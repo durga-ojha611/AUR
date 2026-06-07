@@ -128,7 +128,7 @@ export default function UniversityProfile({ universityId, onBack, onViewChange, 
            {/* Card 3 */}
            <div className="bg-white dark:bg-cyber-gray border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-lg flex flex-col items-center justify-center text-center">
              <span className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white mb-1">
-                {uni.internationalStudents || 12}%
+                {uni.intlStudents || 12}%
              </span>
              <span className="text-[11px] uppercase tracking-wider text-slate-500 font-bold">International students</span>
            </div>
@@ -420,3 +420,4 @@ export default function UniversityProfile({ universityId, onBack, onViewChange, 
     </div>
   );
 }
+
