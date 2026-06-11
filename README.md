@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AUR — Asia University Ranking
 
-## Getting Started
+AUR (Asia University Ranking) is a modern web platform that helps students, researchers, and educators discover, compare, and analyze universities across Asia through rankings, analytics, and intelligent search capabilities.
 
-First, run the development server:
+The project brings ranking analytics, university profiles, country search, and interactive data visualization together in a polished Next.js experience.
+
+##  Key Features
+
+- **University Directory** — browse universities in Asia and view their profile details
+- **Rankings Dashboard** — compare top institutions using research, employability, and score metrics
+- **Country Exploration** — filter universities by country and review regional ranking insights
+- **Advanced Search & Filters** — search by name, location, ranking, and category
+- **Analytics Visualizations** — interactive charts and comparative analytics for trends
+- **Blog & Insights** — Higher education articles, University highlights, Academic trends and updates
+- **AI Assistive UI** — intelligent search and guidance for university discovery
+- **Mobile-first Design** — fully responsive experience for desktop, tablet, and mobile
+
+##  Tech Stack
+
+### Frontend
+- **Next.js 16**
+- **TypeScript**
+- **Tailwind CSS**
+
+### Development Tools
+- Git
+- GitHub
+- ESLint
+- npm
+
+##  Project Structure
+
+```text
+AUR/
+├── public/                 # Static assets, images, icons
+├── src/                    # Application source code
+│   ├── app/                # Next.js App Router pages and layout
+│   ├── components/         # Reusable UI components
+│   ├── styles/             # Global styling and Tailwind configuration
+├── next.config.ts          # Next.js configuration
+├── package.json            # Project metadata and scripts
+├── tsconfig.json           # TypeScript configuration
+└── README.md               # Project overview and setup
+```
+
+##  Getting Started
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/<username>/aur.git
+```
+
+
+### Prerequisites
+
+- Node.js 20+ recommended
+- npm 10+ (or your preferred package manager)
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000` in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+### Start the production server locally
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Run linter
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+```
 
-## Deploy on Vercel
+##  Available Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` — start the Next.js development server
+- `npm run build` — create a production build
+- `npm run start` — start the production server
+- `npm run lint` — run ESLint checks
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+##  Development Notes
+
+- `src/app/layout.tsx` defines the shared layout for the app
+- `src/app/page.tsx` is the main landing page entry point
+- `src/app/components/` contains the main UI building blocks for the dashboard
+- `tailwindcss` is configured via `postcss.config.mjs`
+
+##  Future Enhancements
+
+- User Authentication
+- University Comparison Tool
+- Bookmark & Favorites
+- Personalized Recommendations
+- AI-Based University Suggestions
+- Real-Time Ranking Updates
+- Advanced Analytics Reports
+
+##  License

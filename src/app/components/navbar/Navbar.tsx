@@ -2,7 +2,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+<<<<<<< HEAD
 import { Search, Bell, Sun, Moon, Menu, X, ChevronDown, User, Shield, LogOut } from "lucide-react";
+=======
+import { Search, Bell, Sun, Moon, Menu, X, ChevronDown, User, Shield, LogOut, Bot } from "lucide-react";
+>>>>>>> navdeep/main
 import { useSidebar } from "../navigation/SidebarContext";
 import { TOP_NAV_LINKS } from "../navigation/config";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +21,8 @@ export default function Navbar() {
     handleViewChange,
     filters,
     setFilters,
+    isChatOpen,
+    setIsChatOpen,
   } = useSidebar();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -49,15 +55,16 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-cyber-border bg-white/80 dark:bg-cyber-dark/85 backdrop-blur-md transition-all duration-300">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4">
-          
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-cyber-border bg-white dark:bg-cyber-dark transition-all duration-300">
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex py-2.5 items-center justify-between gap-4">
+
           {/* Logo / Editorial Brand */}
           <div
             onClick={() => handleViewChange("home")}
-            className="flex cursor-pointer items-center space-x-3 text-slate-900 dark:text-white shrink-0 group"
+            className="flex cursor-pointer items-center shrink-0 bg-white/90 dark:bg-white/10 backdrop-blur-sm rounded-md px-2 py-1"
           >
+<<<<<<< HEAD
             <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-slate-900 dark:bg-transparent group-hover:scale-105 transition-transform duration-200">
               <Image
                 src="/logo.png"
@@ -80,6 +87,18 @@ export default function Navbar() {
                 Futuristic Analytics Engine
               </p>
             </div>
+=======
+            <Image
+              src="/aur-logo-cropped.png"
+              alt="Asia University Rankings"
+              width={458}
+              height={135}
+              className="h-[22px] sm:h-[26px] w-auto object-contain mix-blend-multiply dark:mix-blend-normal"
+              priority
+              quality={100}
+              unoptimized
+            />
+>>>>>>> navdeep/main
           </div>
 
           {/* Navigation Links - Desktop */}
@@ -90,11 +109,10 @@ export default function Navbar() {
                 <button
                   key={link.label}
                   onClick={() => handleViewChange(link.view)}
-                  className={`relative px-4 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 rounded-md ${
-                    isActive
-                      ? "text-slate-900 dark:text-cyber-yellow"
-                      : "text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
-                  }`}
+                  className={`relative px-4 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 rounded-md cursor-pointer ${isActive
+                    ? "text-slate-900 dark:text-cyber-yellow"
+                    : "text-slate-500 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                    }`}
                 >
                   {link.label}
                   {isActive && (
@@ -128,11 +146,20 @@ export default function Navbar() {
 
           {/* Right Section Icons */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            
+
+            {/* Chat Toggle Button */}
+            <button
+              onClick={() => setIsChatOpen(!isChatOpen)}
+              className="cursor-pointer p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-cyber-yellow transition-colors hover:bg-slate-100 dark:hover:bg-cyber-gray rounded-full"
+              title="Open AI Assistant"
+            >
+              <Bot className="h-4 w-4" />
+            </button>
+
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-cyber-yellow transition-colors hover:bg-slate-100 dark:hover:bg-cyber-gray rounded-full"
+              className="cursor-pointer p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-cyber-yellow transition-colors hover:bg-slate-100 dark:hover:bg-cyber-gray rounded-full"
               title={theme === "dark" ? "Light Editorial Theme" : "Dark Futuristic Theme"}
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -142,7 +169,7 @@ export default function Navbar() {
             <div className="relative" ref={notifRef}>
               <button
                 onClick={() => setShowNotifMenu(!showNotifMenu)}
-                className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-cyber-yellow transition-colors hover:bg-slate-100 dark:hover:bg-cyber-gray rounded-full relative"
+                className="cursor-pointer p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-cyber-yellow transition-colors hover:bg-slate-100 dark:hover:bg-cyber-gray rounded-full relative"
               >
                 <Bell className="h-4 w-4" />
                 <span className="absolute top-1 right-1 flex h-2 w-2">
@@ -191,9 +218,8 @@ export default function Navbar() {
                       ].map((n) => (
                         <div
                           key={n.id}
-                          className={`p-3 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-cyber-dark/40 transition-colors ${
-                            n.isNew ? "bg-amber-50/20 dark:bg-cyber-yellow/5" : ""
-                          }`}
+                          className={`p-3 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-cyber-dark/40 transition-colors ${n.isNew ? "bg-amber-50/20 dark:bg-cyber-yellow/5" : ""
+                            }`}
                         >
                           <div className="flex justify-between font-semibold text-slate-900 dark:text-white">
                             <span>{n.title}</span>
@@ -214,7 +240,7 @@ export default function Navbar() {
             <div className="relative border-l border-slate-200 dark:border-slate-800 pl-3" ref={profileRef}>
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center space-x-1.5 focus:outline-none group"
+                className="cursor-pointer flex items-center space-x-1.5 focus:outline-none group"
               >
                 <div className="h-8 w-8 rounded-full border border-slate-350 dark:border-cyber-yellow bg-slate-900 flex items-center justify-center text-white text-xs font-bold overflow-hidden shadow-sm dark:shadow-[0_0_8px_rgba(234,179,8,0.1)]">
                   {/* Mock user initial or image */}
@@ -241,8 +267,8 @@ export default function Navbar() {
                     </div>
 
                     {[
-                      { label: "My Profile", icon: User, action: () => {} },
-                      { label: "Admin Console", icon: Shield, action: () => {} },
+                      { label: "My Profile", icon: User, action: () => { } },
+                      { label: "Admin Console", icon: Shield, action: () => { } },
                     ].map((item) => (
                       <button
                         key={item.label}
