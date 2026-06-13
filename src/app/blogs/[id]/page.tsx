@@ -6,7 +6,6 @@ import { ArrowLeft, Clock, BookOpen, Tag, Calendar, User } from "lucide-react";
 import Link from "next/link";
 import AppLayout from "../../components/layout/AppLayout";
 import { SidebarProvider } from "../../components/navigation/SidebarContext";
-import { ToastProvider } from "../../components/feedback/ToastContext";
 import { Article } from "../../data";
 
 function BlogDetailsContent() {
@@ -194,9 +193,7 @@ export default function BlogDetailsPage() {
       </div>
     }>
       <SidebarProvider>
-        <ToastProvider>
-          <BlogDetailsContent />
-        </ToastProvider>
+        <BlogDetailsContent />
       </SidebarProvider>
     </React.Suspense>
   );
