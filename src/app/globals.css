@@ -121,14 +121,16 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--aur-surface);
   box-shadow: var(--aur-shadow);
   border-radius: 16px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+  /* NO backdrop-filter here — it forces GPU repaint on every scroll tick */
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+  contain: layout style;
 }
 .aur-card:hover {
   border-color: var(--aur-border-strong);
   box-shadow: var(--aur-shadow-lg);
-  transform: translateY(-2px);
+  transform: translateY(-2px) translateZ(0);
 }
 
 .aur-panel {
@@ -189,7 +191,7 @@ html.dark .aur-input {
   background: var(--aur-surface-2);
   color: var(--aur-text-secondary);
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
 }
 .aur-chip:hover {
   border-color: var(--aur-border-strong);
@@ -232,7 +234,7 @@ html.dark .aur-input {
   background: transparent;
   color: var(--aur-text-secondary);
   border-radius: 8px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 .aur-btn-ghost:hover {
   background: var(--aur-surface-2);
@@ -256,7 +258,10 @@ html.dark .aur-input {
   letter-spacing: 0.04em;
   border-radius: 10px;
   box-shadow: var(--aur-shadow-sm);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Only animate transform + box-shadow — both GPU composited */
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.15s ease;
 }
 .aur-btn-primary:hover {
   transform: translateY(-1px);
@@ -365,38 +370,48 @@ html.dark .border-slate-100 { border-color: var(--aur-border) !important; }
 html.dark .hover\:bg-slate-50:hover { background-color: var(--aur-surface-hover) !important; }
 html.dark .hover\:border-slate-300:hover { border-color: var(--aur-border-strong) !important; }
 
-/* Micro-animations */
-@keyframes fadeInScale {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+/* Micro-animations — GPU-only (opacity + transform never trigger layout) */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0,  0); }
 }
 .animate-fadeIn {
-  animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
 }
 
 /* ════════════════════════════════════════════════════════════
    PERFORMANCE & SMOOTHNESS OPTIMIZATIONS
    ════════════════════════════════════════════════════════════ */
 
-/* GPU-composited layers for anything that animates */
-.aur-card,
+/*
+  GPU layer promotion strategy:
+  - Promote ONLY elements that actually animate transform/opacity
+  - Avoid blanket will-change: transform — it costs VRAM for every element
+  - Use translate3d() instead of translateZ(0) for consistent cross-browser behaviour
+*/
 .aur-btn-primary,
 .aur-btn-ghost {
   will-change: transform;
-  transform: translateZ(0);   /* promote to own GPU layer */
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
-/* Prevent layout thrash from hover transforms */
+/* Cards: promote only on hover (add/remove will-change dynamically) */
 .aur-card:hover {
-  transform: translateY(-2px) translateZ(0);
+  will-change: transform;
 }
+
+/* Prevent layout thrash — keep transforms in compositing layer */
 .aur-btn-primary:hover {
-  transform: translateY(-1px) translateZ(0);
+  transform: translate3d(0, -1px, 0);
+  box-shadow: var(--aur-shadow);
+  opacity: 0.92;
 }
 .aur-btn-primary:active {
-  transform: translateY(0) translateZ(0);
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
 }
 
 /* Smooth, hardware-accelerated page-level scrolling */

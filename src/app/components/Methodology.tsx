@@ -357,21 +357,14 @@ export default function Methodology() {
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 font-sans flex-grow animate-fadeIn space-y-16 bg-[var(--background)] max-w-5xl">
 
       {/* ── Page Header ── */}
-      <div>
-        <span className="inline-block text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-secondary)] bg-[var(--aur-surface-hover)] px-3 py-1.5 rounded-full border border-[var(--aur-border-strong)] mb-4">
-          Transparency Report
-        </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[var(--aur-text)] tracking-tight">
+      <div className="flex flex-col items-center justify-center text-center pb-6">
+        <span className="aur-caption">Transparency Report</span>
+        <h1 className="aur-section-title text-3xl md:text-4xl leading-tight mt-3">
           Ranking Methodology
         </h1>
-        <p className="text-sm sm:text-base text-[var(--aur-text-secondary)] mt-4 leading-relaxed max-w-2xl">
-          AUR rankings are built on a five-metric framework derived from globally validated data sources.
-          Every weight, data point, and calculation rule is documented here in full.
+        <p className="text-[11px] text-[var(--aur-text-muted)] font-mono mt-4 tracking-wide text-center">
+          Five-metric framework · Globally validated data · Last audited: June 2026 · QS Aligned
         </p>
-        <div className="mt-6 flex items-center gap-3 text-[10px] font-mono text-[var(--aur-text-muted)] uppercase tracking-wider border border-[var(--aur-border)] rounded-lg px-4 py-2.5 w-fit bg-[var(--aur-surface)]">
-          <Info className="h-3.5 w-3.5" />
-          Last audited: June 2026 · Version 4.2 · QS Aligned
-        </div>
       </div>
 
       {/* ── Formula Overview ── */}

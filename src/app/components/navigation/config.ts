@@ -73,5 +73,4 @@ export const TOP_NAV_LINKS = [
   { label: "Discovery Hub", view: "home" },
   { label: "Rankings Engine", view: "rankings" },
   { label: "Methodology", view: "methodology" },
-  { label: "Institutional Analytics", view: "analytics" },
 ];

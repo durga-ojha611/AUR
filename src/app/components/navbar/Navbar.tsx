@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Search, Bell, Sun, Moon, Menu, X, ChevronDown, User, Shield, LogOut, Maximize2, Minimize2 } from "lucide-react";
+import { Search, Bell, Sun, Moon, Menu, X, ChevronDown, User, Shield, LogOut, Maximize2, Minimize2, SlidersHorizontal } from "lucide-react";
 import { useSidebar } from "../navigation/SidebarContext";
 import { useToast } from "../feedback/ToastContext";
 import { TOP_NAV_LINKS } from "../navigation/config";
@@ -24,24 +24,49 @@ export default function Navbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showNavFilter, setShowNavFilter] = useState(false);
 
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    const docEl = document.documentElement as any;
+    const doc = document as any;
+    
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+      const requestFullScreen = docEl.requestFullscreen || docEl.msRequestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen;
+      if (requestFullScreen) {
+        requestFullScreen.call(docEl).then(() => setIsFullscreen(true)).catch(() => {});
+      }
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+      const exitFullScreen = doc.exitFullscreen || doc.msExitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
+      if (exitFullScreen) {
+        exitFullScreen.call(doc).then(() => setIsFullscreen(false)).catch(() => {});
+      }
     }
   };
 
   // Sync state if user presses Esc to exit fullscreen
   useEffect(() => {
-    const handler = () => setIsFullscreen(!!document.fullscreenElement);
+    const handler = () => {
+      const doc = document as any;
+      const isFull = !!(doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement);
+      setIsFullscreen(isFull);
+    };
+    
     document.addEventListener("fullscreenchange", handler);
-    return () => document.removeEventListener("fullscreenchange", handler);
+    document.addEventListener("webkitfullscreenchange", handler);
+    document.addEventListener("mozfullscreenchange", handler);
+    document.addEventListener("MSFullscreenChange", handler);
+    
+    return () => {
+      document.removeEventListener("fullscreenchange", handler);
+      document.removeEventListener("webkitfullscreenchange", handler);
+      document.removeEventListener("mozfullscreenchange", handler);
+      document.removeEventListener("MSFullscreenChange", handler);
+    };
   }, []);
 
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const navFilterRef = useRef<HTMLDivElement>(null);
 
   // Sync internal search state with context searchQuery
   useEffect(() => {
@@ -56,6 +81,9 @@ export default function Navbar() {
       }
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
         setShowNotifMenu(false);
+      }
+      if (navFilterRef.current && !navFilterRef.current.contains(event.target as Node)) {
+        setShowNavFilter(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -75,7 +103,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[var(--aur-border)] bg-[var(--aur-surface)]/95 backdrop-blur-xl transition-all duration-200">
+    <header className="sticky top-0 z-40 w-full border-b border-[var(--aur-border)] bg-[var(--aur-surface)]/95 backdrop-blur-xl" style={{ willChange: "transform", transform: "translateZ(0)" }}>
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between gap-4">
           
@@ -101,25 +129,81 @@ export default function Navbar() {
           <nav className="hidden md:flex space-x-1 h-full items-center">
             {TOP_NAV_LINKS.map((link) => {
               const isActive = activeView === link.view;
+              const isRankings = link.view === "rankings";
               return (
-                <button
-                  key={link.label}
-                  onClick={() => handleViewChange(link.view)}
-                  className={`relative px-4 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 rounded-md ${
-                    isActive
-                      ? "text-[var(--aur-text)]"
-                      : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)]"
-                  }`}
-                >
-                  {link.label}
-                  {isActive && (
-                    <div
+                <div key={link.label} className="relative group flex items-center">
+                  <button
+                    onClick={() => handleViewChange(link.view)}
+                    className={`relative px-4 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 rounded-md ${
+                      isActive
+                        ? "text-[var(--aur-text)]"
+                        : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)]"
+                    }`}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <div
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--aur-text)]"
+                      />
+                    )}
+                  </button>
+                  {/* Filter shortcut beside Rankings Engine */}
+                  {isRankings && (
+                    <div className="relative ml-0.5" ref={navFilterRef}>
+                      <button
+                        type="button"
+                        onClick={() => setShowNavFilter(!showNavFilter)}
+                        title="Open Quick Filters"
+                        className={`p-1.5 rounded-md transition-colors duration-150 ${showNavFilter ? "bg-[var(--aur-surface-hover)] text-[var(--aur-text)]" : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] hover:bg-[var(--aur-hover)]"}`}
+                      >
+                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                      </button>
                       
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--aur-text)]"
-                      
-                    />
+                      {showNavFilter && (
+                        <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--aur-surface)] border border-[var(--aur-border)] rounded-xl shadow-[var(--aur-shadow-lg)] p-4 z-50">
+                          <h4 className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)] mb-3">Quick Filters</h4>
+                          
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-[10px] font-bold text-[var(--aur-text)] mb-1 block">Region/Country</label>
+                              <select 
+                                value={filters.country}
+                                onChange={(e) => setFilters(prev => ({ ...prev, country: e.target.value }))}
+                                className="w-full text-xs p-2 rounded-lg border border-[var(--aur-border)] bg-[var(--aur-surface-2)] text-[var(--aur-text)] focus:outline-none focus:border-[var(--aur-border-strong)]"
+                              >
+                                <option value="">All Regions</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="China">China</option>
+                                <option value="Japan">Japan</option>
+                                <option value="Uzbekistan">Uzbekistan</option>
+                                <option value="India">India</option>
+                              </select>
+                            </div>
+                            
+                            <div>
+                              <label className="text-[10px] font-bold text-[var(--aur-text)] mb-1 block">Max Tuition ($)</label>
+                              <input 
+                                type="range" 
+                                min="0" max="50000" step="1000"
+                                value={filters.tuitionRange[1]}
+                                onChange={(e) => setFilters(prev => ({ ...prev, tuitionRange: [prev.tuitionRange[0], parseInt(e.target.value)] }))}
+                                className="w-full accent-[var(--aur-text)]"
+                              />
+                              <div className="text-right text-[10px] font-mono text-[var(--aur-text-muted)] mt-1">${filters.tuitionRange[1].toLocaleString()}</div>
+                            </div>
+                            
+                            <button 
+                              onClick={() => { setShowNavFilter(false); handleViewChange("rankings"); }}
+                              className="w-full py-2 mt-4 bg-[var(--aur-text)] text-[var(--background)] text-[10px] font-bold uppercase tracking-wider rounded-lg hover:opacity-90 transition-opacity"
+                            >
+                              Apply & View Results
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
-                </button>
+                </div>
               );
             })}
           </nav>

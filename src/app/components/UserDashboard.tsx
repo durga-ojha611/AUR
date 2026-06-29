@@ -63,27 +63,14 @@ export default function UserDashboard({
   return (
     <div className="w-full max-w-6xl mx-auto p-4 md:p-6 lg:p-8 animate-fadeIn">
       {/* Dashboard Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">
-            Command Center
-          </span>
-          <h1 className="font-serif text-3xl font-bold text-[var(--aur-text)] mt-1 tracking-tight">
-            User Profile
-          </h1>
-          <p className="text-sm text-[var(--aur-text-muted)] mt-2 max-w-xl leading-relaxed">
-            Manage your personal university portfolio, configure engine telemetry, and review your account security credentials.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-[var(--aur-border-strong)] border flex items-center justify-center border-[var(--aur-border)]">
-            <User className="h-5 w-5 text-[var(--aur-text-muted)]" />
-          </div>
-          <div>
-            <div className="text-xs font-bold uppercase tracking-wide text-[var(--aur-text)]">Scholar Account</div>
-            <div className="text-[10px] text-[var(--aur-text-muted)] font-mono">ID: AUR-992-BX</div>
-          </div>
-        </div>
+      <div className="mb-8 aur-hero-accent">
+        <span className="aur-caption">Command Center</span>
+        <h1 className="aur-section-title text-3xl md:text-4xl leading-tight mt-2">
+          User Profile &amp; Portfolio
+        </h1>
+        <p className="text-[11px] text-[var(--aur-text-muted)] font-mono mt-3 tracking-wide">
+          Saved universities · Engine preferences · Account security
+        </p>
       </div>
 
       {/* Main Grid */}

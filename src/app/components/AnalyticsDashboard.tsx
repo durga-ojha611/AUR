@@ -131,17 +131,13 @@ export default function AnalyticsDashboard() {
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 font-sans flex-grow animate-fadeIn space-y-8 bg-[var(--background)]">
 
       {/* ── Header ── */}
-      <div className="p-8 sm:p-10 rounded-3xl border border-[var(--aur-border)] bg-[var(--aur-surface)] shadow-sm">
-        <span className="inline-block text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-secondary)] bg-[var(--aur-surface-hover)] px-3 py-1.5 rounded-full border border-[var(--aur-border-strong)] mb-4">
-          Academic Intelligence
-        </span>
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[var(--aur-text)] tracking-tight">
+      <div className="mb-8 aur-hero-accent">
+        <span className="aur-caption">Academic Intelligence</span>
+        <h2 className="aur-section-title text-3xl md:text-4xl leading-tight mt-2">
           Institutional Analytics Hub
         </h2>
-        <p className="text-sm sm:text-base text-[var(--aur-text-secondary)] mt-4 leading-relaxed max-w-3xl">
-          Real-time aggregated insights from{" "}
-          <strong className="text-[var(--aur-text)]">{a.count} audited institutions</strong>{" "}
-          across Asia — derived directly from live QS-methodology scoring data telemetry.
+        <p className="text-[11px] text-[var(--aur-text-muted)] font-mono mt-3 tracking-wide">
+          Real-time aggregated insights · {a.count} audited institutions · QS-methodology scoring
         </p>
       </div>
 

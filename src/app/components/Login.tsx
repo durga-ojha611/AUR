@@ -19,6 +19,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useSidebar } from "./navigation/SidebarContext";
+import { CanvasRevealEffect } from "./ui/canvas-reveal-effect";
 
 // ─── Variants ─────────────────────────────────────────────────────────────────
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
@@ -145,7 +146,8 @@ function GithubIcon() {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Login() {
-  const { handleViewChange } = useSidebar();
+  const { handleViewChange, theme } = useSidebar();
+  const isDark = theme === "dark";
 
   const [isLogin, setIsLogin]             = useState(true);
   const [dir, setDir]                     = useState(1);
@@ -183,12 +185,27 @@ export default function Login() {
     await new Promise(r => setTimeout(r, 800));
     setLoading(false);
 
-    // Admin shortcut: abc / abc
-    if (email === "abc" && password === "abc") {
+    // Admin authentication
+    const isAdmin = email === "admin" && password === "admin";
+                    
+    if (isAdmin) {
       handleViewChange("admin");
       return;
     }
-    handleViewChange("home");
+
+    if (email === "user@aur.edu" && password === "user123") {
+      handleViewChange("home");
+      return;
+    }
+
+    // Default catch-all for demo purposes, since there's no backend
+    if (password.length >= 6) {
+      handleViewChange("home");
+      return;
+    } else {
+      setError("Invalid credentials. Use a valid account or navadeep@aur.edu / admin123 for Admin.");
+      return;
+    }
   };
 
   const chips = [
@@ -198,11 +215,34 @@ export default function Login() {
   ];
 
   return (
-    <div className="lp-root">
-      <div className="lp-bg-grid"/>
+    <div className="lp-root relative">
+      {/* Dark mode: animated dot matrix canvas background */}
+      {isDark && (
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <CanvasRevealEffect
+            animationSpeed={3}
+            containerClassName="bg-black"
+            colors={[
+              [255, 255, 255],
+              [255, 255, 255],
+            ]}
+            dotSize={6}
+            reverse={false}
+            showGradient={false}
+          />
+          {/* Radial vignette so center stays dark and readable */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,0.85)_0%,_transparent_70%)]" />
+          {/* Top fade */}
+          <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-b from-black to-transparent" />
+          {/* Bottom fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black to-transparent" />
+        </div>
+      )}
+
+      <div className="lp-bg-grid relative z-10"/>
 
       {/* ── Left Showcase ── */}
-      <div className="lp-left"   >
+      <div className="lp-left relative z-10"   >
         {/* Logo */}
         <div className="lp-logo">
           <div className="lp-logo-mark">A</div>
@@ -226,9 +266,6 @@ export default function Login() {
             Asia's Premier<br/>
             <span>University Analytics</span>
           </h2>
-          <p className="lp-hero-sub" >
-            A rigorous, structural data engine aggregating research volume, employability indices, and real-time citation metrics across the continent.
-          </p>
           <div className="lp-trust-row" >
             {["Certified Data", "Institutional Access", "Real-time Processing"].map(t => (
               <div key={t} className="lp-trust-badge">
@@ -241,7 +278,7 @@ export default function Login() {
       </div>
 
       {/* ── Right Form ── */}
-      <div className="lp-right"   >
+      <div className="lp-right relative z-10"   >
         <div className="lp-glass-card">
           {/* Mobile brand */}
           <div className="lp-mobile-brand">
@@ -443,7 +480,7 @@ export default function Login() {
                 {isLogin && (
                   <div className="lp-admin-hint">
                     <Shield size={14} style={{ flexShrink: 0, marginTop: 2, color: "var(--aur-text-muted)" }}/>
-                    <div>Use <code>abc</code> / <code>abc</code> for admin access</div>
+                    <div>Use <code>admin</code> / <code>admin</code> for admin access</div>
                   </div>
                 )}
               </form>

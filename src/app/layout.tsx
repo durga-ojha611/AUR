@@ -38,9 +38,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${inter.variable} ${lora.variable} h-full antialiased`}
+      style={{ overscrollBehaviorY: "none" }}
     >
-      <body className="min-h-full flex flex-col font-sans bg-[var(--background)] text-[var(--foreground)]">
+      <body className="min-h-full flex flex-col font-sans bg-[var(--background)] text-[var(--foreground)]" style={{ overscrollBehavior: "none" }}>
         {children}
       </body>
     </html>

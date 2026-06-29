@@ -79,7 +79,7 @@ export default function AppContent() {
   const showSidebar = view !== "home" && view !== "login" && view !== "admin";
 
   return (
-    <div className={`flex min-h-screen flex-col transition-colors duration-200 ${
+    <div className={`flex min-h-screen flex-col ${
       theme === "dark" ? "bg-[#0a0a0a] text-[#e5e5e5] dark" : "bg-white text-[#171717]"
     }`}>
       {/* Top Navigation Bar */}
@@ -93,9 +93,10 @@ export default function AppContent() {
 
         {/* Main Content Area — Full Width */}
         <main
-          className={`flex-1 flex flex-col min-w-0 pb-20 md:pb-0 transition-all duration-300 ease-in-out ${
+          className={`flex-1 flex flex-col min-w-0 pb-20 md:pb-0 ${
             view === "login" || view === "admin" ? "p-0" : "px-4 pt-4 lg:px-8 lg:pt-8"
           }`}
+          style={{ isolation: "isolate" }}
         >
           <>
             <div

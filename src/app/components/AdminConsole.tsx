@@ -9,17 +9,18 @@ import { MOCK_UNIVERSITIES } from "../data";
 
 // Premium Enterprise Mock Data
 const MOCK_EVENTS = [
-  { id: 1, user: "Dr. John Doe", action: "Accessed Restricted Global Rankings", time: "2 mins ago", status: "success" },
-  { id: 2, user: "Jane Smith", action: "Exported Institutional Data (PDF)", time: "14 mins ago", status: "success" },
+  { id: 1, user: "Dr. Kenji Sato", action: "Accessed Restricted Global Rankings", time: "2 mins ago", status: "success" },
+  { id: 2, user: "Prof. Li Wei", action: "Exported Institutional Data (PDF)", time: "14 mins ago", status: "success" },
   { id: 3, user: "Navadeep Yadav", action: "Modified Algorithm Weights", time: "1 hr ago", status: "warning" },
-  { id: 4, user: "System", action: "Failed Authentication Attempt", time: "2 hrs ago", status: "error" },
+  { id: 4, user: "System Daemon", action: "Failed Authentication Attempt", time: "2 hrs ago", status: "error" },
 ];
 
 const MOCK_USERS = [
   { id: "U-101", name: "Navadeep Yadav", role: "SuperAdmin", email: "navadeep@aur.edu", status: "Active", lastIp: "192.168.1.1", session: "Valid" },
-  { id: "U-102", name: "Dr. John Doe", role: "Analyst", email: "jdoe@university.edu", status: "Active", lastIp: "10.0.0.45", session: "Valid" },
-  { id: "U-103", name: "Jane Smith", role: "Editor", email: "jsmith@institute.org", status: "Offline", lastIp: "172.16.2.19", session: "Expired" },
-  { id: "U-104", name: "Guest User", role: "Viewer", email: "guest99@aur.edu", status: "Suspended", lastIp: "203.0.113.12", session: "Revoked" },
+  { id: "U-102", name: "Dr. Kenji Sato", role: "Analyst", email: "ksato@tokyo-u.ac.jp", status: "Active", lastIp: "130.158.0.45", session: "Valid" },
+  { id: "U-103", name: "Prof. Li Wei", role: "Editor", email: "li.wei@tsinghua.edu.cn", status: "Offline", lastIp: "166.111.4.19", session: "Expired" },
+  { id: "U-104", name: "Sarah Jenkins", role: "Viewer", email: "s.jenkins@nus.edu.sg", status: "Suspended", lastIp: "137.132.20.12", session: "Revoked" },
+  { id: "U-105", name: "Dr. Priya Sharma", role: "Editor", email: "psharma@iitb.ac.in", status: "Active", lastIp: "103.21.12.1", session: "Valid" }
 ];
 
 export default function AdminConsole() {

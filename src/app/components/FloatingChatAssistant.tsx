@@ -292,48 +292,50 @@ export default function FloatingChatAssistant() {
 
       {/* ── Floating Trigger Button ─────────────────────────────────────── */}
       <>
-        {!isChatOpen && activeView === "home" && isIdle && (
-          <div 
-            
-            
-            
+        {!isChatOpen && (
+          <div
             className="fixed bottom-6 right-6 z-50 flex items-end gap-4 pointer-events-none"
+            style={{
+              opacity: isIdle ? 1 : 0,
+              transform: isIdle ? "translate3d(0, 0, 0)" : "translate3d(0, 8px, 0)",
+              transition: "opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              willChange: "opacity, transform",
+              pointerEvents: isIdle ? "auto" : "none",
+            }}
           >
-            {/* The "Come talk to me" tooltip */}
-            <div
-              
-              
-              
-              className={[
-                "relative mb-2 px-3.5 py-2.5 rounded-2xl text-[11px] font-bold shadow-xl cursor-pointer pointer-events-auto transition-transform hover:scale-105",
-                isDark 
-                  ? "bg-cyber-gray border border-cyber-yellow/30 text-cyber-yellow" 
-                  : "bg-white border border-slate-200 text-amber-700 shadow-slate-900/10"
-              ].join(" ")}
-              onClick={() => setIsChatOpen(true)}
-            >
-              👋 Come talk to me!
-              {/* Tooltip triangle pointing right/down */}
-              <div 
+            {/* "Come talk to me" tooltip — only on homepage */}
+            {activeView === "home" && (
+              <div
                 className={[
-                  "absolute -right-1.5 bottom-3.5 w-3.5 h-3.5 rotate-45 border-r border-b",
-                  isDark ? "bg-cyber-gray border-cyber-yellow/30" : "bg-white border-slate-200"
-                ].join(" ")} 
-              />
-            </div>
+                  "relative mb-2 px-3.5 py-2.5 rounded-2xl text-[11px] font-bold shadow-xl cursor-pointer pointer-events-auto transition-transform hover:scale-105",
+                  isDark
+                    ? "bg-cyber-gray border border-cyber-yellow/30 text-cyber-yellow"
+                    : "bg-white border border-slate-200 text-amber-700 shadow-slate-900/10",
+                ].join(" ")}
+                onClick={() => setIsChatOpen(true)}
+              >
+                👋 Come talk to me!
+                <div
+                  className={[
+                    "absolute -right-1.5 bottom-3.5 w-3.5 h-3.5 rotate-45 border-r border-b",
+                    isDark ? "bg-cyber-gray border-cyber-yellow/30" : "bg-white border-slate-200",
+                  ].join(" ")}
+                />
+              </div>
+            )}
 
-            {/* The FAB */}
+            {/* FAB — always visible on all pages */}
             <button
               key="chat-trigger"
               onClick={() => setIsChatOpen(true)}
-              
-              
               className="pointer-events-auto shrink-0 h-14 w-14 rounded-full bg-amber-600 dark:bg-cyber-yellow text-white dark:text-cyber-black shadow-lg shadow-amber-600/30 dark:shadow-cyber-yellow/25 flex items-center justify-center relative"
               title="Open AI Rankings Assistant"
             >
               <Bot className="h-6 w-6" />
-              {/* Pulsing attention ring */}
-              <span className="absolute inset-0 rounded-full animate-ping bg-amber-500/30 dark:bg-cyber-yellow/20 pointer-events-none" />
+              {/* Pulsing ring only on home */}
+              {activeView === "home" && (
+                <span className="absolute inset-0 rounded-full animate-ping bg-amber-500/30 dark:bg-cyber-yellow/20 pointer-events-none" />
+              )}
             </button>
           </div>
         )}

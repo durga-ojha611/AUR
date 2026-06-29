@@ -134,20 +134,13 @@ export default function UniversitiesList({
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 font-sans grow animate-fadeIn bg-[var(--background)]">
       {/* ── Page Header ── */}
-      <div className="mb-10 border-b border-[var(--aur-border)] pb-10">
-        <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-secondary)] bg-[var(--aur-surface-hover)] px-2.5 py-1 rounded-full border border-[var(--aur-border-strong)]">
-          Institutional Database
-        </span>
-        <h2 className="font-serif text-3xl sm:text-4xl font-semibold tracking-tight leading-tight mt-4 text-[var(--aur-text)]">
-          University Directory{" "}
-          <span className="text-[var(--aur-text-muted)]">&</span> Regional Intelligence
+      <div className="mb-10 aur-hero-accent">
+        <span className="aur-caption">Institutional Database</span>
+        <h2 className="aur-section-title text-3xl md:text-4xl leading-tight mt-2">
+          University Directory &amp; Regional Intelligence
         </h2>
-        <p className="text-sm leading-relaxed mt-4 max-w-3xl text-[var(--aur-text-secondary)]">
-          Comprehensive profiles of{" "}
-          <strong className="text-[var(--aur-text)]">
-            {MOCK_UNIVERSITIES.length} audited institutions
-          </strong>{" "}
-          spanning 10 countries. Explore, shortlist, and compare universities with real data.
+        <p className="text-[11px] text-[var(--aur-text-muted)] font-mono mt-3 tracking-wide">
+          Index refreshed · Jun 2026 · {MOCK_UNIVERSITIES.length} institutions indexed
         </p>
       </div>
 
