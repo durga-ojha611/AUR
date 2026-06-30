@@ -70,8 +70,8 @@ export default function AppContent() {
   const savedUniversities = MOCK_UNIVERSITIES.filter((u) => savedUniIds.includes(u.id));
 
   return (
-    <div className={`${view === "home" ? "bg-gradient-to-b from-amber-50/50 via-white to-blue-50" : "aur-page"} flex min-h-screen flex-col transition-colors duration-300 ${
-      theme === "dark" && view !== "home" ? "text-slate-100 dark" : "text-slate-900"
+    <div className={`${view === "home" ? "bg-gradient-to-b from-amber-50/50 via-white to-blue-50 dark:bg-none dark:bg-cyber-black" : "aur-page"} flex min-h-screen flex-col transition-colors duration-300 ${
+      theme === "dark" ? "text-slate-100 dark" : "text-slate-900"
     }`}>
       {/* Top Navigation Bar */}
       <Navbar />

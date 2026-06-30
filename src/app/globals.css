@@ -364,6 +364,194 @@ html.dark .aur-editorial-card:hover {
 }
 
 /* Rankings table */
+.aur-rankings-shell {
+  --rank-blue: #2563eb;
+  --rank-blue-soft: #dbeafe;
+  --rank-yellow: #eab308;
+  --rank-yellow-soft: #fffbeb;
+  color: #0f172a;
+}
+
+.aur-rankings-hero {
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background:
+    radial-gradient(ellipse 55% 60% at 88% 10%, rgba(219, 234, 254, 0.58), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 251, 235, 0.58) 52%, rgba(239, 246, 255, 0.92) 100%);
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.06);
+  padding: 1.25rem 1.5rem;
+}
+
+.aur-rankings-action {
+  border: 1px solid #fde047;
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+  color: #422006;
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.22);
+}
+.aur-rankings-action:hover {
+  border-color: #eab308;
+  background: linear-gradient(135deg, #fde047 0%, #ca8a04 100%);
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.32);
+  transform: translateY(-1px);
+}
+
+.aur-rankings-filter {
+  border-color: #dbeafe;
+  background:
+    radial-gradient(ellipse 65% 70% at 100% 0%, rgba(219, 234, 254, 0.5), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 251, 235, 0.34) 100%);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.06);
+}
+
+.aur-rankings-insight-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #dbeafe;
+  background:
+    radial-gradient(ellipse 75% 80% at 100% 0%, rgba(219, 234, 254, 0.55), transparent 58%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 251, 235, 0.45) 100%);
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.055);
+  padding: 1rem;
+}
+.aur-rankings-insight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, #2563eb, #eab308);
+}
+.aur-rankings-insight-icon {
+  display: inline-flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.aur-rankings-filter .aur-input {
+  border-color: rgba(37, 99, 235, 0.16);
+  background: #ffffff;
+}
+.aur-rankings-filter .aur-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.aur-rankings-reset {
+  color: #2563eb;
+}
+.aur-rankings-reset:hover {
+  color: #1d4ed8;
+}
+
+.aur-rankings-table {
+  border-color: #dbeafe;
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.07);
+}
+.aur-rankings-table .aur-table thead {
+  background: linear-gradient(180deg, #fffbeb 0%, #eff6ff 100%);
+  color: #475569;
+}
+.aur-rankings-table .aur-rankings-th {
+  background: linear-gradient(180deg, #fffbeb 0%, #eff6ff 100%);
+  color: #0f172a;
+}
+.aur-rankings-table .aur-table tbody tr:hover {
+  background: rgba(239, 246, 255, 0.9) !important;
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+.aur-rankings-table .aur-rank-badge--elite {
+  border-color: #eab308;
+  background: linear-gradient(135deg, #fffbeb 0%, #eff6ff 100%);
+  color: #92400e;
+}
+.aur-rankings-table .aur-score-pill {
+  background: #eff6ff;
+  border-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.aur-rankings-pagination {
+  border-color: #dbeafe;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+html.dark .aur-rankings-shell {
+  --rank-blue: #facc15;
+  --rank-blue-soft: rgba(234, 179, 8, 0.18);
+  --rank-yellow: #eab308;
+  --rank-yellow-soft: rgba(234, 179, 8, 0.08);
+  color: #f8fafc;
+}
+html.dark .aur-rankings-hero {
+  border-color: rgba(234, 179, 8, 0.14);
+  background:
+    radial-gradient(ellipse 60% 55% at 90% 0%, rgba(234, 179, 8, 0.12), transparent 58%),
+    linear-gradient(135deg, rgba(13, 13, 17, 0.96) 0%, rgba(24, 24, 31, 0.92) 52%, rgba(5, 5, 6, 0.98) 100%);
+  box-shadow: 0 8px 34px rgba(0, 0, 0, 0.36);
+}
+html.dark .aur-rankings-filter {
+  border-color: rgba(234, 179, 8, 0.14);
+  background:
+    radial-gradient(ellipse 65% 70% at 100% 0%, rgba(234, 179, 8, 0.1), transparent 58%),
+    linear-gradient(180deg, rgba(24, 24, 31, 0.92) 0%, rgba(13, 13, 17, 0.96) 100%);
+  box-shadow: 0 8px 34px rgba(0, 0, 0, 0.34);
+}
+html.dark .aur-rankings-insight-card {
+  border-color: rgba(234, 179, 8, 0.14);
+  background:
+    radial-gradient(ellipse 75% 80% at 100% 0%, rgba(234, 179, 8, 0.1), transparent 58%),
+    linear-gradient(135deg, rgba(24, 24, 31, 0.94) 0%, rgba(13, 13, 17, 0.98) 100%);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.34);
+}
+html.dark .aur-rankings-insight-card::before {
+  background: linear-gradient(180deg, #eab308, rgba(234, 179, 8, 0.25));
+}
+html.dark .aur-rankings-insight-icon {
+  border-color: rgba(234, 179, 8, 0.2);
+  background: rgba(234, 179, 8, 0.08);
+  color: #facc15;
+}
+html.dark .aur-rankings-filter .aur-input {
+  border-color: rgba(234, 179, 8, 0.22);
+  background: #18181f;
+}
+html.dark .aur-rankings-filter .aur-input:focus {
+  border-color: #eab308;
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15);
+}
+html.dark .aur-rankings-reset {
+  color: #facc15;
+}
+html.dark .aur-rankings-reset:hover {
+  color: #fef3c7;
+}
+html.dark .aur-rankings-table {
+  border-color: rgba(234, 179, 8, 0.14);
+  box-shadow: 0 8px 34px rgba(0, 0, 0, 0.36);
+}
+html.dark .aur-rankings-table .aur-table thead,
+html.dark .aur-rankings-table .aur-rankings-th {
+  background: linear-gradient(180deg, rgba(234, 179, 8, 0.12) 0%, rgba(13, 13, 17, 0.98) 100%);
+  color: #facc15;
+}
+html.dark .aur-rankings-table .aur-table tbody tr:hover {
+  background: rgba(234, 179, 8, 0.06) !important;
+  box-shadow: inset 3px 0 0 #eab308;
+}
+html.dark .aur-rankings-table .aur-score-pill {
+  background: rgba(234, 179, 8, 0.08);
+  border-color: rgba(234, 179, 8, 0.2);
+  color: #f8fafc;
+}
+html.dark .aur-rankings-pagination {
+  border-color: rgba(234, 179, 8, 0.14);
+  background: rgba(13, 13, 17, 0.92);
+}
+
 .aur-table-wrap {
   border: 1px solid var(--aur-border);
   background: var(--aur-surface);
