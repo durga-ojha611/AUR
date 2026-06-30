@@ -71,21 +71,19 @@ export default function Navbar({ showSidebar = true }: NavbarProps) {
         <div className="flex h-16 items-center justify-between gap-4">
           
           {/* Logo / Editorial Brand */}
-          <div
-            onClick={() => handleViewChange("home")}
-            className="flex cursor-pointer items-center space-x-3 text-slate-900 dark:text-white shrink-0 group"
-          >
-            <Image
-              src="/aur-logo.jpg"
-              alt="Asia University Rankings"
-              width={458}
-              height={135}
-              className="h-[36px] sm:h-[42px] md:h-[46px] w-auto object-contain mix-blend-multiply dark:mix-blend-normal"
-              priority
-              quality={100}
-              unoptimized
-            />
-          </div>
+<div
+  onClick={() => handleViewChange("home")}
+  className="flex h-16 items-center cursor-pointer shrink-0"
+>
+  <Image
+    src="/logo.png"
+    alt="Asia University Rankings"
+    width={458}
+    height={135}
+    priority
+    className="max-h-10 w-auto object-contain"
+  />
+</div>
 
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex space-x-1 h-full items-center">
