@@ -3,7 +3,30 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
+export interface FilterState {
+  searchQuery: string;
+  country: string;
+  subjects: string[];
+  qsRange: [number, number];
+  tuitionRange: [number, number];
+  isPublic: boolean | null;
+  scholarshipOnly: boolean;
+}
+
+export const initialFilters: FilterState = {
+  searchQuery: "",
+  country: "",
+  subjects: [],
+  qsRange: [1, 50],
+  tuitionRange: [0, 25000],
+  isPublic: null,
+  scholarshipOnly: false,
+};
+
 interface SidebarContextType {
+  filters: FilterState;
+  setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+  clearFilters: () => void;
   isCollapsed: boolean;
   setIsCollapsed: (val: boolean) => void;
   isMobileOpen: boolean;
@@ -38,7 +61,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isCollapsed, setIsCollapsedState] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("light");
- // const [filters, setFilters] = useState<FilterState>(initialFilters);
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUniIds, setSelectedUniIds] = useState<string[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -105,6 +128,10 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  const clearFilters = () => {
+    setFilters(initialFilters);
+  };
+
   // Write collapse state to localStorage
   const setIsCollapsed = (val: boolean) => {
     setIsCollapsedState(val);
@@ -134,7 +161,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [theme]);
 
-  // Synchronize initial URL search query if exists
+  // Synchronize  URL search query if exists
   useEffect(() => {
     const q = searchParams.get("search");
     if (q !== null) {
@@ -149,6 +176,12 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (view !== "profile") {
       current.delete("id");
     }
+    
+    // Auto-expand sidebar when navigating to rankings engine
+    if (view === "rankings") {
+      setIsCollapsed(false);
+    }
+
     router.push(`?${current.toString()}`);
     setIsMobileOpen(false); // Close mobile drawer when navigating
   };
@@ -168,6 +201,9 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <SidebarContext.Provider
       value={{
+        filters,
+        setFilters,
+        clearFilters,
         isCollapsed,
         setIsCollapsed,
         isMobileOpen,

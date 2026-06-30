@@ -36,7 +36,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       }`}
     >
       {/* Top Navigation Bar */}
-      <Navbar showSidebar={showSidebar} />
+      <Navbar />
 
       {/* Main Core Layout */}
       <div className={`flex-grow flex w-full mx-auto ${showSidebar ? "max-w-7xl px-0 sm:px-4 lg:px-8" : "max-w-none px-0"}`}>
@@ -50,7 +50,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       </div>
 
       {/* Mobile Responsive Navigation Drawer & Bottom Bar */}
-      <MobileMenu showSidebar={showSidebar} />
+      <MobileMenu />
 
       <FloatingChatAssistant />
 
@@ -61,12 +61,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         onUniversitySelect={handleUniversitySelect}
       />
 
-      {/* Universal Footer */}
-      <footer className="border-t border-slate-200 dark:border-cyber-border bg-slate-50 dark:bg-cyber-dark/80 py-8 transition-colors duration-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">
-          © 2026 Asia University Rankings | Official Analytical Data Engine
-        </div>
-      </footer>
+
     </div>
   );
 }
