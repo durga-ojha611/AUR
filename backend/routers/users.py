@@ -17,7 +17,7 @@ class BookmarkCreate(BaseModel):
 
 
 class BookmarkResponse(BaseModel):
-    id: int
+    id: UUID
     university_id: UUID
     created_at: str
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+
 import {
   Search,
   BookOpen,
@@ -13,7 +14,6 @@ import {
   Clock,
   TrendingUp,
   TrendingDown,
-  Play,
   ArrowRight,
   Bell,
   Building2,
@@ -21,10 +21,36 @@ import {
   Activity,
   Mail,
 } from "lucide-react";
-import Link from "next/link";
 import { MOCK_UNIVERSITIES, FEATURED_ARTICLES, University, Article } from "../data";
 import { AsiaMapNetwork, MapUniversityCards } from "./home/AsiaMapHero";
 import "./home/ref-home.css";
+
+/* ── Reusable scroll-reveal wrapper ── */
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
+};
+
+function RevealSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  
+  return (
+    <div
+      ref={ref}
+      className={className}
+    >
+      {children}
+    </div>
+  );
+}
 
 type SuggestionPick =
   | { kind: "uni"; uni: University }
@@ -420,8 +446,6 @@ export default function Homepage({
   onViewChange,
 }: HomepageProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [articles, setArticles] = useState<Article[]>(FEATURED_ARTICLES);
-  const [loadingArticles, setLoadingArticles] = useState(true);
   const [suggestions, setSuggestions] = useState<{ universities: University[]; articles: Article[] }>({
     universities: [],
     articles: [],
@@ -434,23 +458,6 @@ export default function Homepage({
   const methodologyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    async function fetchArticles() {
-      try {
-        const res = await fetch("/api/blogs");
-        if (res.ok) {
-          const data = await res.json();
-          setArticles(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch articles:", err);
-      } finally {
-        setLoadingArticles(false);
-      }
-    }
-    fetchArticles();
-  }, []);
-
-  useEffect(() => {
     if (searchQuery.trim().length === 0) {
       setSuggestions({ universities: [], articles: [] });
       return;
@@ -461,13 +468,13 @@ export default function Homepage({
         uni.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
         uni.subjects.some((sub) => sub.toLowerCase().includes(searchQuery.toLowerCase()))
     ).slice(0, 5);
-    const filteredArticles = articles.filter(
+    const filteredArticles = FEATURED_ARTICLES.filter(
       (art) =>
         art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (art.subtitle && art.subtitle.toLowerCase().includes(searchQuery.toLowerCase()))
+        art.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
     ).slice(0, 3);
     setSuggestions({ universities: filteredUnis, articles: filteredArticles });
-  }, [searchQuery, articles]);
+  }, [searchQuery]);
 
   const flatSuggestions = useMemo((): SuggestionPick[] => {
     const items: SuggestionPick[] = [];
@@ -544,16 +551,27 @@ export default function Homepage({
   const mapUniversities = topTen.slice(0, 3);
 
   const scrollToMethodology = () => {
-    methodologyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Navigated via onViewChange("methodology") — scroll ref no longer needed
   };
 
   return (
-    <div className="ref-home flex-grow w-full">
+    <div className="ref-home flex-grow w-full relative">
+
+
       {/* ── Hero ── */}
       <section className="ref-hero">
         <div className="ref-hero-grid">
-          <div>
-            <span className="ref-label">Asia University Rankings</span>
+          <div
+            
+            
+            
+          >
+            <span
+              className="ref-label"
+              
+              
+              
+            >Asia University Rankings</span>
             <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold leading-tight mt-3 mb-4">
               Asia&apos;s Most Trusted{" "}
               <span className="ref-hero-title-accent">University Intelligence</span> Platform
@@ -563,14 +581,19 @@ export default function Homepage({
               including medical careers in Central Asia — powered by live audited data.
             </p>
 
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div
+              className="flex flex-wrap gap-3 mb-6"
+              
+              
+              
+            >
               <button type="button" className="ref-btn-primary" onClick={() => onViewChange("rankings")}>
                 Explore Rankings
                 <ArrowRight className="h-4 w-4" />
               </button>
-              <button type="button" className="ref-btn-outline" onClick={scrollToMethodology}>
-                <Play className="h-4 w-4" />
-                Watch Methodology
+              <button type="button" className="ref-btn-outline" onClick={() => onViewChange("methodology")}>
+                <BookOpen className="h-4 w-4" />
+                Our Methodology
               </button>
             </div>
 
@@ -685,14 +708,19 @@ export default function Homepage({
               ))}
             </div>
 
-            <div className="ref-stat-bar">
+            <div
+              className="ref-stat-bar"
+              
+              
+              
+            >
               {[
                 { icon: Building2, val: `${MOCK_UNIVERSITIES.length}+`, label: "Institutions" },
                 { icon: Globe2, val: `${uniqueCountries}+`, label: "Countries" },
                 { icon: Database, val: "1M+", label: "Data Points" },
                 { icon: Clock, val: "15+", label: "Years of Data" },
               ].map((s) => (
-                <div key={s.label} className="ref-stat-item">
+                <div key={s.label} className="ref-stat-item" >
                   <s.icon className="h-5 w-5 text-amber-500 shrink-0" />
                   <div>
                     <div className="font-bold text-sm">{s.val}</div>
@@ -703,7 +731,12 @@ export default function Homepage({
             </div>
           </div>
 
-          <div className="ref-hero-visual">
+          <div
+            className="ref-hero-visual"
+            
+            
+            
+          >
             <div className="ref-map-stage">
               <AsiaMapNetwork />
               <MapUniversityCards
@@ -746,7 +779,7 @@ export default function Homepage({
       </section>
 
       {/* ── Live Top 10 ── */}
-      <section className="ref-section">
+      <RevealSection className="ref-section">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
           <div>
             <span className="ref-label">Rankings Engine</span>
@@ -814,17 +847,17 @@ export default function Homepage({
           </table>
         </div>
         <p className="text-[10px] text-[var(--ref-muted)] mt-3">* Filterable by location, program &amp; tuition in Rankings Engine.</p>
-      </section>
+      </RevealSection>
 
       {/* ── Explore by Country (light cards, per-country theme) ── */}
-      <section className="ref-section pt-0 ref-country-section">
+      <RevealSection className="ref-section pt-0 ref-country-section">
         <span className="ref-label">Regional Intelligence</span>
         <h2 className="text-2xl font-bold mt-1 mb-6">Explore by Country</h2>
-        <div className="ref-country-grid">
+        <div className="ref-country-grid"    >
           {countryStats.map((c) => {
             const theme = getCountryTheme(c.country);
             return (
-              <button
+              <button 
                 key={c.country}
                 type="button"
                 className="ref-country-card ref-country-card--light text-left"
@@ -854,11 +887,11 @@ export default function Homepage({
             );
           })}
         </div>
-      </section>
+      </RevealSection>
 
       {/* ── Methodology ── */}
-      <section className="ref-section pt-0" ref={methodologyRef} id="methodology">
-        <div className="ref-card p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <RevealSection className="ref-section pt-0">
+        <div className="ref-card p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center" ref={methodologyRef} id="methodology">
           <div className="flex justify-center">
             <div className="ref-donut" />
           </div>
@@ -882,22 +915,12 @@ export default function Homepage({
             </ul>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
       {/* ── Discovery Hub ── */}
-      <section className="ref-section pt-0">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4">
-          <div>
-            <span className="ref-label">Discovery Hub</span>
-            <h2 className="text-2xl font-bold mt-1">Insights &amp; Analysis</h2>
-          </div>
-          <Link
-            href="/blogs/create"
-            className="ref-btn-primary text-[11px] font-bold uppercase tracking-wider inline-flex items-center justify-center gap-1.5"
-          >
-            Create Blog
-          </Link>
-        </div>
+      <RevealSection className="ref-section pt-0">
+        <span className="ref-label">Discovery Hub</span>
+        <h2 className="text-2xl font-bold mt-1 mb-4">Insights &amp; Analysis</h2>
         <div className="ref-article-tabs flex gap-6 border-b border-[var(--ref-border)] mb-6">
           {(
             [
@@ -916,11 +939,12 @@ export default function Homepage({
             </button>
           ))}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {articles.map((article) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"    >
+          {FEATURED_ARTICLES.map((article) => (
             <button
               key={article.id}
               type="button"
+              
               onClick={() => onArticleSelect(article)}
               className="ref-card text-left overflow-hidden group hover:border-blue-300 transition-colors"
             >
@@ -933,22 +957,20 @@ export default function Homepage({
                 />
               </div>
               <div className="p-4">
-                <span className="ref-label text-[9px]">{article.category || "Insight"}</span>
+                <span className="ref-label text-[9px]">Insight</span>
                 <h3 className="font-bold text-sm mt-2 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {article.title}
                 </h3>
                 <p className="text-xs text-[var(--ref-muted)] line-clamp-2 mb-3">{article.contentSummary}</p>
-                <span className="text-[10px] text-[var(--ref-muted)]">
-                  {article.date}{article.readTime ? ` · ${article.readTime}` : ""}
-                </span>
+                <span className="text-[10px] text-[var(--ref-muted)]">{article.date} · {article.readTime}</span>
               </div>
             </button>
           ))}
         </div>
-      </section>
+      </RevealSection>
 
       {/* ── Comparison + Analytics ── */}
-      <section className="ref-section pt-0">
+      <RevealSection className="ref-section pt-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="ref-card p-6">
             <span className="ref-label">Comparison Tool</span>
@@ -994,7 +1016,7 @@ export default function Homepage({
             </div>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
       {/* ── Pulse Ticker ── */}
       <div className="ref-pulse-ticker">
@@ -1023,7 +1045,7 @@ export default function Homepage({
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="ref-section pt-0 pb-8">
+      <RevealSection className="ref-section pt-0 pb-8">
         <div className="ref-cta-banner p-8 md:p-12">
           <div className="relative z-10 max-w-xl">
             <h2 className="text-2xl md:text-3xl font-bold mb-3">
@@ -1042,7 +1064,7 @@ export default function Homepage({
             </div>
           </div>
         </div>
-      </section>
+      </RevealSection>
 
       {/* ── Footer block ── */}
       <footer className="ref-section pt-0 border-t border-[var(--ref-border)]">
