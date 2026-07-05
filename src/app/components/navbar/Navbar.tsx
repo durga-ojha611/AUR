@@ -283,8 +283,12 @@ export default function Navbar() {
                   <Search className="h-3.5 w-3.5 shrink-0" style={{ color: scrolled ? "rgba(37,99,235,0.5)" : "rgba(255,255,255,0.5)" }} />
                   <input
                     type="text"
+                    value={searchVal}
+                    onChange={handleSearchChange}
                     placeholder="Search universities..."
-                      color: "#1E293B", outline: "none", width: "180px",
+                    className="w-full bg-transparent text-[11px] font-medium outline-none ml-2"
+                    style={{
+                      color: scrolled ? linkActiveColor : "#FFFFFF",
                       transition: "all 0.2s ease",
                     }}
                     onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = accentColor; (e.currentTarget as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(37,99,235,0.15)"; }}
