@@ -1,0 +1,9 @@
+{
+  "[project]/src/app/components/TrendChart.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/src/app/components/TrendChart.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/src_app_components_TrendChart_tsx_0tlu3fz._.js",
+      "static/chunks/src_app_components_TrendChart_tsx_03huyti._.js"
+    ]
+  }
+}
