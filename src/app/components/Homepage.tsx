@@ -560,153 +560,20 @@ export default function Homepage({
       <section className="ref-hero">
         <div className="ref-hero-grid">
           {/* Top: centered copy */}
-          <div className="ref-hero-centered">
-            {/* Eyebrow removed as requested */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[4rem] font-bold leading-[1.08] mt-0 mb-5" style={{ letterSpacing: "-0.03em", color: "#ffffff" }}>
-              Asia&apos;s Most Trusted{" "}
-              <span className="ref-hero-title-accent">University Intelligence</span>{" "}
-              Platform
+          <div className="ref-hero-centered flex flex-col items-center justify-center">
+            <span className="ref-hero-eyebrow">
+              Welcome to Asia University Rankings
+            </span>
+            <h1 className="text-5xl md:text-[5rem] font-medium leading-[1.1] mt-0 mb-6" style={{ color: "var(--ref-charcoal-2)" }}>
+              Empowering Next-Gen <span style={{ textDecoration: "underline", textDecorationColor: "var(--ref-charcoal-2)", textDecorationThickness: "2px" }}>Innovators</span>
             </h1>
-            <p className="text-lg leading-relaxed max-w-2xl mb-8" style={{ color: "rgba(255,255,255,0.60)" }}>
-              Filter institutional indicators, compare global rankings, and explore regional study models
-              including medical careers in Central Asia — powered by live audited data.
+            <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-12 font-medium" style={{ color: "rgba(28, 37, 49, 0.7)" }}>
+              Asia University Rankings provides the tools, data, and global network needed to turn your academic foundation into a professional legacy.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-              <button type="button" className="ref-btn-primary" onClick={() => onViewChange("rankings")}>
-                Explore Rankings
-                <ArrowRight className="h-4 w-4" />
-              </button>
-              <button type="button" className="ref-btn-outline" onClick={() => onViewChange("methodology")}>
-                <BookOpen className="h-4 w-4" />
-                Our Methodology
-              </button>
-            </div>
 
-            {/* Search */}
-            <div className="relative w-full max-w-2xl mx-auto text-left" ref={suggestionRef}>
-              <form onSubmit={handleSearchSubmit} className="ref-search-wrap">
-                <div className="relative flex-grow">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "rgba(255,255,255,0.40)" }} />
-                  <input
-                    type="search"
-                    role="combobox"
-                    aria-expanded={showSuggestions && searchQuery.trim().length > 0}
-                    placeholder="Search universities, locations, subjects..."
-                    value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
-                    onFocus={() => setShowSuggestions(true)}
-                    onKeyDown={handleSearchKeyDown}
-                    className="w-full bg-transparent text-sm text-[var(--ref-text)] pl-10 pr-4 py-3 focus:outline-none"
-                  />
-                </div>
-                <button type="submit" className="ref-btn-primary rounded-[12px] rounded-l-none px-5 py-3 text-[11px]">
-                  Search
-                </button>
-              </form>
 
-              {showSuggestions && searchQuery.trim().length > 0 && (
-                <div className="absolute left-0 right-0 z-30 mt-2 ref-card max-h-80 overflow-y-auto animate-slideDown">
-                  {(() => {
-                    let rowIndex = -1;
-                    return (
-                      <>
-                        <div className="p-3 border-b border-[var(--ref-border)]">
-                          <div className="ref-label text-[9px] mb-2 flex items-center gap-1">
-                            <GraduationCap className="h-3 w-3" /> Universities
-                          </div>
-                          {suggestions.universities.length > 0 ? (
-                            <ul className="space-y-1">
-                              {suggestions.universities.map((uni) => {
-                                rowIndex += 1;
-                                const active = activeSuggestionIndex === rowIndex;
-                                return (
-                                  <li key={uni.id}>
-                                    <button
-                                      type="button"
-                                      onClick={() => activateSuggestion({ kind: "uni", uni })}
-                                      className={`w-full text-left flex justify-between p-2 text-xs rounded-xl transition-colors ${active ? "bg-[var(--ref-amber-light)] text-[var(--ref-charcoal)]" : "hover:bg-[var(--aur-hover)]"}`}
-                                    >
-                                      <span className="font-semibold truncate pr-2">{highlightMatch(uni.name, searchQuery)}</span>
-                                      <span className="text-[var(--ref-muted)] shrink-0">{uni.location}</span>
-                                    </button>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          ) : (
-                            <p className="text-xs text-[var(--ref-muted)] italic p-2">No universities found</p>
-                          )}
-                        </div>
-                        <div className="p-3 border-b border-[var(--ref-border)]">
-                          <div className="ref-label text-[9px] mb-2 flex items-center gap-1">
-                            <BookOpen className="h-3 w-3" /> Articles
-                          </div>
-                          {suggestions.articles.map((art) => {
-                            rowIndex += 1;
-                            return (
-                              <button
-                                key={art.id}
-                                type="button"
-                                onClick={() => activateSuggestion({ kind: "article", article: art })}
-                                className="w-full text-left p-2 text-xs hover:bg-[var(--aur-hover)] rounded-xl block transition-colors"
-                              >
-                                {highlightMatch(art.title, searchQuery)}
-                              </button>
-                            );
-                          })}
-                        </div>
-                        <div className="p-3 text-center">
-                          <button
-                            type="button"
-                            onClick={() => activateSuggestion({ kind: "view-all" })}
-                            className="text-[11px] text-[var(--ref-amber-dark)] font-bold uppercase tracking-wider hover:opacity-80 transition-opacity"
-                          >
-                            View all matching &quot;{searchQuery}&quot;
-                            <ChevronRight className="inline h-3 w-3" />
-                          </button>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-              )}
-            </div>
 
-            <div className="mt-4 flex flex-wrap justify-center gap-2 items-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.40)" }}>Trending:</span>
-              {["Uzbekistan", "Medicine", "NUS Singapore", "English medium"].map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => { setSearchQuery(tag); onSearchSubmit(tag); onViewChange("rankings"); }}
-                  className="text-[10px] px-3 py-1 rounded-full transition-all duration-200"
-                  style={{ border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.70)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(232,160,32,0.15)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(232,160,32,0.40)"; (e.currentTarget as HTMLButtonElement).style.color = "#E8A020"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.70)"; }}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-
-            {/* Compact stat bar */}
-            <div className="ref-stat-bar mt-12 mb-8">
-              {[
-                { icon: Building2, val: `${MOCK_UNIVERSITIES.length}+`, label: "Institutions" },
-                { icon: Globe2,    val: `${uniqueCountries}+`,          label: "Countries" },
-                { icon: Database,  val: "1M+",                          label: "Data Points" },
-                { icon: Clock,     val: "15+",                          label: "Years of Data" },
-              ].map((s) => (
-                <div key={s.label} className="ref-stat-item">
-                  <s.icon className="h-5 w-5 shrink-0" style={{ color: "#E8A020" }} />
-                  <div>
-                    <div className="font-bold text-sm" style={{ color: "#ffffff" }}>{s.val}</div>
-                    <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Bottom: large image */}
@@ -716,30 +583,71 @@ export default function Homepage({
         </div>
       </section>
 
-      {/* ── Image 3-style Stats Section ── */}
+      {/* ── Logos Section ── */}
+      <RevealSection className="bg-white py-12 md:py-20 text-center">
+        <p className="text-xl md:text-2xl text-[var(--ref-sage)] mb-12 font-medium">
+          Mentors from Leading Global Companies
+        </p>
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 px-4 max-w-6xl mx-auto opacity-70 hover:opacity-100 transition-opacity">
+          {/* We use text as placeholder logos for now */}
+          <span className="text-3xl font-bold" style={{ color: "#0056b3" }}>Infosys</span>
+          <span className="text-2xl font-bold" style={{ color: "#2B529B" }}>wipro</span>
+          <span className="text-3xl font-bold" style={{ color: "#4285F4" }}>Google</span>
+          <span className="text-3xl font-bold" style={{ color: "#737373" }}>Microsoft</span>
+          <span className="text-3xl font-bold" style={{ color: "#1877F2" }}>Meta</span>
+          <span className="text-3xl font-bold" style={{ color: "#FF9900" }}>amazon</span>
+          <span className="text-3xl font-bold" style={{ color: "#A100FF" }}>accenture</span>
+        </div>
+      </RevealSection>
       <RevealSection className="ref-section ref-section-alt">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
           <div>
-            <span className="ref-label">By The Numbers</span>
-            <h2 className="text-2xl sm:text-3xl font-bold mt-1" style={{ letterSpacing: "-0.02em" }}>Our Impact in 2025</h2>
+            <h2 className="text-3xl font-bold mt-1 text-[var(--ref-charcoal-2)]">Our Achievements</h2>
+            <p className="text-sm text-[var(--ref-muted)] mt-2">
+              Celebrating milestones and success stories from our journey of empowering students and startups.
+            </p>
           </div>
-          <button type="button" className="ref-btn-primary text-[12px]" onClick={() => onViewChange("analytics")}>
-            View Full Analytics <ChevronRight className="h-4 w-4" />
-          </button>
         </div>
-        <div className="ref-stats-grid">
-          {[
-            { n: `${MOCK_UNIVERSITIES.length}+`, label: "Universities Indexed",        desc: "Comprehensive database of Asian higher education institutions, updated in real time.",       cls: "ref-stat-card--amber" },
-            { n: "1M+",                          label: "Data Points Analyzed",        desc: "Every ranking, citation count, and employability score traceable to source.",               cls: "ref-stat-card--sage" },
-            { n: `${uniqueCountries}+`,          label: "Countries Covered",          desc: "Regional intelligence from East Asia, South Asia, Southeast Asia, and Central Asia.",       cls: "ref-stat-card--sage" },
-            { n: "15+",                          label: "Years of Historical Data",   desc: "Longitudinal trend analysis spanning over a decade of academic performance shifts.",      cls: "ref-stat-card--charcoal" },
-          ].map((s) => (
-            <div key={s.label} className={`ref-stat-card ${s.cls}`}>
-              <div className="ref-stat-number">{s.n}</div>
-              <div className="ref-stat-label">{s.label}</div>
-              <div className="ref-stat-desc">{s.desc}</div>
+        
+        {/* Bento Box Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Top Row */}
+          <div className="md:col-span-1 rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-amber)", color: "var(--ref-charcoal-2)" }}>
+            <div className="text-5xl sm:text-6xl font-medium mb-4">1,500+</div>
+            <div className="text-lg font-medium mb-6">Students Reached Online</div>
+            <div className="text-sm opacity-90 leading-relaxed">
+              In 2025, our online initiatives reached over 1500 individuals with precise, accessible, and compelling information.
             </div>
-          ))}
+          </div>
+          
+          <div className="md:col-span-2 rounded-[32px] overflow-hidden relative min-h-[300px]">
+            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80" alt="Graduation ceremony" className="absolute inset-0 w-full h-full object-cover" />
+          </div>
+
+          {/* Bottom Row */}
+          <div className="rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-sage)", color: "#ffffff" }}>
+            <div className="text-5xl sm:text-6xl font-medium mb-4">30+</div>
+            <div className="text-lg font-medium mb-6">Mentorship Sessions</div>
+            <div className="text-sm opacity-90 leading-relaxed">
+              In 2025, Student Forge led over 30 in-person and virtual mentorship programs covering key topics.
+            </div>
+          </div>
+
+          <div className="rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-teal)", color: "var(--ref-charcoal-2)" }}>
+            <div className="text-5xl sm:text-6xl font-medium mb-4">100+</div>
+            <div className="text-lg font-medium mb-6">Projects Completed</div>
+            <div className="text-sm opacity-90 leading-relaxed">
+              Over 100 industry-level projects successfully conceptualized and delivered by our interns across various technical domains.
+            </div>
+          </div>
+
+          <div className="rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-charcoal)", color: "#ffffff" }}>
+            <div className="text-5xl sm:text-6xl font-medium mb-4">100+</div>
+            <div className="text-lg font-medium mb-6">Internships</div>
+            <div className="text-sm opacity-90 leading-relaxed">
+              In 2025, Student Forge provided 100+ internship opportunities to students across various technical and business domains.
+            </div>
+          </div>
         </div>
       </RevealSection>
 

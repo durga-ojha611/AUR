@@ -86,12 +86,12 @@ export default function Navbar() {
   };
 
   /* ── Color palette ── */
-  const navBg = scrolled ? "#EFF6FF" : "transparent"; /* Pill color when scrolled */
-  const linkColor = scrolled ? "#64748B" : "rgba(255,255,255,0.7)"; 
-  const linkActiveColor = scrolled ? "#1E293B" : "#FFFFFF";
-  const iconColor = scrolled ? "#64748B" : "rgba(255,255,255,0.7)";
-  const iconHoverColor = scrolled ? "#1E293B" : "#FFFFFF";
-  const accentColor = "#2563EB";
+  const navBg = scrolled ? "var(--ref-amber)" : "transparent"; 
+  const linkColor = "rgba(28, 37, 49, 0.8)"; 
+  const linkActiveColor = "#1C2531";
+  const iconColor = "rgba(28, 37, 49, 0.8)";
+  const iconHoverColor = "#1C2531";
+  const accentColor = "var(--ref-charcoal)";
 
   return (
     <div
@@ -107,9 +107,9 @@ export default function Navbar() {
         style={{
           background: navBg,
           borderRadius: scrolled ? "100px" : "0px",
-          border: scrolled ? "1px solid rgba(37,99,235,0.12)" : "1px solid transparent",
-          borderBottom: scrolled ? "1px solid rgba(37,99,235,0.12)" : "1px solid rgba(255,255,255,0.05)",
-          boxShadow: scrolled ? "0 8px 32px rgba(37,99,235,0.12), 0 2px 8px rgba(37,99,235,0.06)" : "none",
+          border: scrolled ? "1px solid rgba(28,37,49,0.12)" : "1px solid transparent",
+          borderBottom: scrolled ? "1px solid rgba(28,37,49,0.12)" : "1px solid transparent",
+          boxShadow: scrolled ? "0 8px 32px rgba(235,170,64,0.3), 0 2px 8px rgba(28,37,49,0.1)" : "none",
           transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
           maxWidth: scrolled ? "1400px" : "100%",
           margin: "0 auto",
@@ -124,7 +124,7 @@ export default function Navbar() {
           <div
             onClick={() => handleViewChange("home")}
             className="flex items-center cursor-pointer shrink-0 select-none group"
-            style={{ gap: "8px", mixBlendMode: scrolled ? "multiply" : "screen" }}
+            style={{ gap: "8px", mixBlendMode: "multiply" }}
           >
             <Image
               src="/logo.png"
@@ -138,7 +138,7 @@ export default function Navbar() {
                 height: "64px", 
                 width: "auto", 
                 objectFit: "contain",
-                filter: scrolled ? "none" : "invert(1) grayscale(1) brightness(2)",
+                filter: "brightness(0)",
                 transition: "opacity 0.2s, filter 0.4s" 
               }}
             />
