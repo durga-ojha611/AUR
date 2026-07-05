@@ -1,23 +1,22 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Search, Bell, Sun, Moon, Menu, X, ChevronDown, User, Shield, LogOut, Maximize2, Minimize2, SlidersHorizontal } from "lucide-react";
+import Image from "next/image";
+import {
+  Search, Bell, Sun, Moon, Menu, X, ChevronDown,
+  User, Shield, LogOut, Maximize2, Minimize2, SlidersHorizontal
+} from "lucide-react";
 import { useSidebar } from "../navigation/SidebarContext";
 import { useToast } from "../feedback/ToastContext";
 import { TOP_NAV_LINKS } from "../navigation/config";
 
-
 export default function Navbar() {
   const { showToast } = useToast();
   const {
-    theme,
-    toggleTheme,
-    isMobileOpen,
-    setIsMobileOpen,
-    activeView,
-    handleViewChange,
-    filters,
-    setFilters,
+    theme, toggleTheme,
+    isMobileOpen, setIsMobileOpen,
+    activeView, handleViewChange,
+    filters, setFilters,
   } = useSidebar();
 
   const [searchVal, setSearchVal] = useState(filters.searchQuery);
@@ -25,149 +24,191 @@ export default function Navbar() {
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showNavFilter, setShowNavFilter] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
+  /* ── Scroll detection ── */
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  /* ── Fullscreen ── */
   const toggleFullscreen = () => {
     const docEl = document.documentElement as any;
     const doc = document as any;
-    
-    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-      const requestFullScreen = docEl.requestFullscreen || docEl.msRequestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen;
-      if (requestFullScreen) {
-        requestFullScreen.call(docEl).then(() => setIsFullscreen(true)).catch(() => {});
-      }
+    if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
+      const req = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen;
+      req?.call(docEl).then(() => setIsFullscreen(true)).catch(() => {});
     } else {
-      const exitFullScreen = doc.exitFullscreen || doc.msExitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
-      if (exitFullScreen) {
-        exitFullScreen.call(doc).then(() => setIsFullscreen(false)).catch(() => {});
-      }
+      const exit = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen;
+      exit?.call(doc).then(() => setIsFullscreen(false)).catch(() => {});
     }
   };
-
-  // Sync state if user presses Esc to exit fullscreen
   useEffect(() => {
     const handler = () => {
       const doc = document as any;
-      const isFull = !!(doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement);
-      setIsFullscreen(isFull);
+      setIsFullscreen(!!(doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement));
     };
-    
     document.addEventListener("fullscreenchange", handler);
     document.addEventListener("webkitfullscreenchange", handler);
-    document.addEventListener("mozfullscreenchange", handler);
-    document.addEventListener("MSFullscreenChange", handler);
-    
     return () => {
       document.removeEventListener("fullscreenchange", handler);
       document.removeEventListener("webkitfullscreenchange", handler);
-      document.removeEventListener("mozfullscreenchange", handler);
-      document.removeEventListener("MSFullscreenChange", handler);
     };
   }, []);
 
-  const profileRef = useRef<HTMLDivElement>(null);
-  const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef  = useRef<HTMLDivElement>(null);
+  const notifRef    = useRef<HTMLDivElement>(null);
   const navFilterRef = useRef<HTMLDivElement>(null);
 
-  // Sync internal search state with context searchQuery
-  useEffect(() => {
-    setSearchVal(filters.searchQuery);
-  }, [filters.searchQuery]);
+  useEffect(() => { setSearchVal(filters.searchQuery); }, [filters.searchQuery]);
 
-  // Click outside menus to close
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
-        setShowProfileMenu(false);
-      }
-      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
-        setShowNotifMenu(false);
-      }
-      if (navFilterRef.current && !navFilterRef.current.contains(event.target as Node)) {
-        setShowNavFilter(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const handler = (e: MouseEvent) => {
+      if (profileRef.current   && !profileRef.current.contains(e.target as Node))   setShowProfileMenu(false);
+      if (notifRef.current     && !notifRef.current.contains(e.target as Node))      setShowNotifMenu(false);
+      if (navFilterRef.current && !navFilterRef.current.contains(e.target as Node))  setShowNavFilter(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFilters((prev) => ({ ...prev, searchQuery: searchVal }));
-    handleViewChange("rankings"); // Direct user to rankings to see results
+    handleViewChange("rankings");
   };
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchVal(e.target.value);
-    // Instant search filtering
     setFilters((prev) => ({ ...prev, searchQuery: e.target.value }));
   };
 
-  return (
-    <header className="sticky top-0 z-40 w-full border-b border-[var(--aur-border)] bg-[var(--aur-surface)]/95 backdrop-blur-xl" style={{ willChange: "transform", transform: "translateZ(0)" }}>
-      <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between gap-4">
-          
-          {/* Logo / Editorial Brand */}
-<div
-  onClick={() => handleViewChange("home")}
-  className="flex h-16 items-center cursor-pointer shrink-0"
->
-  <Image
-    src="/logo.png"
-    alt="Asia University Rankings"
-    width={458}
-    height={135}
-    priority
-    className="max-h-10 w-auto object-contain"
-  />
-</div>
+  /* ── Color palette ── */
+  const navBg = scrolled ? "#EFF6FF" : "transparent"; /* Pill color when scrolled */
+  const linkColor = scrolled ? "#64748B" : "rgba(255,255,255,0.7)"; 
+  const linkActiveColor = scrolled ? "#1E293B" : "#FFFFFF";
+  const iconColor = scrolled ? "#64748B" : "rgba(255,255,255,0.7)";
+  const iconHoverColor = scrolled ? "#1E293B" : "#FFFFFF";
+  const accentColor = "#2563EB";
 
-          {/* Navigation Links - Desktop */}
-          <nav className="hidden md:flex space-x-1 h-full items-center">
+  return (
+    <div
+      className="fixed top-0 left-0 right-0 z-50 w-full"
+      style={{ 
+        paddingTop: scrolled ? "12px" : "0", 
+        paddingLeft: scrolled ? "24px" : "0", 
+        paddingRight: scrolled ? "24px" : "0", 
+        transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)" 
+      }}
+    >
+      <nav
+        style={{
+          background: navBg,
+          borderRadius: scrolled ? "100px" : "0px",
+          border: scrolled ? "1px solid rgba(37,99,235,0.12)" : "1px solid transparent",
+          borderBottom: scrolled ? "1px solid rgba(37,99,235,0.12)" : "1px solid rgba(255,255,255,0.05)",
+          boxShadow: scrolled ? "0 8px 32px rgba(37,99,235,0.12), 0 2px 8px rgba(37,99,235,0.06)" : "none",
+          transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
+          maxWidth: scrolled ? "1400px" : "100%",
+          margin: "0 auto",
+        }}
+      >
+        <div
+          className="flex items-center justify-between"
+          style={{ height: "80px", padding: "0 24px" }}
+        >
+
+          {/* ── Logo ── */}
+          <div
+            onClick={() => handleViewChange("home")}
+            className="flex items-center cursor-pointer shrink-0 select-none group"
+            style={{ gap: "8px", mixBlendMode: scrolled ? "multiply" : "screen" }}
+          >
+            <Image
+              src="/logo.png"
+              alt="Asia University Rankings"
+              width={240}
+              height={80}
+              priority
+              unoptimized={true}
+              quality={100}
+              style={{ 
+                height: "64px", 
+                width: "auto", 
+                objectFit: "contain",
+                filter: scrolled ? "none" : "invert(1) grayscale(1) brightness(2)",
+                transition: "opacity 0.2s, filter 0.4s" 
+              }}
+            />
+          </div>
+
+          {/* ── Desktop Nav Links (center) ── */}
+          <nav className="hidden md:flex items-center" style={{ gap: "4px" }}>
             {TOP_NAV_LINKS.map((link) => {
               const isActive = activeView === link.view;
               const isRankings = link.view === "rankings";
               return (
-                <div key={link.label} className="relative group flex items-center">
+                <div key={link.label} className="relative flex items-center">
                   <button
                     onClick={() => handleViewChange(link.view)}
-                    className={`relative px-4 py-2 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 rounded-md ${
-                      isActive
-                        ? "text-[var(--aur-text)]"
-                        : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)]"
-                    }`}
+                    className="relative px-3 py-2 text-[13px] font-bold uppercase tracking-wider transition-colors font-sans flex items-center"
+                    style={{
+                      color: isActive ? linkActiveColor : linkColor,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = linkActiveColor;
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) e.currentTarget.style.color = linkColor;
+                    }}
                   >
                     {link.label}
                     {isActive && (
-                      <div
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--aur-text)]"
+                      <span
+                        className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] w-4 rounded-full transition-all duration-300"
+                        style={{ background: scrolled ? accentColor : "#FFFFFF" }}
                       />
                     )}
                   </button>
-                  {/* Filter shortcut beside Rankings Engine */}
+
+                  {/* Quick filter beside Rankings */}
                   {isRankings && (
-                    <div className="relative ml-0.5" ref={navFilterRef}>
+                    <div className="relative" ref={navFilterRef}>
                       <button
                         type="button"
                         onClick={() => setShowNavFilter(!showNavFilter)}
-                        title="Open Quick Filters"
-                        className={`p-1.5 rounded-md transition-colors duration-150 ${showNavFilter ? "bg-[var(--aur-surface-hover)] text-[var(--aur-text)]" : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] hover:bg-[var(--aur-hover)]"}`}
+                        style={{
+                          padding: "6px",
+                          borderRadius: "8px",
+                          border: "none",
+                          background: showNavFilter ? "rgba(37,99,235,0.15)" : "transparent",
+                          color: showNavFilter ? accentColor : iconColor,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
                       >
-                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                        <SlidersHorizontal style={{ width: "14px", height: "14px" }} />
                       </button>
-                      
+
                       {showNavFilter && (
-                        <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--aur-surface)] border border-[var(--aur-border)] rounded-xl shadow-[var(--aur-shadow-lg)] p-4 z-50">
-                          <h4 className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)] mb-3">Quick Filters</h4>
-                          
-                          <div className="space-y-3">
+                        <div style={{
+                          position: "absolute", top: "calc(100% + 8px)", left: "0",
+                          width: "260px", background: "var(--aur-surface)",
+                          border: "1px solid var(--aur-border)", borderRadius: "16px",
+                          boxShadow: "0 16px 40px rgba(0,0,0,0.20)", padding: "16px", zIndex: 60,
+                          animation: "slideDown 0.25s cubic-bezier(0.16,1,0.3,1) both",
+                        }}>
+                          <p style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--aur-text-muted)", marginBottom: "12px" }}>Quick Filters</p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                             <div>
-                              <label className="text-[10px] font-bold text-[var(--aur-text)] mb-1 block">Region/Country</label>
-                              <select 
-                                value={filters.country}
+                              <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--aur-text)", display: "block", marginBottom: "4px" }}>Region / Country</label>
+                              <select value={filters.country}
                                 onChange={(e) => setFilters(prev => ({ ...prev, country: e.target.value }))}
-                                className="w-full text-xs p-2 rounded-lg border border-[var(--aur-border)] bg-[var(--aur-surface-2)] text-[var(--aur-text)] focus:outline-none focus:border-[var(--aur-border-strong)]"
-                              >
+                                style={{ width: "100%", fontSize: "12px", padding: "8px 10px", borderRadius: "10px", border: "1px solid var(--aur-border)", background: "var(--aur-surface-2)", color: "var(--aur-text)" }}>
                                 <option value="">All Regions</option>
                                 <option value="Singapore">Singapore</option>
                                 <option value="China">China</option>
@@ -176,24 +217,23 @@ export default function Navbar() {
                                 <option value="India">India</option>
                               </select>
                             </div>
-                            
                             <div>
-                              <label className="text-[10px] font-bold text-[var(--aur-text)] mb-1 block">Max Tuition ($)</label>
-                              <input 
-                                type="range" 
-                                min="0" max="50000" step="1000"
+                              <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--aur-text)", display: "block", marginBottom: "4px" }}>Max Tuition ($)</label>
+                              <input type="range" min="0" max="50000" step="1000"
                                 value={filters.tuitionRange[1]}
                                 onChange={(e) => setFilters(prev => ({ ...prev, tuitionRange: [prev.tuitionRange[0], parseInt(e.target.value)] }))}
-                                className="w-full accent-[var(--aur-text)]"
-                              />
-                              <div className="text-right text-[10px] font-mono text-[var(--aur-text-muted)] mt-1">${filters.tuitionRange[1].toLocaleString()}</div>
+                                style={{ width: "100%", accentColor: accentColor }} />
+                              <div style={{ textAlign: "right", fontSize: "10px", fontFamily: "monospace", color: "var(--aur-text-muted)", marginTop: "2px" }}>
+                                ${filters.tuitionRange[1].toLocaleString()}
+                              </div>
                             </div>
-                            
-                            <button 
+                            <button
                               onClick={() => { setShowNavFilter(false); handleViewChange("rankings"); }}
-                              className="w-full py-2 mt-4 bg-[var(--aur-text)] text-[var(--background)] text-[10px] font-bold uppercase tracking-wider rounded-lg hover:opacity-90 transition-opacity"
+                              style={{ width: "100%", padding: "10px", background: "#1E293B", color: "#fff", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", borderRadius: "10px", border: "none", cursor: "pointer", transition: "background 0.15s" }}
+                              onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = accentColor)}
+                              onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#1E293B")}
                             >
-                              Apply & View Results
+                              Apply &amp; View Results
                             </button>
                           </div>
                         </div>
@@ -203,200 +243,203 @@ export default function Navbar() {
                 </div>
               );
             })}
+
+            {/* Universities quick link */}
+            <button
+              onClick={() => handleViewChange("universities")}
+              className="relative px-3 py-2 text-[13px] font-bold uppercase tracking-wider transition-colors font-sans flex items-center"
+              style={{ color: activeView === "universities" ? linkActiveColor : linkColor }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = linkActiveColor; }}
+              onMouseLeave={(e) => { if (activeView !== "universities") e.currentTarget.style.color = linkColor; }}
+            >
+              Universities
+            </button>
+
+            <button
+              onClick={() => handleViewChange("analytics")}
+              className="relative px-3 py-2 text-[13px] font-bold uppercase tracking-wider transition-colors font-sans flex items-center"
+              style={{ color: activeView === "analytics" ? linkActiveColor : linkColor }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = linkActiveColor; }}
+              onMouseLeave={(e) => { if (activeView !== "analytics") e.currentTarget.style.color = linkColor; }}
+            >
+              Analytics
+            </button>
           </nav>
 
-          {/* Search bar in center */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex-grow max-w-md hidden md:block"
-          >
-            <div className="relative">
-              <input
-                type="text"
-                value={searchVal}
-                onChange={handleSearchChange}
-                placeholder="Search across index..."
-                className="w-full border border-[var(--aur-border)] bg-[var(--aur-surface-2)] px-4 py-1.5 pl-10 rounded-lg text-xs text-[var(--aur-text)] placeholder-[var(--aur-text-muted)] focus:outline-none focus:border-[var(--aur-text)] transition-all duration-200"
-              />
-              <Search className="absolute left-3.5 top-2 h-4 w-4 text-[var(--aur-text-muted)]" />
+          {/* ── Right Actions ── */}
+          <div className="flex items-center" style={{ gap: "6px" }}>
+
+            {/* Search Bar */}
+            <div className="hidden lg:block">
+              <form onSubmit={handleSearchSubmit}>
+                <div
+                  className="flex items-center px-4 h-[36px] rounded-full border transition-all overflow-hidden"
+                  style={{
+                    background: scrolled ? "rgba(37,99,235,0.04)" : "rgba(255,255,255,0.1)",
+                    borderColor: scrolled ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.2)",
+                    width: "220px",
+                  }}
+                >
+                  <Search className="h-3.5 w-3.5 shrink-0" style={{ color: scrolled ? "rgba(37,99,235,0.5)" : "rgba(255,255,255,0.5)" }} />
+                  <input
+                    type="text"
+                    placeholder="Search universities..."
+                      color: "#1E293B", outline: "none", width: "180px",
+                      transition: "all 0.2s ease",
+                    }}
+                    onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = accentColor; (e.currentTarget as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(37,99,235,0.15)"; }}
+                    onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = "rgba(37,99,235,0.15)"; (e.currentTarget as HTMLInputElement).style.boxShadow = "none"; }}
+                  />
+                </div>
+              </form>
             </div>
-          </form>
 
-          {/* Right Section Icons */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
-
-            {/* Fullscreen Toggle Button */}
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-              className="p-2 text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] transition-colors hover:bg-[var(--aur-hover)] rounded-lg"
+            {/* Theme toggle */}
+            <button type="button" onClick={toggleTheme}
+              style={{ padding: "8px", borderRadius: "10px", border: "none", background: "transparent", color: iconColor, cursor: "pointer", transition: "all 0.15s ease", display: "flex", alignItems: "center" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(37,99,235,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = iconHoverColor; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = iconColor; }}
             >
-              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              {theme === "dark" ? <Sun style={{ width: "16px", height: "16px" }} /> : <Moon style={{ width: "16px", height: "16px" }} />}
             </button>
 
-            {/* Theme Toggle Button */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-              className="p-2 text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] transition-colors hover:bg-[var(--aur-hover)] rounded-lg"
-              title={theme === "dark" ? "Light Mode" : "Dark Mode"}
+            {/* Fullscreen */}
+            <button type="button" onClick={toggleFullscreen}
+              style={{ padding: "8px", borderRadius: "10px", border: "none", background: "transparent", color: iconColor, cursor: "pointer", transition: "all 0.15s ease", display: "flex", alignItems: "center" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(37,99,235,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = iconHoverColor; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = iconColor; }}
             >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isFullscreen ? <Minimize2 style={{ width: "16px", height: "16px" }} /> : <Maximize2 style={{ width: "16px", height: "16px" }} />}
             </button>
 
-            {/* Notification Bell Dropdown */}
+            {/* Notifications */}
             <div className="relative" ref={notifRef}>
-              <button
-                type="button"
-                onClick={() => setShowNotifMenu(!showNotifMenu)}
-                aria-label="Open notifications"
-                className="p-2 text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] transition-colors hover:bg-[var(--aur-hover)] rounded-lg relative"
+              <button type="button" onClick={() => setShowNotifMenu(!showNotifMenu)}
+                style={{ padding: "8px", borderRadius: "10px", border: "none", background: "transparent", color: iconColor, cursor: "pointer", position: "relative", transition: "all 0.15s ease", display: "flex", alignItems: "center" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(37,99,235,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = iconHoverColor; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = iconColor; }}
               >
-                <Bell className="h-4 w-4" />
-                <span className="absolute top-1.5 right-1.5 flex h-1.5 w-1.5">
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
-                </span>
+                <Bell style={{ width: "16px", height: "16px" }} />
+                <span style={{ position: "absolute", top: "7px", right: "7px", width: "6px", height: "6px", borderRadius: "50%", background: accentColor, border: "1.5px solid #EFF6FF" }} />
               </button>
 
-              <>
-                {showNotifMenu && (
-                  <div
-                    
-                    
-                    
-                    className="absolute right-0 mt-2.5 w-80 rounded-xl border border-[var(--aur-border)] bg-[var(--aur-surface)] shadow-xl py-2 z-50 text-xs text-[var(--aur-text-secondary)]"
-                  >
-                    <div className="px-4 py-2 border-b border-[var(--aur-border)] flex justify-between items-center font-bold">
-                      <span className="text-[var(--aur-text)] uppercase tracking-wider text-[10px]">
-                        Notifications
-                      </span>
-                      <span className="text-[10px] text-red-500">3 New</span>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto">
-                      {[
-                        {
-                          id: 1,
-                          title: "QS Rankings 2026 Released",
-                          time: "10 mins ago",
-                          desc: "Explore updated analytical scores and recalculation models.",
-                          isNew: true,
-                        },
-                        {
-                          id: 2,
-                          title: "Uzbekistan Medical Admission Open",
-                          time: "2 hours ago",
-                          desc: "Samarkand & Tashkent medical academies are accepting applications.",
-                          isNew: true,
-                        },
-                        {
-                          id: 3,
-                          title: "Data Audit Log Completed",
-                          time: "1 day ago",
-                          desc: "All regional study models have been successfully audited.",
-                          isNew: false,
-                        },
-                      ].map((n) => (
-                        <div
-                          key={n.id}
-                          className={`p-3 border-b border-[var(--aur-border)] hover:bg-[var(--aur-hover)] transition-colors ${
-                            n.isNew ? "bg-[var(--aur-hover)]" : ""
-                          }`}
-                        >
-                          <div className="flex justify-between font-semibold text-[var(--aur-text)]">
-                            <span>{n.title}</span>
-                            <span className="text-[9px] text-[var(--aur-text-muted)] font-normal">{n.time}</span>
-                          </div>
-                          <p className="text-[10px] text-[var(--aur-text-muted)] mt-0.5 leading-normal">
-                            {n.desc}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+              {showNotifMenu && (
+                <div style={{
+                  position: "absolute", right: "0", top: "calc(100% + 8px)",
+                  width: "320px", background: "var(--aur-surface)",
+                  border: "1px solid var(--aur-border)", borderRadius: "16px",
+                  boxShadow: "0 16px 40px rgba(0,0,0,0.20)", overflow: "hidden", zIndex: 60,
+                  animation: "slideDown 0.25s cubic-bezier(0.16,1,0.3,1) both",
+                }}>
+                  <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--aur-border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--aur-text)" }}>Notifications</span>
+                    <span style={{ fontSize: "10px", fontWeight: 700, color: "#1D4ED8", background: "#DBEAFE", padding: "2px 8px", borderRadius: "100px" }}>3 New</span>
                   </div>
-                )}
-              </>
+                  <div style={{ maxHeight: "260px", overflowY: "auto" }}>
+                    {[
+                      { id: 1, title: "QS Rankings 2026 Released", time: "10 min ago", desc: "Updated analytical scores and recalculation models.", isNew: true },
+                      { id: 2, title: "Uzbekistan Medical Open", time: "2 hrs ago", desc: "Samarkand & Tashkent accepting applications.", isNew: true },
+                      { id: 3, title: "Data Audit Completed", time: "1 day ago", desc: "All regional models audited successfully.", isNew: false },
+                    ].map((n) => (
+                      <div key={n.id} style={{ padding: "12px 16px", borderBottom: "1px solid var(--aur-border)", background: n.isNew ? "rgba(37,99,235,0.04)" : "transparent" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2px" }}>
+                          <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--aur-text)" }}>{n.title}</span>
+                          <span style={{ fontSize: "10px", color: "var(--aur-text-muted)", marginLeft: "8px", flexShrink: 0 }}>{n.time}</span>
+                        </div>
+                        <p style={{ fontSize: "11px", color: "var(--aur-text-muted)", lineHeight: 1.5, margin: 0 }}>{n.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Profile Avatar Dropdown */}
-            <div className="relative border-l border-[var(--aur-border)] pl-3" ref={profileRef}>
-              <button
-                type="button"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                aria-label="Open profile menu"
-                className="flex items-center space-x-1.5 focus:outline-none group"
+            {/* Profile */}
+            <div className="relative" ref={profileRef} style={{ borderLeft: "1px solid rgba(37,99,235,0.15)", paddingLeft: "10px", marginLeft: "2px" }}>
+              <button type="button" onClick={() => setShowProfileMenu(!showProfileMenu)}
+                style={{ display: "flex", alignItems: "center", gap: "6px", border: "none", background: "transparent", cursor: "pointer", padding: "4px" }}
               >
-                <div className="h-8 w-8 rounded-lg bg-[var(--aur-text)] flex items-center justify-center text-[var(--background)] text-xs font-bold overflow-hidden">
+                <div style={{ width: "32px", height: "32px", borderRadius: "10px", background: "rgba(37,99,235,0.12)", display: "flex", alignItems: "center", justifyContent: "center", color: "#1E293B", fontSize: "11px", fontWeight: 700 }}>
                   US
                 </div>
-                <ChevronDown className="h-3 w-3 text-[var(--aur-text-muted)] group-hover:text-[var(--aur-text)] transition-colors" />
+                <ChevronDown style={{ width: "12px", height: "12px", color: iconColor }} />
               </button>
 
-              <>
-                {showProfileMenu && (
-                  <div
-                    
-                    
-                    
-                    className="absolute right-0 mt-2.5 w-48 rounded-xl border border-[var(--aur-border)] bg-[var(--aur-surface)] shadow-xl py-1.5 z-50 text-xs text-[var(--aur-text-secondary)]"
-                  >
-                    <div className="px-4 py-2 border-b border-[var(--aur-border)]">
-                      <span className="block font-bold text-[var(--aur-text)]">Dr. John Doe</span>
-                      <span className="block text-[10px] text-[var(--aur-text-muted)]">
-                        j.doe@university.edu
-                      </span>
-                    </div>
-
-                    {[
-                      { label: "My Profile", icon: User, action: () => {} },
-                      { label: "Admin Console", icon: Shield, action: () => handleViewChange("admin") },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={() => {
-                          item.action();
-                          setShowProfileMenu(false);
-                        }}
-                        className="w-full text-left px-4 py-2 hover:bg-[var(--aur-hover)] flex items-center space-x-2 transition-colors"
-                      >
-                        <item.icon className="h-3.5 w-3.5 text-[var(--aur-text-muted)]" />
-                        <span>{item.label}</span>
-                      </button>
-                    ))}
-
-                    <div className="border-t border-[var(--aur-border)] my-1"></div>
-
-                    <button
-                      onClick={() => {
-                        handleViewChange("login");
-                        setShowProfileMenu(false);
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-red-50 dark:hover:bg-red-950/20 text-red-500 flex items-center space-x-2 transition-colors"
-                    >
-                      <LogOut className="h-3.5 w-3.5" />
-                      <span className="font-semibold">Sign Out</span>
-                    </button>
+              {showProfileMenu && (
+                <div style={{
+                  position: "absolute", right: "0", top: "calc(100% + 8px)",
+                  width: "210px", background: "var(--aur-surface)",
+                  border: "1px solid var(--aur-border)", borderRadius: "16px",
+                  boxShadow: "0 16px 40px rgba(0,0,0,0.20)", overflow: "hidden", zIndex: 60,
+                  animation: "slideDown 0.25s cubic-bezier(0.16,1,0.3,1) both",
+                }}>
+                  <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--aur-border)" }}>
+                    <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--aur-text)" }}>Dr. John Doe</div>
+                    <div style={{ fontSize: "11px", color: "var(--aur-text-muted)", marginTop: "1px" }}>j.doe@university.edu</div>
                   </div>
-                )}
-              </>
+                  {[
+                    { label: "My Profile", icon: User, action: () => {} },
+                    { label: "Admin Console", icon: Shield, action: () => handleViewChange("admin") },
+                  ].map((item) => (
+                    <button key={item.label}
+                      onClick={() => { item.action(); setShowProfileMenu(false); }}
+                      style={{ width: "100%", textAlign: "left", padding: "10px 16px", display: "flex", alignItems: "center", gap: "10px", border: "none", background: "transparent", cursor: "pointer", fontSize: "13px", color: "var(--aur-text)", transition: "background 0.15s" }}
+                      onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--aur-hover)")}
+                      onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "transparent")}
+                    >
+                      <item.icon style={{ width: "14px", height: "14px", color: "var(--aur-text-muted)" }} />
+                      {item.label}
+                    </button>
+                  ))}
+                  <div style={{ borderTop: "1px solid var(--aur-border)", margin: "4px 0" }} />
+                  <button
+                    onClick={() => { handleViewChange("login"); setShowProfileMenu(false); }}
+                    style={{ width: "100%", textAlign: "left", padding: "10px 16px", display: "flex", alignItems: "center", gap: "10px", border: "none", background: "transparent", cursor: "pointer", fontSize: "13px", color: "#ef4444", transition: "background 0.15s" }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#fff1f2")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "transparent")}
+                  >
+                    <LogOut style={{ width: "14px", height: "14px" }} />
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Mobile Hamburger menu */}
+            {/* GET STARTED CTA */}
             <button
-              type="button"
-              onClick={() => setIsMobileOpen(!isMobileOpen)}
-              aria-label={isMobileOpen ? "Close menu" : "Open menu"}
-              className="p-2 text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] transition-colors hover:bg-[var(--aur-hover)] rounded-lg md:hidden"
+              onClick={() => handleViewChange("rankings")}
+              style={{
+                padding: "10px 20px",
+                background: accentColor,
+                color: "#fff",
+                fontSize: "13px",
+                fontWeight: 700,
+                borderRadius: "100px",
+                border: "none",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                letterSpacing: "0.02em",
+                transition: "all 0.2s cubic-bezier(0.16,1,0.3,1)",
+                boxShadow: "0 2px 8px rgba(37,99,235,0.30)",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#1D4ED8"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(37,99,235,0.45)"; (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = accentColor; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 8px rgba(37,99,235,0.30)"; (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; }}
             >
-              {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              GET STARTED
+            </button>
+
+            {/* Mobile hamburger */}
+            <button type="button"
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              style={{ padding: "8px", borderRadius: "10px", border: "none", background: "transparent", color: iconColor, cursor: "pointer", display: "none", alignItems: "center" }}
+              className="md:hidden flex"
+            >
+              {isMobileOpen ? <X style={{ width: "20px", height: "20px" }} /> : <Menu style={{ width: "20px", height: "20px" }} />}
             </button>
 
           </div>
-
         </div>
-      </div>
-    </header>
+      </nav>
+    </div>
   );
 }

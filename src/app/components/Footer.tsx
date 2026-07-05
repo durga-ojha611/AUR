@@ -49,14 +49,8 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-12 bg-slate-950 text-slate-100">
-      <div
-        
-        
-        
-        
-        className="border-t border-slate-800 bg-slate-950 px-4 sm:px-6 lg:px-8 py-12"
-      >
+    <footer style={{ background: "#2A3548", color: "#D0D8E4", marginTop: "48px" }}>
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "#2A3548", padding: "60px 32px 40px" }}>
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-4">
             <div className="space-y-5">

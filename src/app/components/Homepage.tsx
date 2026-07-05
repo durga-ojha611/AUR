@@ -22,7 +22,6 @@ import {
   Mail,
 } from "lucide-react";
 import { MOCK_UNIVERSITIES, FEATURED_ARTICLES, University, Article } from "../data";
-import { AsiaMapNetwork, MapUniversityCards } from "./home/AsiaMapHero";
 import "./home/ref-home.css";
 
 /* ── Reusable scroll-reveal wrapper ── */
@@ -548,7 +547,6 @@ export default function Homepage({
   const countryStats = useMemo(() => getCountryStats(), []);
   const compareUnis = topTen.slice(0, 4);
   const uniqueCountries = useMemo(() => new Set(MOCK_UNIVERSITIES.map((u) => u.location)).size, []);
-  const mapUniversities = topTen.slice(0, 3);
 
   const scrollToMethodology = () => {
     // Navigated via onViewChange("methodology") — scroll ref no longer needed
@@ -561,32 +559,20 @@ export default function Homepage({
       {/* ── Hero ── */}
       <section className="ref-hero">
         <div className="ref-hero-grid">
-          <div
-            
-            
-            
-          >
-            <span
-              className="ref-label"
-              
-              
-              
-            >Asia University Rankings</span>
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold leading-tight mt-3 mb-4">
+          {/* Top: centered copy */}
+          <div className="ref-hero-centered">
+            {/* Eyebrow removed as requested */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[4rem] font-bold leading-[1.08] mt-0 mb-5" style={{ letterSpacing: "-0.03em", color: "#ffffff" }}>
               Asia&apos;s Most Trusted{" "}
-              <span className="ref-hero-title-accent">University Intelligence</span> Platform
+              <span className="ref-hero-title-accent">University Intelligence</span>{" "}
+              Platform
             </h1>
-            <p className="text-[var(--ref-muted)] text-sm leading-relaxed max-w-lg mb-6">
+            <p className="text-lg leading-relaxed max-w-2xl mb-8" style={{ color: "rgba(255,255,255,0.60)" }}>
               Filter institutional indicators, compare global rankings, and explore regional study models
               including medical careers in Central Asia — powered by live audited data.
             </p>
 
-            <div
-              className="flex flex-wrap gap-3 mb-6"
-              
-              
-              
-            >
+            <div className="flex flex-wrap justify-center gap-3 mb-8">
               <button type="button" className="ref-btn-primary" onClick={() => onViewChange("rankings")}>
                 Explore Rankings
                 <ArrowRight className="h-4 w-4" />
@@ -598,32 +584,29 @@ export default function Homepage({
             </div>
 
             {/* Search */}
-            <div className="relative max-w-lg" ref={suggestionRef}>
-              <form onSubmit={handleSearchSubmit} className="flex rounded-lg overflow-hidden border border-[var(--ref-border)]">
+            <div className="relative w-full max-w-2xl mx-auto text-left" ref={suggestionRef}>
+              <form onSubmit={handleSearchSubmit} className="ref-search-wrap">
                 <div className="relative flex-grow">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--ref-muted)]" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "rgba(255,255,255,0.40)" }} />
                   <input
                     type="search"
                     role="combobox"
                     aria-expanded={showSuggestions && searchQuery.trim().length > 0}
                     placeholder="Search universities, locations, subjects..."
                     value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setShowSuggestions(true);
-                    }}
+                    onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                     onFocus={() => setShowSuggestions(true)}
                     onKeyDown={handleSearchKeyDown}
-                    className="w-full bg-white text-sm text-slate-900 pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--ref-blue)]"
+                    className="w-full bg-transparent text-sm text-[var(--ref-text)] pl-10 pr-4 py-3 focus:outline-none"
                   />
                 </div>
-                <button type="submit" className="ref-btn-primary rounded-none px-5 py-3 text-[11px]">
+                <button type="submit" className="ref-btn-primary rounded-[12px] rounded-l-none px-5 py-3 text-[11px]">
                   Search
                 </button>
               </form>
 
               {showSuggestions && searchQuery.trim().length > 0 && (
-                <div className="absolute left-0 right-0 z-30 mt-1 ref-card max-h-80 overflow-y-auto">
+                <div className="absolute left-0 right-0 z-30 mt-2 ref-card max-h-80 overflow-y-auto animate-slideDown">
                   {(() => {
                     let rowIndex = -1;
                     return (
@@ -642,7 +625,7 @@ export default function Homepage({
                                     <button
                                       type="button"
                                       onClick={() => activateSuggestion({ kind: "uni", uni })}
-                                      className={`w-full text-left flex justify-between p-2 text-xs rounded ${active ? "bg-amber-50" : "hover:bg-slate-50"}`}
+                                      className={`w-full text-left flex justify-between p-2 text-xs rounded-xl transition-colors ${active ? "bg-[var(--ref-amber-light)] text-[var(--ref-charcoal)]" : "hover:bg-[var(--aur-hover)]"}`}
                                     >
                                       <span className="font-semibold truncate pr-2">{highlightMatch(uni.name, searchQuery)}</span>
                                       <span className="text-[var(--ref-muted)] shrink-0">{uni.location}</span>
@@ -666,18 +649,18 @@ export default function Homepage({
                                 key={art.id}
                                 type="button"
                                 onClick={() => activateSuggestion({ kind: "article", article: art })}
-                                className="w-full text-left p-2 text-xs hover:bg-slate-50 rounded block"
+                                className="w-full text-left p-2 text-xs hover:bg-[var(--aur-hover)] rounded-xl block transition-colors"
                               >
                                 {highlightMatch(art.title, searchQuery)}
                               </button>
                             );
                           })}
                         </div>
-                        <div className="p-2 text-center">
+                        <div className="p-3 text-center">
                           <button
                             type="button"
                             onClick={() => activateSuggestion({ kind: "view-all" })}
-                            className="text-[11px] text-blue-600 font-semibold uppercase tracking-wider"
+                            className="text-[11px] text-[var(--ref-amber-dark)] font-bold uppercase tracking-wider hover:opacity-80 transition-opacity"
                           >
                             View all matching &quot;{searchQuery}&quot;
                             <ChevronRight className="inline h-3 w-3" />
@@ -690,93 +673,75 @@ export default function Homepage({
               )}
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2 items-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ref-muted)]">Trending:</span>
-              {["Uzbekistan", "Medicine", "National Univ Singapore", "English medium"].map((tag) => (
+            <div className="mt-4 flex flex-wrap justify-center gap-2 items-center">
+              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.40)" }}>Trending:</span>
+              {["Uzbekistan", "Medicine", "NUS Singapore", "English medium"].map((tag) => (
                 <button
                   key={tag}
                   type="button"
-                  onClick={() => {
-                    setSearchQuery(tag);
-                    onSearchSubmit(tag);
-                    onViewChange("rankings");
-                  }}
-                  className="text-[10px] px-2.5 py-1 rounded-full border border-blue-200 bg-white text-slate-600 hover:border-amber-400 hover:bg-amber-50 hover:text-amber-900 transition-colors"
+                  onClick={() => { setSearchQuery(tag); onSearchSubmit(tag); onViewChange("rankings"); }}
+                  className="text-[10px] px-3 py-1 rounded-full transition-all duration-200"
+                  style={{ border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.70)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(232,160,32,0.15)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(232,160,32,0.40)"; (e.currentTarget as HTMLButtonElement).style.color = "#E8A020"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.70)"; }}
                 >
                   {tag}
                 </button>
               ))}
             </div>
 
-            <div
-              className="ref-stat-bar"
-              
-              
-              
-            >
+            {/* Compact stat bar */}
+            <div className="ref-stat-bar mt-12 mb-8">
               {[
                 { icon: Building2, val: `${MOCK_UNIVERSITIES.length}+`, label: "Institutions" },
-                { icon: Globe2, val: `${uniqueCountries}+`, label: "Countries" },
-                { icon: Database, val: "1M+", label: "Data Points" },
-                { icon: Clock, val: "15+", label: "Years of Data" },
+                { icon: Globe2,    val: `${uniqueCountries}+`,          label: "Countries" },
+                { icon: Database,  val: "1M+",                          label: "Data Points" },
+                { icon: Clock,     val: "15+",                          label: "Years of Data" },
               ].map((s) => (
-                <div key={s.label} className="ref-stat-item" >
-                  <s.icon className="h-5 w-5 text-amber-500 shrink-0" />
+                <div key={s.label} className="ref-stat-item">
+                  <s.icon className="h-5 w-5 shrink-0" style={{ color: "#E8A020" }} />
                   <div>
-                    <div className="font-bold text-sm">{s.val}</div>
-                    <div className="text-[10px] text-[var(--ref-muted)] uppercase tracking-wider">{s.label}</div>
+                    <div className="font-bold text-sm" style={{ color: "#ffffff" }}>{s.val}</div>
+                    <div className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div
-            className="ref-hero-visual"
-            
-            
-            
-          >
-            <div className="ref-map-stage">
-              <AsiaMapNetwork />
-              <MapUniversityCards
-                universities={mapUniversities}
-                onUniversitySelect={onUniversitySelect}
-              />
-            </div>
-
-            <aside className="ref-live-sidebar">
-              <h3 className="ref-live-sidebar__title">
-                <span className="text-amber-500">L</span>ive Updates
-              </h3>
-              <ul className="ref-live-sidebar__list">
-                {LIVE_UPDATES.map((item) => (
-                  <li key={item.text} className="ref-live-sidebar__item">
-                    <span
-                      className="ref-live-sidebar__icon"
-                      style={{ background: `${item.color}18`, color: item.color }}
-                    >
-                      <Bell className="h-3.5 w-3.5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="ref-live-sidebar__text">{item.text}</p>
-                      <p className="ref-live-sidebar__time">{item.time}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button
-                type="button"
-                className="ref-live-sidebar__cta"
-                onClick={() => onViewChange("rankings")}
-              >
-                View All Updates
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            </aside>
+          {/* Bottom: large image */}
+          <div className="ref-hero-image-wrap mt-4">
+            <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80" alt="University Campus" />
           </div>
         </div>
       </section>
+
+      {/* ── Image 3-style Stats Section ── */}
+      <RevealSection className="ref-section ref-section-alt">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
+          <div>
+            <span className="ref-label">By The Numbers</span>
+            <h2 className="text-2xl sm:text-3xl font-bold mt-1" style={{ letterSpacing: "-0.02em" }}>Our Impact in 2025</h2>
+          </div>
+          <button type="button" className="ref-btn-primary text-[12px]" onClick={() => onViewChange("analytics")}>
+            View Full Analytics <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="ref-stats-grid">
+          {[
+            { n: `${MOCK_UNIVERSITIES.length}+`, label: "Universities Indexed",        desc: "Comprehensive database of Asian higher education institutions, updated in real time.",       cls: "ref-stat-card--amber" },
+            { n: "1M+",                          label: "Data Points Analyzed",        desc: "Every ranking, citation count, and employability score traceable to source.",               cls: "ref-stat-card--sage" },
+            { n: `${uniqueCountries}+`,          label: "Countries Covered",          desc: "Regional intelligence from East Asia, South Asia, Southeast Asia, and Central Asia.",       cls: "ref-stat-card--sage" },
+            { n: "15+",                          label: "Years of Historical Data",   desc: "Longitudinal trend analysis spanning over a decade of academic performance shifts.",      cls: "ref-stat-card--charcoal" },
+          ].map((s) => (
+            <div key={s.label} className={`ref-stat-card ${s.cls}`}>
+              <div className="ref-stat-number">{s.n}</div>
+              <div className="ref-stat-label">{s.label}</div>
+              <div className="ref-stat-desc">{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </RevealSection>
 
       {/* ── Live Top 10 ── */}
       <RevealSection className="ref-section">
@@ -815,7 +780,11 @@ export default function Homepage({
                     onClick={() => onUniversitySelect(uni.id)}
                   >
                     <td>
-                      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${idx < 3 ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"}`}>
+                      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
+                        idx === 0 ? "bg-[var(--ref-amber)] text-white"
+                        : idx < 3 ? "bg-[var(--ref-amber-light)] text-[var(--ref-amber-dark)]"
+                        : "bg-[var(--aur-surface-2)] text-[var(--aur-text-muted)]"
+                      }`}>
                         {idx + 1}
                       </span>
                     </td>
@@ -880,7 +849,7 @@ export default function Homepage({
                   <span className="ref-country-monument-label">{theme.monument}</span>
                   <div className="ref-country-name">{c.country}</div>
                   <div className="ref-country-meta">{c.count} universities</div>
-                  <div className="ref-country-avg">Avg {c.avgScore.toFixed(1)}</div>
+                  <div className="ref-country-avg" style={{ color: "var(--ref-amber-dark)" }}>Avg {c.avgScore.toFixed(1)}</div>
                   <div className="ref-country-top truncate">Top: {c.topUni.name}</div>
                 </div>
               </button>
@@ -999,18 +968,18 @@ export default function Homepage({
             <h2 className="text-xl font-bold mt-1 mb-4">Live Performance Dashboard</h2>
             <div className="ref-analytics-grid">
               {[
-                { title: "Live Rankings Updates", icon: LineChart, color: "#3b82f6", trend: "up" as const, stat: "+12 shifts" },
-                { title: "Research Output Growth", icon: Activity, color: "#22c55e", trend: "up" as const, stat: "+18.7%" },
-                { title: "Country Performance", icon: BarChart3, color: "#3b82f6", trend: "up" as const, stat: "Singapore 94.2" },
-                { title: "Institution Performance", icon: TrendingUp, color: "#f97316", trend: "up" as const, stat: "Tsinghua 98.2" },
+                { title: "Live Rankings Updates", icon: LineChart, stat: "+12 shifts" },
+                { title: "Research Output Growth", icon: Activity, stat: "+18.7%" },
+                { title: "Country Performance", icon: BarChart3, stat: "Singapore 94.2" },
+                { title: "Institution Performance", icon: TrendingUp, stat: "Tsinghua 98.2" },
               ].map((card) => (
                 <div key={card.title} className="ref-analytics-card">
                   <div className="flex items-center gap-2 mb-1">
-                    <card.icon className="h-4 w-4" style={{ color: card.color }} />
+                    <card.icon className="h-4 w-4" style={{ color: "#1E293B" }} />
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ref-muted)]">{card.title}</span>
                   </div>
-                  <div className="font-mono font-bold text-lg" style={{ color: card.color }}>{card.stat}</div>
-                  <MiniLineChart color={card.color} trend={card.trend} />
+                  <div className="font-mono font-bold text-lg" style={{ color: "#1E293B" }}>{card.stat}</div>
+                  <MiniLineChart color="#64748B" trend="up" />
                 </div>
               ))}
             </div>
@@ -1023,7 +992,7 @@ export default function Homepage({
         <div className="ref-pulse-track">
           {[...PULSE_ITEMS, ...PULSE_ITEMS].map((item, i) => (
             <span key={`${item}-${i}`} className="text-xs text-[var(--ref-muted)] inline-flex items-center gap-2">
-              <Activity className="h-3 w-3 text-amber-500" />
+              <Activity className="h-3 w-3" style={{ color: "#64748B" }} />
               {item}
             </span>
           ))}
@@ -1071,7 +1040,7 @@ export default function Homepage({
         <div className="ref-footer-grid">
           <div>
             <div className="font-bold text-lg mb-2">
-              ASIA <span className="text-amber-600">UNIVERSITY</span> RANKINGS
+              ASIA <span style={{ color: "#1E293B" }}>UNIVERSITY</span> RANKINGS
             </div>
             <p className="text-xs text-[var(--ref-muted)] leading-relaxed max-w-xs">
               The definitive intelligence platform for higher education across Asia and Central Asia.
@@ -1107,7 +1076,7 @@ export default function Homepage({
             <input
               type="email"
               placeholder="Newsletter email"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 w-48 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 w-48 focus:outline-none focus:ring-2 focus:ring-slate-400"
             />
             <button type="button" className="ref-btn-primary text-[10px] px-3 py-1.5">Subscribe</button>
           </div>

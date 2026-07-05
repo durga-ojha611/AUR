@@ -6,7 +6,6 @@ import { useSidebar } from "../navigation/SidebarContext";
 import { SIDEBAR_ITEMS, NavItem } from "../navigation/config";
 import FilterPanel from "../filters/FilterPanel";
 
-
 export default function Sidebar() {
   const {
     isCollapsed,
@@ -18,16 +17,9 @@ export default function Sidebar() {
 
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
-  // Helper to check if a navigation item matches the active view
-  const isItemActive = (item: NavItem) => {
-    return activeView === item.view;
-  };
+  const isItemActive = (item: NavItem) => activeView === item.view;
+  const handleItemClick = (item: NavItem) => handleViewChange(item.view);
 
-  const handleItemClick = (item: NavItem) => {
-    handleViewChange(item.view);
-  };
-
-  // Expand sidebar and expand filters if clicked collapsed filter icon
   const handleFilterAccordionClick = () => {
     if (isCollapsed) {
       setIsCollapsed(false);
@@ -39,149 +31,158 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`hidden md:flex flex-col shrink-0 h-[calc(100vh-3.5rem)] sticky top-14 border-r border-[var(--aur-border)] transition-all duration-300 z-30 select-none bg-[var(--aur-surface)] ${
+      className={`hidden md:flex flex-col shrink-0 h-[calc(100vh-60px)] sticky top-[60px] border-r transition-all duration-300 z-30 select-none ${
         isCollapsed ? "w-20" : "w-64"
       }`}
+      style={{ background: "var(--aur-surface)", borderColor: "var(--aur-border)" }}
     >
-      {/* 1. Sidebar Links Section */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col justify-center space-y-1.5 scrollbar-thin">
+      {/* Nav Items */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 flex flex-col space-y-0.5">
         {SIDEBAR_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = isItemActive(item);
-
           return (
             <div key={item.id} className="relative group">
               <button
                 onClick={() => handleItemClick(item)}
-                className={`w-full flex items-center p-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 relative z-10 cursor-pointer ${
-                  isActive
-                    ? "text-[var(--background)]"
-                    : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] hover:bg-[var(--aur-hover)]"
-                }`}
+                style={{
+                  width: "100%", display: "flex", alignItems: "center",
+                  padding: "10px 12px", borderRadius: "12px",
+                  fontSize: "11px", fontWeight: 700,
+                  textTransform: "uppercase", letterSpacing: "0.06em",
+                  border: "none", cursor: "pointer",
+                  transition: "all 0.18s ease",
+                  background: isActive ? "#E8A020" : "transparent",
+                  color: isActive ? "#fff" : "var(--aur-text-muted)",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLButtonElement).style.background = "var(--aur-hover)";
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--aur-text)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--aur-text-muted)";
+                  }
+                }}
               >
-                {/* Background highlight using Framer Motion for active state */}
-                {isActive && (
-                  <div
-                    
-                    className="absolute inset-0 bg-[var(--aur-text)] shadow-sm rounded-lg z-[-1]"
-                    
-                  />
-                )}
-
-                {/* Left Icon */}
-                <div className={`shrink-0 ${isCollapsed ? "mx-auto" : "mr-3.5"}`}>
-                  <Icon className="h-4.5 w-4.5" />
+                {/* Icon */}
+                <div style={{ flexShrink: 0, ...(isCollapsed ? { margin: "0 auto" } : { marginRight: "12px" }) }}>
+                  <Icon style={{ width: "16px", height: "16px" }} />
                 </div>
 
-                {/* Label text (hidden when collapsed) */}
+                {/* Label */}
                 {!isCollapsed && (
-                  <span className="truncate">{item.label}</span>
+                  <span style={{ flexGrow: 1, textAlign: "left", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {item.label}
+                  </span>
                 )}
 
-                {/* Badge (e.g. "Live") */}
+                {/* Badge */}
                 {!isCollapsed && item.badge && (
-                  <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded font-mono font-bold uppercase bg-[var(--aur-hover)] text-[var(--aur-text)] border border-[var(--aur-border)]">
+                  <span style={{
+                    fontSize: "8px", padding: "2px 6px", borderRadius: "100px",
+                    fontWeight: 700, textTransform: "uppercase", marginLeft: "auto",
+                    background: isActive ? "rgba(255,255,255,0.25)" : "#FDF3E0",
+                    color: isActive ? "#fff" : "#C88010",
+                    border: isActive ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(232,160,32,0.25)",
+                  }}>
                     {item.badge}
                   </span>
                 )}
               </button>
 
-              {/* Collapsed Hover Tooltip */}
+              {/* Collapsed tooltip */}
               {isCollapsed && (
-                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2.5 py-1.5 rounded border border-[var(--aur-border)] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-50 text-[10px] font-bold uppercase tracking-widest shadow-lg bg-[var(--aur-surface)] text-[var(--aur-text)]">
+                <div
+                  className="group-hover:opacity-100"
+                  style={{
+                    position: "absolute", left: "calc(100% + 12px)", top: "50%",
+                    transform: "translateY(-50%)",
+                    padding: "6px 12px", background: "#3D4A5A", color: "#fff",
+                    fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em",
+                    textTransform: "uppercase", borderRadius: "8px",
+                    whiteSpace: "nowrap", pointerEvents: "none",
+                    opacity: 0, zIndex: 60, transition: "opacity 0.15s ease",
+                    boxShadow: "0 4px 16px rgba(61,74,90,0.25)",
+                  }}
+                >
                   {item.label}
-                  {item.badge && (
-                    <span className="ml-2 font-mono bg-[var(--aur-hover)] px-1 py-0.2 rounded">
-                      {item.badge}
-                    </span>
-                  )}
                 </div>
               )}
             </div>
           );
         })}
 
-        {/* 2. Collapsible Filter Accordion Section inside Sidebar */}
-        <div className="pt-4 border-t border-[var(--aur-border)] mt-4">
+        {/* Filter Accordion */}
+        <div style={{ paddingTop: "12px", borderTop: "1px solid var(--aur-border)", marginTop: "8px" }}>
           <button
             onClick={handleFilterAccordionClick}
-            className={`w-full flex items-center p-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-              isFilterExpanded && !isCollapsed
-                ? "text-[var(--aur-text)]"
-                : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text)] hover:bg-[var(--aur-hover)]"
-            }`}
+            style={{
+              width: "100%", display: "flex", alignItems: "center",
+              padding: "10px 12px", borderRadius: "12px",
+              fontSize: "11px", fontWeight: 700, textTransform: "uppercase",
+              letterSpacing: "0.06em", border: "none", cursor: "pointer",
+              transition: "all 0.18s ease",
+              background: isFilterExpanded && !isCollapsed ? "rgba(232,160,32,0.08)" : "transparent",
+              color: isFilterExpanded && !isCollapsed ? "#C88010" : "var(--aur-text-muted)",
+            }}
           >
-            <div className={`shrink-0 ${isCollapsed ? "mx-auto" : "mr-3.5"}`}>
-              <SlidersHorizontal className="h-4.5 w-4.5" />
+            <div style={{ flexShrink: 0, ...(isCollapsed ? { margin: "0 auto" } : { marginRight: "12px" }) }}>
+              <SlidersHorizontal style={{ width: "16px", height: "16px" }} />
             </div>
-            
             {!isCollapsed && (
               <>
-                <span>Filters</span>
-                <ChevronDown
-                  className={`ml-auto h-4 w-4 transition-transform duration-200 ${
-                    isFilterExpanded ? "rotate-180" : "rotate-0"
-                  }`}
-                />
+                <span style={{ flexGrow: 1, textAlign: "left" }}>Filters</span>
+                <ChevronDown style={{
+                  width: "14px", height: "14px", transition: "transform 0.2s",
+                  transform: isFilterExpanded ? "rotate(180deg)" : "none",
+                }} />
               </>
-            )}
-
-            {/* Collapsed Hover Tooltip for filters */}
-            {isCollapsed && (
-              <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2.5 py-1.5 rounded border border-[var(--aur-border)] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-50 text-[10px] font-bold uppercase tracking-widest shadow-lg bg-[var(--aur-surface)] text-[var(--aur-text)]">
-                University Filters
-              </div>
             )}
           </button>
 
-          {/* Expandable Filter Content */}
-          <>
-            {isFilterExpanded && !isCollapsed && (
-              <div
-                
-                
-                
-                
-                className="overflow-hidden"
-              >
-                <div className="px-3 pt-4 pb-2 border border-[var(--aur-border)] rounded-lg mt-2 bg-[var(--aur-surface-2)]">
-                  <FilterPanel />
-                </div>
-              </div>
-            )}
-          </>
-        </div>
-
-      </div>
-
-      {/* 3. Bottom Expand / Collapse Toggle Button */}
-      <div className="p-4 pb-12 border-t border-[var(--aur-border)] flex justify-center">
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-lg border transition-all duration-150 cursor-pointer border-[var(--aur-border)] text-[var(--aur-text-secondary)] hover:bg-[var(--aur-text)] hover:text-[var(--background)] hover:border-[var(--aur-text)]"
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <div className="flex items-center space-x-1.5 text-[10px] uppercase font-bold tracking-widest px-1">
-              <ChevronLeft className="h-4 w-4 shrink-0" />
-              <span>Collapse</span>
+          {isFilterExpanded && !isCollapsed && (
+            <div style={{ marginTop: "8px", padding: "12px", borderRadius: "12px", border: "1px solid var(--aur-border)", background: "var(--aur-surface-2)" }}>
+              <FilterPanel />
             </div>
           )}
-        </button>
+        </div>
       </div>
 
-      {/* Style tag helper for tooltip styling inside CSS */}
-      <style jsx>{`
-        .scrollbar-thin::-webkit-scrollbar {
-          width: 4px;
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-          background: var(--aur-border-strong);
-          border-radius: 2px;
-        }
-      `}</style>
+      {/* Collapse Button */}
+      <div style={{ padding: "12px", borderTop: "1px solid var(--aur-border)", display: "flex", justifyContent: "center" }}>
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          style={{
+            padding: "8px 14px", borderRadius: "10px",
+            border: "1.5px solid var(--aur-border)",
+            background: "transparent", color: "var(--aur-text-muted)",
+            cursor: "pointer", transition: "all 0.18s ease",
+            display: "flex", alignItems: "center", gap: "6px",
+            fontSize: "10px", fontWeight: 700,
+            textTransform: "uppercase", letterSpacing: "0.08em",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "#3D4A5A";
+            (e.currentTarget as HTMLButtonElement).style.color = "#fff";
+            (e.currentTarget as HTMLButtonElement).style.borderColor = "#3D4A5A";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+            (e.currentTarget as HTMLButtonElement).style.color = "var(--aur-text-muted)";
+            (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--aur-border)";
+          }}
+          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+        >
+          {isCollapsed
+            ? <ChevronRight style={{ width: "16px", height: "16px" }} />
+            : <><ChevronLeft style={{ width: "16px", height: "16px" }} /><span>Collapse</span></>
+          }
+        </button>
+      </div>
     </aside>
   );
 }

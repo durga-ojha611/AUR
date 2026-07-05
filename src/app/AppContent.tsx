@@ -80,8 +80,9 @@ export default function AppContent() {
 
   return (
     <div className={`flex min-h-screen flex-col ${
-      theme === "dark" ? "bg-[#0a0a0a] text-[#e5e5e5] dark" : "bg-white text-[#171717]"
-    }`}>
+      theme === "dark" ? "dark" : ""
+    }`}
+    style={{ background: "var(--background)", color: "var(--foreground)" }}>
       {/* Top Navigation Bar */}
       {view !== "login" && view !== "admin" && <Navbar />}
 
@@ -94,7 +95,9 @@ export default function AppContent() {
         {/* Main Content Area — Full Width */}
         <main
           className={`flex-1 flex flex-col min-w-0 pb-20 md:pb-0 ${
-            view === "login" || view === "admin" ? "p-0" : "px-4 pt-4 lg:px-8 lg:pt-8"
+            view === "login" || view === "admin" ? "p-0"
+            : view === "home" ? ""
+            : "px-4 pt-4 lg:px-8 lg:pt-8"
           }`}
           style={{ isolation: "isolate" }}
         >

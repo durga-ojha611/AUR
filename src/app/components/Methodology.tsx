@@ -358,11 +358,11 @@ export default function Methodology() {
 
       {/* ── Page Header ── */}
       <div className="flex flex-col items-center justify-center text-center pb-6">
-        <span className="aur-caption">Transparency Report</span>
-        <h1 className="aur-section-title text-3xl md:text-4xl leading-tight mt-3">
+        <span className="aur-caption text-[9px]">Transparency Report</span>
+        <h1 className="aur-section-title text-2xl md:text-3xl leading-tight mt-3">
           Ranking Methodology
         </h1>
-        <p className="text-[11px] text-[var(--aur-text-muted)] font-mono mt-4 tracking-wide text-center">
+        <p className="text-[9px] text-[var(--aur-text-muted)] font-mono mt-4 tracking-wide text-center">
           Five-metric framework · Globally validated data · Last audited: June 2026 · QS Aligned
         </p>
       </div>
@@ -386,8 +386,8 @@ export default function Methodology() {
         </div>
 
         <div className="lg:col-span-3 space-y-4">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Score Formula</span>
-          <div className="p-6 rounded-2xl border border-[var(--aur-border)] bg-[var(--aur-surface-2)] font-mono text-sm">
+          <span className="text-[9px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Score Formula</span>
+          <div className="p-6 rounded-2xl border border-[var(--aur-border)] bg-[var(--aur-surface-2)] font-mono text-xs">
             <p className="text-[var(--aur-text-secondary)] leading-loose">
               <span className="text-[var(--aur-text)] font-bold">Score</span> ={" "}
               <span style={{ color: "#3b82f6" }}>(AcadRep × 0.30)</span>
@@ -421,11 +421,11 @@ export default function Methodology() {
       {/* ── Metric Deep Dives ── */}
       <div>
         <div className="mb-6">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Metric Definitions</span>
-          <h2 className="text-2xl font-serif font-bold text-[var(--aur-text)] mt-2">
+          <span className="text-[9px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Metric Definitions</span>
+          <h2 className="text-xl font-serif font-bold text-[var(--aur-text)] mt-2">
             Five Core Indicators
           </h2>
-          <p className="text-sm text-[var(--aur-text-secondary)] mt-2">
+          <p className="text-xs text-[var(--aur-text-secondary)] mt-2">
             Click any indicator to expand its full specification, data source, and sub-indicators.
           </p>
         </div>
@@ -444,8 +444,8 @@ export default function Methodology() {
       {/* ── Data Sources ── */}
       <div>
         <div className="mb-6">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Data Provenance</span>
-          <h2 className="text-2xl font-serif font-bold text-[var(--aur-text)] mt-2">
+          <span className="text-[9px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Data Provenance</span>
+          <h2 className="text-xl font-serif font-bold text-[var(--aur-text)] mt-2">
             Six Verified Source Channels
           </h2>
         </div>
@@ -513,8 +513,8 @@ export default function Methodology() {
       {/* ── FAQ ── */}
       <div>
         <div className="mb-6">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Common Questions</span>
-          <h2 className="text-2xl font-serif font-bold text-[var(--aur-text)] mt-2">FAQ</h2>
+          <span className="text-[9px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">Common Questions</span>
+          <h2 className="text-xl font-serif font-bold text-[var(--aur-text)] mt-2">FAQ</h2>
         </div>
         <div className="border border-[var(--aur-border)] rounded-2xl bg-[var(--aur-surface)] px-6 divide-y divide-[var(--aur-border)]">
           {FAQS.map((faq) => (

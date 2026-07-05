@@ -369,24 +369,13 @@ export default function Login() {
             <div className="lp-logo-text">AUR</div>
           </div>
 
-          {/* Tab bar */}
-          <div className="lp-tabs">
-            <button className={`lp-tab ${isLogin ? "lp-tab-active" : ""}`} onClick={() => switchMode(true)}>
-              Sign In
-            </button>
-            <button className={`lp-tab ${!isLogin ? "lp-tab-active" : ""}`} onClick={() => switchMode(false)}>
-              Create Account
-            </button>
-          </div>
+          {/* Tab bar removed as per request */}
 
           {/* Animated form swap */}
           <>
             <div
               key={isLogin ? "login" : "signup"}
-              
-              
-              
-              
+              className="lp-form-anim-wrapper"
             >
               {/* Header */}
               <div className="lp-form-header">
