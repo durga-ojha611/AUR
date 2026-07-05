@@ -142,15 +142,19 @@ def test_by_subregion():
 def test_by_subregion_structure():
     data = client.get("/api/insights/by-subregion").json()
 
-    assert isinstance(data, dict)
+    assert isinstance(data, list)
+
+    if len(data) > 0:
+        assert "subregion" in data[0]
+        assert "count" in data[0]
 
 
 def test_subregion_counts():
     data = client.get("/api/insights/by-subregion").json()
 
-    for value in data.values():
-        assert isinstance(value, int)
-        assert value >= 0
+    for item in data:
+        assert isinstance(item["count"], int)
+        assert item["count"] >= 0
 
 
 def test_country_average_score():
