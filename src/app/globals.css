@@ -12,15 +12,26 @@
 
 /* ── ROOT (LIGHT MODE) ─────────────────────────────────────── */
 :root {
-  /* Brand */
-  --aur-amber:         #E8A020;
+  /* StudentForge palette — available globally */
+  --sf-amber:      #EBAA40;
+  --sf-amber-d:    #C88010;
+  --sf-sage:       #8BB19E;
+  --sf-teal:       #7AAFB0;
+  --sf-charcoal:   #1C2531;
+  --sf-charcoal-2: #2E3D4F;
+  --sf-slate:      #64748B;
+  --sf-white:      #FFFFFF;
+  --sf-off-white:  #F8F9FA;
+
+  /* Brand (legacy compat) */
+  --aur-amber:         #EBAA40;
   --aur-amber-light:   #FDF3E0;
   --aur-amber-dark:    #C88010;
-  --aur-sage:          #8FBFAD;
+  --aur-sage:          #8BB19E;
   --aur-sage-light:    #E8F5F0;
   --aur-sage-dark:     #5A9A85;
-  --aur-charcoal:      #3D4A5A;
-  --aur-charcoal-2:    #5A6B7A;
+  --aur-charcoal:      #1C2531;
+  --aur-charcoal-2:    #2E3D4F;
 
   /* Surface */
   --background:        #FAFAF8;

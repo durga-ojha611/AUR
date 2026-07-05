@@ -548,108 +548,212 @@ export default function Homepage({
   const compareUnis = topTen.slice(0, 4);
   const uniqueCountries = useMemo(() => new Set(MOCK_UNIVERSITIES.map((u) => u.location)).size, []);
 
-  const scrollToMethodology = () => {
-    // Navigated via onViewChange("methodology") — scroll ref no longer needed
-  };
+  const TESTIMONIALS = [
+    { text: "The data at AUR is life-changing. It helped me bridge the gap between choosing the right university and guessing.", name: "Priya S.", role: "NUS Graduate", color: "#EBAA40" },
+    { text: "I gained immense clarity through AUR's structured rankings and regional breakdowns.", name: "Arjun M.", role: "IIT Bombay Alumni", color: "#8BB19E" },
+    { text: "A truly user-friendly platform that provides perfect guidance for students choosing Asian universities.", name: "Li Wei", role: "Tsinghua Student", color: "#7AAFB0" },
+    { text: "AUR offers a unique ecosystem for data-driven university selection you simply can't find anywhere else.", name: "Yuki T.", role: "UTokyo Applicant", color: "#1C2531" },
+    { text: "The ranking methodology is well-balanced and clearly structured, providing a solid analytical foundation.", name: "Sana K.", role: "Osaka University", color: "#EBAA40" },
+    { text: "I feel much more confident in my university choice thanks to AUR's transparent data insights.", name: "Raj P.", role: "BITS Pilani", color: "#8BB19E" },
+    { text: "Everything about AUR is designed to help students make informed decisions. Truly transformative.", name: "Min J.", role: "Seoul Nat'l Univ.", color: "#7AAFB0" },
+    { text: "The perfect place to compare institutions, research programs, and explore Central Asia opportunities.", name: "Asel N.", role: "Samarkand Medical", color: "#1C2531" },
+  ];
+
+  const ACHIEVEMENTS = [
+    { emoji: "🏆", title: "Featured in QS Asia Rankings 2026", desc: "Recognized as a leading data intelligence platform for higher education in the Asia Pacific region." },
+    { emoji: "🎓", title: "Partnership with 50+ Institutions", desc: "Formal data partnerships with over 50 leading Asian universities ensuring real-time accuracy." },
+    { emoji: "🌏", title: "Invited to Asia Education Summit", desc: "Our team represented AUR at the Asia Education Innovation Summit in Singapore." },
+    { emoji: "📊", title: "1 Million Data Points Analyzed", desc: "In 2025, AUR crossed 1 million verified data points across research, employment, and faculty metrics." },
+    { emoji: "🩺", title: "Central Asia Medical Hub Guide", desc: "Asia's most comprehensive guide to medical education in Uzbekistan, Kazakhstan and Central Asia." },
+    { emoji: "🤝", title: "Knowledge Partner – UniExpo 2026", desc: "Served as Knowledge Partner at UniExpo 2026 helping students navigate Asian university choices." },
+  ];
 
   return (
     <div className="ref-home flex-grow w-full relative">
 
-
-      {/* ── Hero ── */}
+      {/* ── HERO ── */}
       <section className="ref-hero">
         <div className="ref-hero-grid">
-          {/* Top: centered copy */}
-          <div className="ref-hero-centered flex flex-col items-center justify-center">
-            <span className="ref-hero-eyebrow">
-              Welcome to Asia University Rankings
-            </span>
-            <h1 className="text-5xl md:text-[5rem] font-medium leading-[1.1] mt-0 mb-6" style={{ color: "var(--ref-charcoal-2)" }}>
-              Empowering Next-Gen <span style={{ textDecoration: "underline", textDecorationColor: "var(--ref-charcoal-2)", textDecorationThickness: "2px" }}>Innovators</span>
+          <div className="ref-hero-centered">
+            <span className="ref-hero-eyebrow">Asia University Rankings — 2026</span>
+            <h1
+              className="text-[clamp(2.75rem,7vw,5.25rem)] font-medium leading-[1.08] mb-6"
+              style={{ color: "var(--sf-charcoal)", letterSpacing: "-0.03em" }}
+            >
+              No matter how dark the path,<br />
+              <span className="sf-underline">AUR stands beside you.</span>
             </h1>
-            <p className="text-lg leading-relaxed max-w-3xl mx-auto mb-12 font-medium" style={{ color: "rgba(28, 37, 49, 0.7)" }}>
-              Asia University Rankings provides the tools, data, and global network needed to turn your academic foundation into a professional legacy.
+            <p
+              className="text-lg leading-relaxed max-w-2xl mx-auto mb-10 font-normal"
+              style={{ color: "rgba(28,37,49,0.68)" }}
+            >
+              Asia University Rankings provides the tools, data, and global network
+              needed to turn your academic foundation into a professional legacy.
             </p>
-
-
-
-
+            <div className="sf-hero-ctas">
+              <button type="button" className="ref-btn-primary" onClick={() => onViewChange("rankings")}>
+                Explore Rankings <ChevronRight className="h-4 w-4" />
+              </button>
+              <button type="button" className="ref-btn-outline" onClick={() => onViewChange("methodology")}>
+                Learn More
+              </button>
+            </div>
           </div>
-
-          {/* Bottom: large image */}
-          <div className="ref-hero-image-wrap mt-4">
-            <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80" alt="University Campus" />
+          <div className="ref-hero-image-wrap mt-8">
+            <img
+              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80"
+              alt="University Campus"
+            />
           </div>
         </div>
       </section>
 
-      {/* ── Logos Section ── */}
-      <RevealSection className="bg-white py-12 md:py-20 text-center">
-        <p className="text-xl md:text-2xl text-[var(--ref-sage)] mb-12 font-medium">
-          Mentors from Leading Global Companies
-        </p>
-        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 px-4 max-w-6xl mx-auto opacity-70 hover:opacity-100 transition-opacity">
-          {/* We use text as placeholder logos for now */}
-          <span className="text-3xl font-bold" style={{ color: "#0056b3" }}>Infosys</span>
-          <span className="text-2xl font-bold" style={{ color: "#2B529B" }}>wipro</span>
-          <span className="text-3xl font-bold" style={{ color: "#4285F4" }}>Google</span>
-          <span className="text-3xl font-bold" style={{ color: "#737373" }}>Microsoft</span>
-          <span className="text-3xl font-bold" style={{ color: "#1877F2" }}>Meta</span>
-          <span className="text-3xl font-bold" style={{ color: "#FF9900" }}>amazon</span>
-          <span className="text-3xl font-bold" style={{ color: "#A100FF" }}>accenture</span>
+      {/* ── LOGO BAND ── */}
+      <div className="sf-logo-band">
+        <p>Mentors from Leading Global Companies</p>
+        <div className="sf-logo-list">
+          {[
+            { label: "Google",      color: "#4285F4" },
+            { label: "Microsoft",   color: "#737373" },
+            { label: "Infosys",     color: "#0056b3" },
+            { label: "Wipro",       color: "#2B529B" },
+            { label: "Accenture",   color: "#A100FF" },
+            { label: "Amazon",      color: "#FF9900" },
+            { label: "Meta",        color: "#1877F2" },
+          ].map((co) => (
+            <span key={co.label} className="sf-logo-item" style={{ color: co.color }}>
+              {co.label}
+            </span>
+          ))}
         </div>
-      </RevealSection>
+      </div>
+
+      {/* ── BENTO STATS ── */}
       <RevealSection className="ref-section ref-section-alt">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
-          <div>
-            <h2 className="text-3xl font-bold mt-1 text-[var(--ref-charcoal-2)]">Our Achievements</h2>
-            <p className="text-sm text-[var(--ref-muted)] mt-2">
-              Celebrating milestones and success stories from our journey of empowering students and startups.
-            </p>
-          </div>
+        <div className="mb-10">
+          <p className="ref-label mb-2">By The Numbers</p>
+          <h2 className="text-3xl font-semibold" style={{ color: "var(--sf-charcoal)", letterSpacing: "-0.02em" }}>
+            Making a Difference in the Student Community
+          </h2>
+          <p className="text-sm mt-3" style={{ color: "var(--sf-slate)" }}>
+            At AUR, we are dedicated to making a positive impact through data, mentorship, and global access.
+          </p>
         </div>
-        
-        {/* Bento Box Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Top Row */}
-          <div className="md:col-span-1 rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-amber)", color: "var(--ref-charcoal-2)" }}>
-            <div className="text-5xl sm:text-6xl font-medium mb-4">1,500+</div>
-            <div className="text-lg font-medium mb-6">Students Reached Online</div>
-            <div className="text-sm opacity-90 leading-relaxed">
-              In 2025, our online initiatives reached over 1500 individuals with precise, accessible, and compelling information.
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Card 1 — Amber */}
+          <div className="sf-bento-card" style={{ background: "var(--sf-amber)", color: "var(--sf-charcoal)" }}>
+            <div className="sf-bento-num">1,500+</div>
+            <div className="sf-bento-label">Students Reached Online</div>
+            <div className="sf-bento-desc">
+              Our online platform reached over 1,500 students with precise, accessible university intelligence.
             </div>
           </div>
-          
-          <div className="md:col-span-2 rounded-[32px] overflow-hidden relative min-h-[300px]">
-            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80" alt="Graduation ceremony" className="absolute inset-0 w-full h-full object-cover" />
+          {/* Card 2 — Photo */}
+          <div className="sf-bento-card md:col-span-2 p-0 overflow-hidden min-h-[280px]" style={{ borderRadius: "28px" }}>
+            <img
+              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80"
+              alt="Graduation"
+              className="w-full h-full object-cover"
+              style={{ minHeight: "280px" }}
+            />
           </div>
-
-          {/* Bottom Row */}
-          <div className="rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-sage)", color: "#ffffff" }}>
-            <div className="text-5xl sm:text-6xl font-medium mb-4">30+</div>
-            <div className="text-lg font-medium mb-6">Mentorship Sessions</div>
-            <div className="text-sm opacity-90 leading-relaxed">
-              In 2025, Student Forge led over 30 in-person and virtual mentorship programs covering key topics.
+          {/* Card 3 — Sage */}
+          <div className="sf-bento-card" style={{ background: "var(--sf-sage)", color: "#fff" }}>
+            <div className="sf-bento-num">30+</div>
+            <div className="sf-bento-label">Countries Covered</div>
+            <div className="sf-bento-desc">
+              Regional intelligence from East Asia, South Asia, Southeast Asia, and Central Asia.
             </div>
           </div>
-
-          <div className="rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-teal)", color: "var(--ref-charcoal-2)" }}>
-            <div className="text-5xl sm:text-6xl font-medium mb-4">100+</div>
-            <div className="text-lg font-medium mb-6">Projects Completed</div>
-            <div className="text-sm opacity-90 leading-relaxed">
-              Over 100 industry-level projects successfully conceptualized and delivered by our interns across various technical domains.
+          {/* Card 4 — Teal */}
+          <div className="sf-bento-card" style={{ background: "var(--sf-teal)", color: "var(--sf-charcoal)" }}>
+            <div className="sf-bento-num">1M+</div>
+            <div className="sf-bento-label">Data Points Analyzed</div>
+            <div className="sf-bento-desc">
+              Every ranking, citation count, and employability score traceable to source.
             </div>
           </div>
-
-          <div className="rounded-[32px] p-8 sm:p-10" style={{ background: "var(--ref-charcoal)", color: "#ffffff" }}>
-            <div className="text-5xl sm:text-6xl font-medium mb-4">100+</div>
-            <div className="text-lg font-medium mb-6">Internships</div>
-            <div className="text-sm opacity-90 leading-relaxed">
-              In 2025, Student Forge provided 100+ internship opportunities to students across various technical and business domains.
+          {/* Card 5 — Charcoal */}
+          <div className="sf-bento-card" style={{ background: "var(--sf-charcoal)", color: "#fff" }}>
+            <div className="sf-bento-num">15+</div>
+            <div className="sf-bento-label">Years of Historical Data</div>
+            <div className="sf-bento-desc">
+              Longitudinal trend analysis spanning over a decade of academic performance shifts.
             </div>
           </div>
         </div>
       </RevealSection>
+
+      {/* ── ACHIEVEMENTS GRID ── */}
+      <RevealSection className="ref-section">
+        <div className="mb-10">
+          <p className="ref-label mb-2">Our Achievements</p>
+          <h2 className="text-3xl font-semibold" style={{ color: "var(--sf-charcoal)", letterSpacing: "-0.02em" }}>
+            Celebrating Milestones
+          </h2>
+          <p className="text-sm mt-3" style={{ color: "var(--sf-slate)" }}>
+            Success stories from our journey of empowering students and institutions across Asia.
+          </p>
+        </div>
+        <div className="sf-achieve-grid">
+          {ACHIEVEMENTS.map((a) => (
+            <div key={a.title} className="sf-achieve-card">
+              <div className="sf-achieve-icon">{a.emoji}</div>
+              <div className="sf-achieve-title">{a.title}</div>
+              <div className="sf-achieve-desc">{a.desc}</div>
+            </div>
+          ))}
+        </div>
+      </RevealSection>
+
+      {/* ── TESTIMONIALS MARQUEE ── */}
+      <RevealSection className="ref-section ref-section-alt overflow-hidden">
+        <div className="text-center mb-10">
+          <p className="ref-label mb-2">Community Feedback</p>
+          <h2 className="text-3xl font-semibold" style={{ color: "var(--sf-charcoal)", letterSpacing: "-0.02em" }}>
+            Voices from Our Students
+          </h2>
+        </div>
+        <div className="sf-testimonial-track-outer mb-5">
+          <div className="sf-testimonial-track">
+            {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
+              <div key={i} className="sf-testimonial-card">
+                <div className="sf-testimonial-stars">★★★★★</div>
+                <p className="sf-testimonial-text">{t.text}</p>
+                <div className="sf-testimonial-author">
+                  <div className="sf-testimonial-avatar" style={{ background: t.color }}>
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="sf-testimonial-name">{t.name}</div>
+                    <div className="sf-testimonial-role">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="sf-testimonial-track-outer">
+          <div className="sf-testimonial-track-2">
+            {[...TESTIMONIALS.slice(4), ...TESTIMONIALS, ...TESTIMONIALS.slice(0, 4)].map((t, i) => (
+              <div key={i} className="sf-testimonial-card">
+                <div className="sf-testimonial-stars">★★★★★</div>
+                <p className="sf-testimonial-text">{t.text}</p>
+                <div className="sf-testimonial-author">
+                  <div className="sf-testimonial-avatar" style={{ background: t.color }}>
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="sf-testimonial-name">{t.name}</div>
+                    <div className="sf-testimonial-role">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </RevealSection>
+
 
       {/* ── Live Top 10 ── */}
       <RevealSection className="ref-section">
@@ -922,71 +1026,115 @@ export default function Homepage({
       </section>
 
       {/* ── CTA Banner ── */}
-      <RevealSection className="ref-section pt-0 pb-8">
-        <div className="ref-cta-banner p-8 md:p-12">
-          <div className="relative z-10 max-w-xl">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-              Discover the Future of Higher Education Intelligence
+      <RevealSection className="ref-section pt-0 pb-16">
+        <div className="sf-cta-banner p-12 md:p-20">
+          <div className="relative z-10 max-w-2xl mx-auto text-center">
+            <p className="text-sm font-semibold tracking-widest uppercase mb-4" style={{ color: "var(--sf-amber)" }}>
+              Ready to Forge Your Future?
+            </p>
+            <h2 className="text-3xl md:text-4xl font-semibold mb-5 text-white" style={{ letterSpacing: "-0.02em" }}>
+              Join thousands of students bridging the gap between academics and industry excellence.
             </h2>
-            <p className="text-sm text-[var(--ref-muted)] mb-6">
+            <p className="text-base mb-10" style={{ color: "rgba(255,255,255,0.60)" }}>
               Access live rankings, institutional analytics, and regional insights trusted across Asia.
             </p>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <button type="button" className="ref-btn-primary" onClick={() => onViewChange("rankings")}>
-                Explore Rankings
+            <div className="flex flex-wrap gap-4 justify-center">
+              <button
+                type="button"
+                onClick={() => onViewChange("rankings")}
+                className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3.5 rounded-full transition-all"
+                style={{ background: "var(--sf-amber)", color: "var(--sf-charcoal)", border: "2px solid var(--sf-amber)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#fff"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#fff"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "var(--sf-amber)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--sf-amber)"; }}
+              >
+                Get Started Now <ChevronRight className="h-4 w-4" />
               </button>
-              <button type="button" className="ref-btn-outline" onClick={() => onViewChange("settings")}>
-                Request Institutional Access
+              <button
+                type="button"
+                onClick={() => onViewChange("methodology")}
+                className="inline-flex items-center gap-2 font-semibold text-sm px-7 py-3.5 rounded-full transition-all"
+                style={{ background: "transparent", color: "rgba(255,255,255,0.80)", border: "2px solid rgba(255,255,255,0.30)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.10)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.60)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.30)"; }}
+              >
+                Contact Admissions
               </button>
             </div>
           </div>
         </div>
       </RevealSection>
 
-      {/* ── Footer block ── */}
-      <footer className="ref-section pt-0 border-t border-[var(--ref-border)]">
-        <div className="ref-footer-grid">
-          <div>
-            <div className="font-bold text-lg mb-2">
-              ASIA <span style={{ color: "#1E293B" }}>UNIVERSITY</span> RANKINGS
+      {/* ── Footer ── */}
+      <footer style={{ background: "var(--sf-charcoal)", color: "rgba(255,255,255,0.70)" }}>
+        <div className="ref-section py-16">
+          <div className="ref-footer-grid">
+            {/* Brand col */}
+            <div>
+              <div className="font-bold text-xl mb-3 text-white tracking-tight">
+                ASIA <span style={{ color: "var(--sf-amber)" }}>UNIVERSITY</span> RANKINGS
+              </div>
+              <p className="text-xs leading-relaxed max-w-xs mb-6" style={{ color: "rgba(255,255,255,0.50)" }}>
+                Empowering next-gen innovators and bridging the gap between academic foundation and industry excellence.
+              </p>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" style={{ color: "var(--sf-amber)" }} />
+                <input
+                  type="email"
+                  placeholder="Subscribe to newsletter"
+                  className="rounded-lg px-3 py-1.5 text-xs w-44 focus:outline-none"
+                  style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }}
+                />
+                <button
+                  type="button"
+                  className="text-xs font-bold px-4 py-1.5 rounded-full transition-all"
+                  style={{ background: "var(--sf-amber)", color: "var(--sf-charcoal)" }}
+                >
+                  Subscribe
+                </button>
+              </div>
             </div>
-            <p className="text-xs text-[var(--ref-muted)] leading-relaxed max-w-xs">
-              The definitive intelligence platform for higher education across Asia and Central Asia.
-            </p>
+
+            {/* Link cols */}
+            {[
+              { title: "Explore", links: [["Rankings Engine", "rankings"], ["Universities", "universities"], ["Analytics", "analytics"], ["Methodology", "methodology"]] },
+              { title: "Resources", links: [["Insights Hub", "home"], ["Reports", "home"], ["Regional Guides", "home"], ["Compare Tool", "rankings"]] },
+              { title: "Connect", links: [["About AUR", "settings"], ["Contact Us", "settings"], ["Privacy Policy", "settings"], ["Terms of Service", "settings"]] },
+            ].map((col) => (
+              <div key={col.title}>
+                <h4 className="text-xs font-bold uppercase tracking-widest mb-4 text-white">{col.title}</h4>
+                <ul className="space-y-3">
+                  {col.links.map(([label, view]) => (
+                    <li key={label}>
+                      <button
+                        type="button"
+                        onClick={() => onViewChange(view)}
+                        className="text-xs transition-colors hover:text-white"
+                        style={{ color: "rgba(255,255,255,0.50)" }}
+                      >
+                        {label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-          {[
-            { title: "Platform", links: [["Rankings Engine", "rankings"], ["Discovery Hub", "home"], ["Analytics", "rankings"]] },
-            { title: "Resources", links: [["Methodology", "home"], ["Reports", "home"], ["Insights", "home"]] },
-            { title: "Company", links: [["About Us", "settings"], ["Contact", "settings"], ["Privacy", "settings"]] },
-          ].map((col) => (
-            <div key={col.title}>
-              <h4 className="text-xs font-bold uppercase tracking-wider mb-3">{col.title}</h4>
-              <ul className="space-y-2">
-                {col.links.map(([label, view]) => (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      onClick={() => onViewChange(view)}
-                      className="text-xs text-[var(--ref-muted)] hover:text-blue-600 transition-colors"
-                    >
-                      {label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+
+          {/* Bottom bar */}
+          <div className="mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+              © 2026 Asia University Rankings. All rights reserved.
+            </span>
+            <div className="flex gap-6">
+              {["Privacy Policy", "Terms of Service", "Refund Policy"].map((t) => (
+                <button key={t} type="button" onClick={() => onViewChange("settings")}
+                  className="text-xs transition-colors hover:text-white"
+                  style={{ color: "rgba(255,255,255,0.35)" }}>
+                  {t}
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="mt-8 pt-6 border-t border-[var(--ref-border)] flex flex-col sm:flex-row justify-between gap-4 items-center">
-          <span className="text-[10px] text-[var(--ref-muted)]">© 2026 Asia University Rankings. All rights reserved.</span>
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4 text-[var(--ref-muted)]" />
-            <input
-              type="email"
-              placeholder="Newsletter email"
-              className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-900 w-48 focus:outline-none focus:ring-2 focus:ring-slate-400"
-            />
-            <button type="button" className="ref-btn-primary text-[10px] px-3 py-1.5">Subscribe</button>
           </div>
         </div>
       </footer>

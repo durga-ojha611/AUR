@@ -85,13 +85,13 @@ export default function Navbar() {
     setFilters((prev) => ({ ...prev, searchQuery: e.target.value }));
   };
 
-  /* ── Color palette ── */
-  const navBg = scrolled ? "var(--ref-amber)" : "transparent"; 
-  const linkColor = "rgba(28, 37, 49, 0.8)"; 
+  /* ── Color palette — amber hero: dark text always, amber pill on scroll ── */
+  const navBg = scrolled ? "var(--sf-amber, #EBAA40)" : "transparent";
+  const linkColor = "rgba(28,37,49,0.72)";
   const linkActiveColor = "#1C2531";
-  const iconColor = "rgba(28, 37, 49, 0.8)";
+  const iconColor = "rgba(28,37,49,0.70)";
   const iconHoverColor = "#1C2531";
-  const accentColor = "var(--ref-charcoal)";
+  const accentColor = "#1C2531";
 
   return (
     <div
@@ -168,7 +168,7 @@ export default function Navbar() {
                     {isActive && (
                       <span
                         className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] w-4 rounded-full transition-all duration-300"
-                        style={{ background: scrolled ? accentColor : "#FFFFFF" }}
+                        style={{ background: accentColor }}
                       />
                     )}
                   </button>
@@ -275,24 +275,21 @@ export default function Navbar() {
                 <div
                   className="flex items-center px-4 h-[36px] rounded-full border transition-all overflow-hidden"
                   style={{
-                    background: scrolled ? "rgba(37,99,235,0.04)" : "rgba(255,255,255,0.1)",
-                    borderColor: scrolled ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.2)",
+                    background: "rgba(28,37,49,0.07)",
+                    borderColor: "rgba(28,37,49,0.14)",
                     width: "220px",
                   }}
                 >
-                  <Search className="h-3.5 w-3.5 shrink-0" style={{ color: scrolled ? "rgba(37,99,235,0.5)" : "rgba(255,255,255,0.5)" }} />
+                  <Search className="h-3.5 w-3.5 shrink-0" style={{ color: "rgba(28,37,49,0.50)" }} />
                   <input
                     type="text"
                     value={searchVal}
                     onChange={handleSearchChange}
                     placeholder="Search universities..."
                     className="w-full bg-transparent text-[11px] font-medium outline-none ml-2"
-                    style={{
-                      color: scrolled ? linkActiveColor : "#FFFFFF",
-                      transition: "all 0.2s ease",
-                    }}
-                    onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = accentColor; (e.currentTarget as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(37,99,235,0.15)"; }}
-                    onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = "rgba(37,99,235,0.15)"; (e.currentTarget as HTMLInputElement).style.boxShadow = "none"; }}
+                    style={{ color: linkActiveColor, transition: "all 0.2s ease" }}
+                    onFocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = accentColor; }}
+                    onBlur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = "rgba(28,37,49,0.14)"; }}
                   />
                 </div>
               </form>
