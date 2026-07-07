@@ -15,6 +15,7 @@ export default function EventsAndAwards() {
       type: "Conference",
       description: "Join leading academic minds and university chancellors to discuss the future of AI in higher education, institutional growth, and global partnerships.",
       detailedDescription: "The Asia Higher Education Summit brings together over 5,000 academic leaders, policymakers, and industry innovators. This three-day event features keynote addresses, interactive panel discussions, and hands-on workshops aimed at reshaping the landscape of tertiary education across the Asian continent. Attendees will explore topics such as sustainable campus operations, digital transformation, and cross-border research initiatives.",
+      applicationUrl: "https://example.edu/register/summit-2026",
       speakers: [
         { name: "Dr. Elena Rostova", role: "Vice Chancellor", company: "National Tech University" },
         { name: "Prof. Kenji Sato", role: "Head of AI Research", company: "Tokyo Institute of Technology" }
@@ -33,6 +34,7 @@ export default function EventsAndAwards() {
       type: "Awards",
       description: "Celebrating the most innovative universities and outstanding contributors to research and employability in the Asian region.",
       detailedDescription: "The prestigious AUR Awards Gala is the most anticipated event of the academic calendar, recognizing excellence in teaching, research, and community impact. Nominations are open across 15 categories, including 'Most Innovative Curriculum', 'Excellence in Internationalization', and the 'Lifetime Achievement in Education' award. Join us for an evening of celebration, networking, and inspiration.",
+      applicationUrl: "https://example.edu/events/aur-gala",
       speakers: [
         { name: "Sarah Lin", role: "President", company: "AUR Board of Directors" }
       ],
@@ -50,6 +52,7 @@ export default function EventsAndAwards() {
       type: "Webinar",
       description: "A deep dive into cross-border education trends, scholarship opportunities, and the changing landscape of international student mobility.",
       detailedDescription: "As the world becomes increasingly interconnected, understanding the dynamics of student mobility is crucial for modern universities. This virtual forum will analyze the latest data on international student flows, discuss strategies for attracting diverse student bodies, and highlight innovative support structures for international students.",
+      applicationUrl: "https://example.edu/webinars/mobility-forum",
       speakers: [
         { name: "Dr. Anil Kumar", role: "Director of International Affairs", company: "Global Education Network" },
         { name: "Maria Gonzalez", role: "Policy Analyst", company: "Institute of International Education" }
@@ -147,9 +150,14 @@ export default function EventsAndAwards() {
               <h2 className="text-3xl md:text-5xl font-bold text-[var(--aur-text)] leading-tight mb-6">
                 {selectedEvent.title}
               </h2>
-              <button className="aur-btn-primary px-8 py-3 text-sm font-bold uppercase tracking-wider">
+              <a 
+                href={selectedEvent.applicationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="aur-btn-primary px-8 py-3 text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center text-center"
+              >
                 Register Now
-              </button>
+              </a>
             </div>
             
             <div className="p-8 md:p-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
