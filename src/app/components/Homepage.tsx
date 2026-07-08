@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import NewsFlashWidget from "./NewsFlashWidget";
 import {
@@ -21,8 +22,10 @@ import {
   LineChart,
   Activity,
   Mail,
+  Plus,
 } from "lucide-react";
 import { FEATURED_ARTICLES, University, Article } from "../data";
+import { BLOG_CATEGORY_TABS, getPublishedStoredBlogs, storedBlogToArticle } from "../lib/blog-storage";
 import { useUniversityData } from "./data/UniversityDataProvider";
 import { AsiaMapNetwork, MapUniversityCards } from "./home/AsiaMapHero";
 import "./home/ref-home.css";
@@ -456,9 +459,35 @@ export default function Homepage({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [articleTab, setArticleTab] = useState<"featured" | "reports" | "insights">("featured");
+  const [createdArticles, setCreatedArticles] = useState<Article[]>([]);
 
   const suggestionRef = useRef<HTMLDivElement>(null);
   const methodologyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const loadCreatedArticles = () => {
+      setCreatedArticles(getPublishedStoredBlogs().map(storedBlogToArticle));
+    };
+
+    loadCreatedArticles();
+    window.addEventListener("storage", loadCreatedArticles);
+
+    return () => window.removeEventListener("storage", loadCreatedArticles);
+  }, []);
+
+  const articlesForSearch = useMemo(
+    () => [...createdArticles, ...FEATURED_ARTICLES],
+    [createdArticles]
+  );
+
+  const displayedArticles = useMemo(() => {
+    const localArticlesForTab = createdArticles.filter((article) => {
+      const category = article.category as keyof typeof BLOG_CATEGORY_TABS | undefined;
+      return category ? BLOG_CATEGORY_TABS[category] === articleTab : false;
+    });
+
+    return articleTab === "featured" ? [...localArticlesForTab, ...FEATURED_ARTICLES] : localArticlesForTab;
+  }, [articleTab, createdArticles]);
 
   useEffect(() => {
     if (searchQuery.trim().length === 0) {
@@ -471,13 +500,13 @@ export default function Homepage({
         uni.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
         uni.subjects.some((sub) => sub.toLowerCase().includes(searchQuery.toLowerCase()))
     ).slice(0, 5);
-    const filteredArticles = FEATURED_ARTICLES.filter(
+    const filteredArticles = articlesForSearch.filter(
       (art) =>
         art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         art.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
     ).slice(0, 3);
     setSuggestions({ universities: filteredUnis, articles: filteredArticles });
-  }, [searchQuery, universities]);
+  }, [articlesForSearch, searchQuery, universities]);
 
   const flatSuggestions = useMemo((): SuggestionPick[] => {
     const items: SuggestionPick[] = [];
@@ -873,8 +902,16 @@ export default function Homepage({
 
       {/* ── Discovery Hub ── */}
       <RevealSection className="ref-section pt-0">
-        <span className="ref-label">Discovery Hub</span>
-        <h2 className="text-2xl font-bold mt-1 mb-4">Insights &amp; Analysis</h2>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-4">
+          <div>
+            <span className="ref-label">Discovery Hub</span>
+            <h2 className="text-2xl font-bold mt-1">Insights &amp; Analysis</h2>
+          </div>
+          <Link href="/blogs/create" className="ref-btn-outline text-[11px] uppercase tracking-wider justify-center">
+            <Plus className="h-3.5 w-3.5" />
+            Create Blog
+          </Link>
+        </div>
         <div className="ref-article-tabs flex gap-6 border-b border-[var(--ref-border)] mb-6">
           {(
             [
@@ -894,7 +931,7 @@ export default function Homepage({
           ))}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"    >
-          {FEATURED_ARTICLES.map((article) => (
+          {displayedArticles.map((article) => (
             <button
               key={article.id}
               type="button"
