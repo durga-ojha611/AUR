@@ -968,54 +968,6 @@ export default function Homepage({
         </div>
       </RevealSection>
 
-      {/* ── Comparison + Analytics ── */}
-      <RevealSection className="ref-section pt-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="ref-card p-6">
-            <span className="ref-label">Comparison Tool</span>
-            <h2 className="text-xl font-bold mt-1 mb-2">University Comparison</h2>
-            <p className="text-xs text-[var(--ref-muted)] mb-4">Top 4 institutions across key performance axes</p>
-            <RadarChart universities={compareUnis} />
-            <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              {compareUnis.map((u, i) => (
-                <span key={u.id} className="text-[10px] px-2 py-1 rounded border border-[var(--ref-border)]">
-                  <span className="inline-block w-2 h-2 rounded-full mr-1" style={{ background: ["#f97316", "#3b82f6", "#10b981", "#8b5cf6"][i] }} />
-                  {u.name.split(" ")[0]}
-                </span>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="ref-btn-outline w-full mt-4 justify-center text-[11px]"
-              onClick={() => onViewChange("rankings")}
-            >
-              Open Full Comparison
-            </button>
-          </div>
-
-          <div>
-            <span className="ref-label">Real-Time Analytics</span>
-            <h2 className="text-xl font-bold mt-1 mb-4">Live Performance Dashboard</h2>
-            <div className="ref-analytics-grid">
-              {[
-                { title: "Live Rankings Updates", icon: LineChart, color: "#3b82f6", trend: "up" as const, stat: "+12 shifts" },
-                { title: "Research Output Growth", icon: Activity, color: "#22c55e", trend: "up" as const, stat: "+18.7%" },
-                { title: "Country Performance", icon: BarChart3, color: "#3b82f6", trend: "up" as const, stat: "Singapore 94.2" },
-                { title: "Institution Performance", icon: TrendingUp, color: "#f97316", trend: "up" as const, stat: "Tsinghua 98.2" },
-              ].map((card) => (
-                <div key={card.title} className="ref-analytics-card">
-                  <div className="flex items-center gap-2 mb-1">
-                    <card.icon className="h-4 w-4" style={{ color: card.color }} />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ref-muted)]">{card.title}</span>
-                  </div>
-                  <div className="font-mono font-bold text-lg" style={{ color: card.color }}>{card.stat}</div>
-                  <MiniLineChart color={card.color} trend={card.trend} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </RevealSection>
 
       {/* ── Pulse Ticker ── */}
       <div className="ref-pulse-ticker">
