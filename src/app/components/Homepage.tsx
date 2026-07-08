@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import Link from "next/link";
 import { motion } from "framer-motion";
 import NewsFlashWidget from "./NewsFlashWidget";
+import Image from "next/image";
 import {
   Search,
   BookOpen,
@@ -84,6 +85,29 @@ const COUNTRY_FLAGS: Record<string, string> = {
   Cambodia: "🇰🇭",
   Mongolia: "🇲🇳",
 };
+
+const socialLinks = [
+  {
+    label: "Twitter",
+    imgSrc: "/twitter-logo.png",
+    href: "https://twitter.com",
+  },
+  {
+    label: "LinkedIn",
+    imgSrc: "/linkedin-logo.png",
+    href: "https://www.linkedin.com/company/asia-university-rankings/",
+  },
+  {
+    label: "Instagram",
+    imgSrc: "/instagram-logo.png",
+    href: "https://www.instagram.com/asiauniversityrankings/",
+  },
+  {
+    label: "YouTube",
+    imgSrc: "/youtube-logo.png",
+    href: "https://www.youtube.com/",
+  },
+];
 
 /** Light cards themed around each country's iconic monument */
 const COUNTRY_THEME: Record<
@@ -1045,13 +1069,38 @@ export default function Homepage({
       <footer className="ref-section pt-0 border-t border-[var(--ref-border)]">
         <div className="ref-footer-grid">
           <div>
-            <div className="font-bold text-lg mb-2">
-              ASIA <span className="text-amber-600">UNIVERSITY</span> RANKINGS
-            </div>
-            <p className="text-xs text-[var(--ref-muted)] leading-relaxed max-w-xs">
-              The definitive intelligence platform for higher education across Asia and Central Asia.
-            </p>
-          </div>
+  <div className="font-bold text-lg mb-2">
+    ASIA <span className="text-amber-600">UNIVERSITY</span> RANKINGS
+  </div>
+
+  <p className="text-xs text-[var(--ref-muted)] leading-relaxed max-w-xs">
+    The definitive intelligence platform for higher education across Asia and Central Asia.
+  </p>
+
+  {/* Social Media */}
+  <div className="mt-5 flex flex-wrap items-center gap-3">
+    {socialLinks.map((social) => (
+      <a
+        key={social.label}
+        href={social.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={social.label}
+        className="group"
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--ref-border)] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:scale-110 hover:border-amber-400 hover:shadow-md">
+          <Image
+            src={social.imgSrc}
+            alt={social.label}
+            width={20}
+            height={20}
+            className="object-contain"
+          />
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
           {[
             { title: "Platform", links: [["Rankings Engine", "rankings"], ["Discovery Hub", "home"], ["Analytics", "analytics"]] },
             { title: "Resources", links: [["Methodology", "methodology"], ["Reports", "home"], ["Insights", "home"]] },
