@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connections import get_db
-from schemas import NewsItemResponse, NewsListResponse
+from schemas import NewsItemResponse, NewsListResponse, NewsFlashResponse
 
 router = APIRouter(
     prefix="/api/news",
