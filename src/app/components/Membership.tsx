@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Crown, ShieldCheck, BarChart3, Edit3, Award, Info, Check, X, ChevronDown, Building2, User, Mail, Globe2, CreditCard, CalendarDays, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE_URL } from "../lib/universities";
 
 // --- Application Modal Component ---
 function ApplicationModal({ isOpen, onClose, selectedTier }: { isOpen: boolean, onClose: () => void, selectedTier: string }) {
@@ -215,12 +216,12 @@ function ApplicationModal({ isOpen, onClose, selectedTier }: { isOpen: boolean, 
                             type="text"
                             maxLength={19}
                             value={formData.cardNumber}
-                            onChange={(e) => { 
-                              let val = e.target.value.replace(/\D/g, "");
-                              val = val.replace(/(.{4})/g, "$1 ").trim();
-                              setFormData({ ...formData, cardNumber: val }); 
-                              setErrors({ ...errors, cardNumber: "" }); 
-                            }}
+                            onChange={(e) => {
+                               let val = e.target.value.replace(/\D/g, "").slice(0, 16);
+                               val = val.replace(/(.{4})/g, "$1 ").trim();
+                               setFormData({ ...formData, cardNumber: val });
+                               setErrors({ ...errors, cardNumber: "" });
+                               }}
                             className={`w-full bg-[var(--aur-surface-2)] border ${errors.cardNumber ? "border-red-500 focus:border-red-500" : "border-[var(--aur-border)] focus:border-[var(--aur-text)]"} rounded-xl py-3 pl-10 pr-4 text-sm text-[var(--aur-text)] focus:outline-none transition-colors`}
                             placeholder="0000 0000 0000 0000"
                           />
@@ -239,12 +240,22 @@ function ApplicationModal({ isOpen, onClose, selectedTier }: { isOpen: boolean, 
                               type="text"
                               maxLength={5}
                               value={formData.expiry}
-                              onChange={(e) => { 
-                                let val = e.target.value.replace(/\D/g, "");
-                                if (val.length >= 2) val = val.slice(0, 2) + "/" + val.slice(2, 4);
-                                setFormData({ ...formData, expiry: val }); 
-                                setErrors({ ...errors, expiry: "" }); 
-                              }}
+                              onChange={(e) => {
+  let digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length >= 1) {
+    let month = digits.slice(0, 2);
+    if (digits.length >= 2) {
+      const monthNum = parseInt(month, 10);
+      if (monthNum < 1) month = "01";
+      if (monthNum > 12) month = "12";
+    }
+    const year = digits.slice(2, 4);
+    setFormData({ ...formData, expiry: digits.length > 2 ? `${month}/${year}` : month });
+  } else {
+    setFormData({ ...formData, expiry: "" });
+  }
+  setErrors({ ...errors, expiry: "" });
+}}
                               className={`w-full bg-[var(--aur-surface-2)] border ${errors.expiry ? "border-red-500 focus:border-red-500" : "border-[var(--aur-border)] focus:border-[var(--aur-text)]"} rounded-xl py-3 pl-10 pr-4 text-sm text-[var(--aur-text)] focus:outline-none transition-colors`}
                               placeholder="MM/YY"
                             />
@@ -442,6 +453,32 @@ function FAQSection() {
 export default function Membership() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTier, setSelectedTier] = useState("Standard");
+  interface MembershipTierData {
+    id: string;
+    name: string;
+    price: number;
+    duration_months: number;
+    benefits: string[];
+  }
+
+  const [tiers, setTiers] = useState<MembershipTierData[]>([]);
+  const [tiersLoading, setTiersLoading] = useState(true);
+  const [tiersError, setTiersError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${API_BASE_URL}/api/membership/tiers`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load membership tiers");
+        return res.json();
+      })
+      .then((data: MembershipTierData[]) => setTiers(data))
+      .catch((err) => {
+        if (err.name !== "AbortError") setTiersError(err.message);
+      })
+      .finally(() => setTiersLoading(false));
+    return () => controller.abort();
+  }, []);
 
   const openApplication = (tier: string) => {
     setSelectedTier(tier);
@@ -498,18 +535,16 @@ export default function Membership() {
               <p className="text-[var(--aur-text-muted)] text-sm mt-2">Essential tools for institutional visibility.</p>
             </div>
             <div className="text-3xl font-bold font-mono text-[var(--aur-text)] mb-8">
-              $2,500<span className="text-sm text-[var(--aur-text-muted)] font-sans"> / year</span>
+              {tiersLoading ? "..." : `$${tiers.find(t => t.name === "Standard")?.price.toLocaleString() ?? "2,500"}`}<span className="text-sm text-[var(--aur-text-muted)] font-sans"> / year</span>
             </div>
-            
+
             <ul className="space-y-5 mb-8 flex-1">
-              <li className="flex items-start gap-4">
-                <ShieldCheck className="w-5 h-5 text-[var(--aur-text-muted)] shrink-0 mt-0.5" />
-                <span className="text-sm font-medium text-[var(--aur-text-secondary)]">Profile Verification Badge</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <Edit3 className="w-5 h-5 text-[var(--aur-text-muted)] shrink-0 mt-0.5" />
-                <span className="text-sm font-medium text-[var(--aur-text-secondary)]">Institutional Data Update Submissions</span>
-              </li>
+              {(tiers.find(t => t.name === "Standard")?.benefits ?? ["Profile Verification Badge", "Institutional Data Update Submissions"]).map((benefit) => (
+                <li key={benefit} className="flex items-start gap-4">
+                  <ShieldCheck className="w-5 h-5 text-[var(--aur-text-muted)] shrink-0 mt-0.5" />
+                  <span className="text-sm font-medium text-[var(--aur-text-secondary)]">{benefit}</span>
+                </li>
+              ))}
             </ul>
 
             <button 
@@ -520,7 +555,7 @@ export default function Membership() {
             </button>
           </motion.div>
 
-          {/* Tier 2: Premium */}
+         {/* Tier 2: Premium */}
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -540,7 +575,7 @@ export default function Membership() {
               <p className="text-[var(--background)]/70 text-sm mt-2">Advanced analytics and premium participation.</p>
             </div>
             <div className="text-3xl font-bold font-mono text-[var(--background)] mb-8">
-              $5,000<span className="text-sm text-[var(--background)]/70 font-sans"> / year</span>
+              {tiersLoading ? "..." : `$${tiers.find(t => t.name === "Premium")?.price.toLocaleString() ?? "5,000"}`}<span className="text-sm text-[var(--background)]/70 font-sans"> / year</span>
             </div>
             
             <ul className="space-y-5 mb-8 flex-1">
