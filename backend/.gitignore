@@ -1,0 +1,26 @@
+# Environment variables
+.env
+
+# Python virtual environment
+venv/
+
+# Cache files
+__pycache__/
+*.pyc
+<<<<<<< HEAD
+.pytest_cache/
+=======
+.pytest_cache/
+
+# VS Code settings
+.vscode/
+
+# Logs
+*.log
+
+# env files
+.env
+>>>>>>> main
+
+# ranking_engine test
+test_ranking.py
