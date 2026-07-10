@@ -49,14 +49,11 @@ def get_valid_university_id(client):
 # ---------------------------------------------------
 # POST /users/bookmarks
 # ---------------------------------------------------
-
 def test_add_bookmark_success():
     with get_client() as client:
         headers = register_and_login(client)
 
         university_id = get_valid_university_id(client)
-
-        print(university_id)
 
         response = client.post(
             "/users/bookmarks",
@@ -64,17 +61,14 @@ def test_add_bookmark_success():
             headers=headers,
         )
 
-        print("University ID:", university_id)
-        print("Status:", response.status_code)
-        print("Response:", response.json())
+        print("STATUS:", response.status_code)
+        print("BODY:", response.json())
 
-        assert response.status_code == 201
-
+        assert False
         data = response.json()
 
         assert data["message"] == "Bookmark added"
         assert "bookmark_id" in data
-
 
 def test_add_duplicate_bookmark():
     with get_client() as client:
