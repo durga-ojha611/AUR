@@ -23,7 +23,8 @@ app = FastAPI(title="AUR - Asia University Ranking API", version="1.0.0", lifesp
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://aur-frontend.vercel.app", "https://aur-frontend-git-main-aur-frontend.vercel.app"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
