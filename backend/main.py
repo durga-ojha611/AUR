@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from routers import membership
+from routers import faculty_student_awards
 
 
 from database.connections import close_db, close_redis
@@ -45,6 +46,7 @@ app.include_router(news.router)
 app.include_router(methodology.router)
 app.include_router(events.router)
 app.include_router(membership.router)
+app.include_router(faculty_student_awards.router)
 
 @app.get("/")
 def root():

@@ -235,3 +235,27 @@ class UserMembershipResponse(BaseModel):
     start_date: datetime
     end_date: datetime
     status: str
+
+
+class NominationCreate(BaseModel):
+    nominee_name: str
+    nominee_email: str
+    category: str
+    department: str
+    university_id: uuid.UUID
+    justification: str
+
+
+class NominationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    submitted_by_user_id: uuid.UUID
+    nominee_name: str
+    nominee_email: str
+    category: str
+    department: str
+    university_id: uuid.UUID
+    justification: str
+    documents: List[str] = []
+    status: str
+    submitted_at: datetime
