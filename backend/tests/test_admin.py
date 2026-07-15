@@ -75,13 +75,14 @@ async def sample_university(db_session):
 
     possible_values = {
         "id": uuid.uuid4(),
+        "slug": "test-university",
         "name": "Test University",
         "location": "India",
         "country": "India",
         "subregion": "Southern Asia",
         "size": "L",
         "focus": "FC",
-        "research": "VH",
+        "research_level": "VH",
         "is_public": True,
         "isPublic": True,
         "description": "Original description",

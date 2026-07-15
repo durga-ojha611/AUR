@@ -4,8 +4,11 @@ import uuid
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+import pytest_asyncio
 from fastapi.testclient import TestClient
+
 from main import app
+from database.models import University
 
 
 def get_client():
@@ -18,73 +21,106 @@ def unique_email():
 
 def register_and_login(client):
     payload = {
-        "first_name": "Chandrika",
-        "last_name": "Test",
+        "full_name": "Chandrika Test",
         "email": unique_email(),
-        "password": "Password123"
+        "password": "Password123!"
     }
 
     response = client.post("/auth/register", json=payload)
 
-    assert response.status_code == 201
+    assert response.status_code == 201, (
+        f"Registration failed: "
+        f"status={response.status_code}, "
+        f"body={response.text}"
+    )
 
     access_token = response.json()["access_token"]
 
-    headers = {
+    return {
         "Authorization": f"Bearer {access_token}"
     }
 
-    return headers
 
+# ---------------------------------------------------
+# TEST UNIVERSITY FIXTURE
+# Creates a real DB university with a UUID.
+# This avoids the Excel directory slug issue:
+# "peking-university" is a slug, not a UUID.
+# ---------------------------------------------------
 
-def get_valid_university_id(client):
-    response = client.get("/api/universities?limit=1")
-    assert response.status_code == 200
+@pytest_asyncio.fixture
+async def test_university(db_session):
+    university = University(
+        id=uuid.uuid4(),
+        slug=f"users-test-university-{uuid.uuid4().hex[:8]}",
+        name="Users Test University",
+        country="India",
+        subregion="Southern Asia",
+        size="L",
+        focus="FC",
+        research_level="VH",
+        is_public=True,
+    )
 
-    data = response.json()
+    db_session.add(university)
+    await db_session.commit()
+    await db_session.refresh(university)
 
-    return data["data"][0]["id"]
+    return university
 
 
 # ---------------------------------------------------
 # POST /users/bookmarks
 # ---------------------------------------------------
-def test_add_bookmark_success():
+
+def test_add_bookmark_success(test_university):
     with get_client() as client:
         headers = register_and_login(client)
 
-        university_id = get_valid_university_id(client)
+        university_id = str(test_university.id)
 
         response = client.post(
             "/users/bookmarks",
-            json={"university_id": university_id},
+            json={
+                "university_id": university_id
+            },
             headers=headers,
         )
 
-        print("STATUS:", response.status_code)
-        print("BODY:", response.json())
+        assert response.status_code == 201, (
+            f"Expected 201, got {response.status_code}: {response.text}"
+        )
 
-        assert False
         data = response.json()
 
         assert data["message"] == "Bookmark added"
         assert "bookmark_id" in data
 
-def test_add_duplicate_bookmark():
+
+def test_add_duplicate_bookmark(test_university):
     with get_client() as client:
         headers = register_and_login(client)
 
-        university_id = get_valid_university_id(client)
+        university_id = str(test_university.id)
 
-        client.post(
+        first_response = client.post(
             "/users/bookmarks",
-            json={"university_id": university_id},
+            json={
+                "university_id": university_id
+            },
             headers=headers,
+        )
+
+        assert first_response.status_code == 201, (
+            f"First bookmark failed: "
+            f"{first_response.status_code} {first_response.text}"
         )
 
         response = client.post(
             "/users/bookmarks",
-            json={"university_id": university_id},
+            json={
+                "university_id": university_id
+            },
             headers=headers,
         )
 
@@ -95,7 +131,9 @@ def test_add_bookmark_unauthorized():
     with get_client() as client:
         response = client.post(
             "/users/bookmarks",
-            json={"university_id": get_valid_university_id(client)},
+            json={
+                "university_id": str(uuid.uuid4())
+            },
         )
 
         assert response.status_code == 403
@@ -107,7 +145,9 @@ def test_add_bookmark_invalid_uuid():
 
         response = client.post(
             "/users/bookmarks",
-            json={"university_id": "invalid"},
+            json={
+                "university_id": "invalid"
+            },
             headers=headers,
         )
 
@@ -118,14 +158,23 @@ def test_add_bookmark_invalid_uuid():
 # GET /users/bookmarks
 # ---------------------------------------------------
 
-def test_get_bookmarks():
+def test_get_bookmarks(test_university):
     with get_client() as client:
         headers = register_and_login(client)
 
-        client.post(
+        university_id = str(test_university.id)
+
+        add_response = client.post(
             "/users/bookmarks",
-            json={"university_id": get_valid_university_id(client)},
+            json={
+                "university_id": university_id
+            },
             headers=headers,
+        )
+
+        assert add_response.status_code == 201, (
+            f"Bookmark setup failed: "
+            f"{add_response.status_code} {add_response.text}"
         )
 
         response = client.get(
@@ -139,6 +188,7 @@ def test_get_bookmarks():
 
         assert "bookmarks" in data
         assert "total" in data
+        assert data["total"] >= 1
 
 
 def test_get_bookmarks_empty():
@@ -151,7 +201,12 @@ def test_get_bookmarks_empty():
         )
 
         assert response.status_code == 200
-        assert response.json()["total"] == 0
+
+        data = response.json()
+
+        assert "bookmarks" in data
+        assert "total" in data
+        assert data["total"] == 0
 
 
 def test_get_bookmarks_unauthorized():
@@ -162,19 +217,26 @@ def test_get_bookmarks_unauthorized():
 
 
 # ---------------------------------------------------
-# DELETE /users/bookmarks
+# DELETE /users/bookmarks/{university_id}
 # ---------------------------------------------------
 
-def test_delete_bookmark_success():
+def test_delete_bookmark_success(test_university):
     with get_client() as client:
         headers = register_and_login(client)
 
-        university_id = get_valid_university_id(client)
+        university_id = str(test_university.id)
 
-        client.post(
+        add_response = client.post(
             "/users/bookmarks",
-            json={"university_id": university_id},
+            json={
+                "university_id": university_id
+            },
             headers=headers,
+        )
+
+        assert add_response.status_code == 201, (
+            f"Bookmark setup failed: "
+            f"{add_response.status_code} {add_response.text}"
         )
 
         response = client.delete(
@@ -185,12 +247,14 @@ def test_delete_bookmark_success():
         assert response.status_code == 204
 
 
-def test_delete_bookmark_not_found():
+def test_delete_bookmark_not_found(test_university):
     with get_client() as client:
         headers = register_and_login(client)
 
+        university_id = str(test_university.id)
+
         response = client.delete(
-            f"/users/bookmarks/{get_valid_university_id(client)}",
+            f"/users/bookmarks/{university_id}",
             headers=headers,
         )
 
@@ -212,7 +276,7 @@ def test_delete_bookmark_invalid_uuid():
 def test_delete_bookmark_unauthorized():
     with get_client() as client:
         response = client.delete(
-            f"/users/bookmarks/{get_valid_university_id(client)}",
+            f"/users/bookmarks/{uuid.uuid4()}",
         )
 
         assert response.status_code == 403
@@ -236,8 +300,14 @@ def test_update_preferences():
             headers=headers,
         )
 
-        assert response.status_code == 200
-        assert response.json()["message"] == "Preferences updated"
+        assert response.status_code == 200, (
+            f"Expected 200, got "
+            f"{response.status_code}: {response.text}"
+        )
+
+        data = response.json()
+
+        assert data["message"] == "Preferences updated"
 
 
 def test_update_preferences_partial():
@@ -246,7 +316,9 @@ def test_update_preferences_partial():
 
         response = client.patch(
             "/users/preferences",
-            json={"default_country": "India"},
+            json={
+                "default_country": "India"
+            },
             headers=headers,
         )
 
@@ -257,7 +329,9 @@ def test_update_preferences_unauthorized():
     with get_client() as client:
         response = client.patch(
             "/users/preferences",
-            json={"default_country": "India"},
+            json={
+                "default_country": "India"
+            },
         )
 
         assert response.status_code == 403
@@ -277,6 +351,10 @@ def test_get_preferences():
         )
 
         assert response.status_code == 200
+
+        data = response.json()
+
+        assert isinstance(data, dict)
 
 
 def test_get_preferences_unauthorized():
