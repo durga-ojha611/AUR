@@ -8,10 +8,10 @@ FastAPI validates/filters the outgoing data.
 """
 
 from typing import List, Optional
-from pydantic import BaseModel
 from datetime import date, datetime
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict
+import uuid
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class University(BaseModel):
@@ -118,10 +118,6 @@ class TopMover(BaseModel):
     rank_2025: Optional[int] = None
     improvement: int
 
-from pydantic import BaseModel, EmailStr
-from datetime import datetime
-import uuid
-
 
 class NewsletterSubscribeRequest(BaseModel):
     email: EmailStr
@@ -193,6 +189,12 @@ class MethodologyVersionCreate(BaseModel):
     release_date: date
     is_current: bool = False
 
+class ChatRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=500)
+
+class ChatResponse(BaseModel):
+    reply: str
+      
 class EventCreate(BaseModel):
     title: str
     description: Optional[str] = None
