@@ -160,13 +160,11 @@ export default function Login() {
 
     try {
       // Split full name into first/last for backend, which expects both separately
-      const [firstName, ...rest] = name.trim().split(" ");
-      const lastName = rest.join(" ") || firstName;
 
       const endpoint = isLogin ? `${API_BASE_URL}/auth/login` : `${API_BASE_URL}/auth/register`;
       const payload = isLogin
         ? { email: email.trim(), password }
-        : { first_name: firstName, last_name: lastName, email: email.trim(), password };
+        : { full_name: name.trim(), email: email.trim(), password };
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -191,7 +189,8 @@ export default function Login() {
         if (response.status === 401) throw new Error("Invalid credentials. Please try again.");
         if (response.status === 403) throw new Error("Account locked or access denied.");
         if (response.status === 429) throw new Error("Too many attempts. Please try again later.");
-        throw new Error(errorData.message || "An error occurred during authentication.");
+        const detailMsg = Array.isArray(errorData.detail) ? errorData.detail.map((d: any) => d.msg).join(', ') : errorData.detail;
+        throw new Error(detailMsg || errorData.message || 'An error occurred during authentication.');
       }
 
       const data = await response.json();
@@ -492,3 +491,4 @@ export default function Login() {
     </div>
   );
 }
+
