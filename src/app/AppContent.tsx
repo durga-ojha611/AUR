@@ -273,7 +273,7 @@ useEffect(() => {
           {view === "membership" && <Membership />}
 
           {/* Events & Awards */}
-          {view === "events" && <EventsAndAwards />}
+          {view === "events" && <EventsAndAwards onNavigateToMembership={() => handleViewChange("membership")} />}
 
           {/* Faculty & Student Awards */}
           {view === "faculty-awards" && <FacultyStudentAwards />}

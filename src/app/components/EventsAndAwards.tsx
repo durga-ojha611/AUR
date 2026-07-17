@@ -27,7 +27,7 @@ function getUserRole(): string | null {
   }
 }
 
-export default function EventsAndAwards() {
+export default function EventsAndAwards({ onNavigateToMembership }: { onNavigateToMembership?: () => void }) {
   const [universities, setUniversities] = useState<DirectoryUniversity[]>([]);
 
   React.useEffect(() => {
@@ -401,7 +401,14 @@ export default function EventsAndAwards() {
                       </div>
 
                       {applicationStatus === "error" && applicationError && (
-                        <div className="text-sm text-red-600">{applicationError}</div>
+                        applicationError.includes("requires one of these memberships") ? (
+                          <div className="text-sm text-red-600 flex flex-col gap-2">
+                            <span className="text-base font-bold">Not Authorized - Buy Membership to apply.</span>
+                            <button type="button" onClick={() => onNavigateToMembership && onNavigateToMembership()} className="aur-btn-primary self-start px-8 py-3 text-sm font-bold uppercase tracking-wider">Buy Membership</button>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-red-600">{applicationError}</div>
+                        )
                       )}
 
                       <div className="pt-4 flex items-center gap-4">
