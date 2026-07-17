@@ -2,10 +2,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import func
 from uuid import UUID
 
 from database.connections import get_db
-from database.models import User
+from database.models import User, UserMembership, MembershipTier
 from auth.jwt import decode_access_token
 
 security = HTTPBearer()
@@ -83,3 +84,26 @@ async def require_admin(user: User = Depends(get_current_user)) -> User:
             detail="Admin access required",
         )
     return user
+def require_tier(*allowed_tiers: str):
+    async def _check_tier(
+        user: User = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
+    ) -> User:
+        result = await db.execute(
+            select(UserMembership)
+            .join(MembershipTier, UserMembership.tier_id == MembershipTier.id)
+            .where(
+                UserMembership.user_id == user.id,
+                UserMembership.status == "active",
+                UserMembership.end_date > func.now(),
+                MembershipTier.name.in_(allowed_tiers),
+            )
+        )
+        membership = result.scalar_one_or_none()
+        if membership is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"This feature requires one of these memberships: {', '.join(allowed_tiers)}",
+            )
+        return user
+    return _check_tier
