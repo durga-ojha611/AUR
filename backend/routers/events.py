@@ -10,7 +10,7 @@ from sqlalchemy import select
 from database.connections import get_db
 from database.models import Event, Application, JudgeScore, User, University
 from services.notifications import create_notification
-from auth.middleware import require_admin
+from auth.middleware import require_admin, require_tier
 from schemas import (
     EventCreate, EventResponse,
     ApplicationResponse,
@@ -67,6 +67,7 @@ async def create_event(
 
 @router.post("/applications", response_model=ApplicationResponse, status_code=201)
 async def submit_application(
+    current_user: User = Depends(require_tier("Basic", "Premium")),
     event_id: str = Form(...),
     university_id: str = Form(...),
     files: list[UploadFile] = File(default=[]),
