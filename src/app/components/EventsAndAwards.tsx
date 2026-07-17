@@ -101,8 +101,10 @@ export default function EventsAndAwards() {
     }
 
     try {
+      const token = sessionStorage.getItem("aur_access_token");
       const res = await fetch(`${API_BASE_URL}/api/events-awards/applications`, {
         method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       if (!res.ok) {
@@ -449,3 +451,4 @@ export default function EventsAndAwards() {
     </div>
   );
 }
+
