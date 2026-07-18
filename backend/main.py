@@ -12,6 +12,7 @@ from routers.users import router as users_router
 from routers import analytics
 from routers import compare
 from routers.admin import router as admin_router
+from routers.chat import router as chat_router
 from routers import newsletter
 from routers import news
 from routers import methodology
@@ -52,6 +53,7 @@ app.include_router(users_router)
 app.include_router(newsletter.router)
 app.include_router(news.router)
 app.include_router(methodology.router)
+app.include_router(chat_router) 
 app.include_router(events.router)
 app.include_router(notifications.router)
 app.include_router(membership.router)
