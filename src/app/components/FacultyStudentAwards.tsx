@@ -5,7 +5,7 @@ import { Award, Users, BookOpen, Star, ArrowRight, ArrowLeft, CheckCircle, Loade
 import { useUniversityData } from "./data/UniversityDataProvider";
 import { API_BASE_URL } from "../lib/universities";
 
-export default function FacultyStudentAwards() {
+export default function FacultyStudentAwards({ onNavigateToLogin }: { onNavigateToLogin?: () => void }) {
   const [activeTab, setActiveTab] = useState<"faculty" | "student">("faculty");
   const [selectedAwardId, setSelectedAwardId] = useState<string | null>(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
@@ -22,7 +22,7 @@ export default function FacultyStudentAwards() {
   });
   const [files, setFiles] = useState<File[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const facultyAwards = [
     {
       id: "fa-1",
@@ -150,7 +150,7 @@ export default function FacultyStudentAwards() {
 
     const token = sessionStorage.getItem("aur_access_token");
     if (!token) {
-      setSubmitError("You must be logged in to submit a nomination.");
+      setShowLoginPrompt(true);
       setApplicationStatus("idle");
       return;
     }
@@ -327,9 +327,12 @@ export default function FacultyStudentAwards() {
                       Apply for this Award
                     </button>
                   ) : (
-                    <p className="text-sm text-[var(--aur-text-muted)]">
-                      Please <span className="font-bold text-[var(--aur-text)]">log in</span> to submit a nomination.
-                    </p>
+                    <button
+                      onClick={() => setShowLoginPrompt(true)}
+                      className="aur-btn-primary px-8 py-3 text-sm font-bold uppercase tracking-wider inline-flex items-center justify-center text-center"
+                    >
+                      Apply for this Award
+                    </button>
                   )}
                 </div>
               )}
@@ -509,6 +512,18 @@ export default function FacultyStudentAwards() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setShowLoginPrompt(false)}>
+          <div className="bg-white rounded-2xl max-w-sm w-full p-8 text-center" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-serif font-bold text-[var(--aur-text)] mb-2">Please Login / Sign Up</h3>
+            <p className="text-sm text-[var(--aur-text-secondary)] mb-6">You need an account to submit a nomination. Please log in or sign up first.</p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => setShowLoginPrompt(false)} className="aur-btn-ghost px-6 py-2.5 text-xs font-bold uppercase tracking-wider">Close</button>
+              <button onClick={() => onNavigateToLogin && onNavigateToLogin()} className="aur-btn-primary px-6 py-2.5 text-xs font-bold uppercase tracking-wider">Login / Sign Up</button>
             </div>
           </div>
         </div>
