@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import Navbar from "./components/navbar/Navbar";
@@ -11,7 +11,6 @@ import InstitutionDirectory from "./components/InstitutionDirectory";
 import ComparisonDock from "./components/ComparisonDock";
 import ComparisonMatrix from "./components/ComparisonMatrix";
 import UniversityProfile from "./components/UniversityProfile";
-import Footer from "./components/Footer";
 import FloatingChatAssistant from "./components/FloatingChatAssistant";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import AdminConsole from "./components/AdminConsole";
@@ -22,11 +21,14 @@ import Methodology from "./components/Methodology";
 import EventsAndAwards from "./components/EventsAndAwards";
 import FacultyStudentAwards from "./components/FacultyStudentAwards";
 import Membership from "./components/Membership";
+import LoginModal from "./components/LoginModal";
 import { useSidebar } from "./components/navigation/SidebarContext";
 import { useUniversityData } from "./components/data/UniversityDataProvider";
-import { Article, MOCK_UNIVERSITIES } from "./data";
-import { Bookmark, ShieldAlert } from "lucide-react";
+import { Article } from "./data";
 import Sidebar from "./components/sidebar/Sidebar";
+
+// How long (ms) a guest may browse before the nudge popup appears
+const GUEST_NUDGE_DELAY_MS = 30_000;
 
 export default function AppContent() {
   const router = useRouter();
@@ -42,182 +44,166 @@ export default function AppContent() {
     handleToggleCompare,
     handleRemoveCompare,
     handleClearCompare,
-    theme,
-    isCollapsed,
     searchQuery,
     setSearchQuery,
+    isLoggedIn,
   } = useSidebar();
 
-
   const [savedUniIds, setSavedUniIds] = useState<string[]>([]);
-
-  // Local settings toggles state
   const [settingsAutoRecalc, setSettingsAutoRecalc] = useState(true);
   const [settingsRealtimeSearch, setSettingsRealtimeSearch] = useState(true);
   const [settingsAnalyticsTelemetry, setSettingsAnalyticsTelemetry] = useState(false);
 
-  // Derived state from URL (synced with context)
+  // ── Login modal state ──────────────────────────────────────────────────
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  // "nudge" = timed soft prompt (dismissible), "gate" = hard gate (not dismissible)
+  const [modalReason, setModalReason] = useState<"nudge" | "gate">("nudge");
+
+  // Timed nudge: show popup after GUEST_NUDGE_DELAY_MS if not logged in
+  useEffect(() => {
+    if (isLoggedIn) return;
+    const timer = setTimeout(() => {
+      setModalReason("nudge");
+      setShowLoginModal(true);
+    }, GUEST_NUDGE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [isLoggedIn]);
+
+  // Gate: if a guest navigates to the membership view, intercept and show modal
+  useEffect(() => {
+    if (activeView === "membership" && !isLoggedIn) {
+      setModalReason("gate");
+      setShowLoginModal(true);
+      // Bounce them back to home so the URL doesn't stay on membership
+      handleViewChange("home");
+    }
+  }, [activeView, isLoggedIn]);
+
   const view = activeView;
   const id = selectedUniId;
-
-  // A key to force AnimatePresence re-mount on view change
   const viewKey = view + (id ?? "");
 
-  const handleToggleSave = (uniId: string) => {
+  const handleToggleSave = (uniId: string) =>
     setSavedUniIds((prev) =>
       prev.includes(uniId) ? prev.filter((id) => id !== uniId) : [...prev, uniId]
     );
-  };
 
-  const handleUniversitySelect = (uniId: string) => {
-    setSelectedUniId(uniId);
-  };
+  const handleUniversitySelect = (uniId: string) => setSelectedUniId(uniId);
+  const handleBackToRankings   = () => setSelectedUniId(null);
+  const handleArticleSelect    = (article: Article) => router.push(`/blogs/${article.id}`);
 
-  const handleBackToRankings = () => {
-    setSelectedUniId(null);
-  };
-
-  const handleArticleSelect = (article: Article) => {
-    router.push(`/blogs/${article.id}`);
-  };
-
-  // Get selected universities for Saved view
   const savedUniversities = universities.filter((u) => savedUniIds.includes(u.id));
-
-  // Show sidebar for non-home views
   const showSidebar = view !== "home" && view !== "login" && view !== "admin";
 
   return (
-    <div className={`${view === "home" ? "bg-gradient-to-b from-amber-50/50 via-white to-blue-50 dark:bg-none dark:bg-cyber-black" : "aur-page"} flex min-h-screen flex-col transition-colors duration-300 ${
-      theme === "text-slate-900"
-    }`}>
-      {/* Top Navigation Bar */}
+    <div
+      className={`${
+        view === "home"
+          ? "bg-gradient-to-b from-amber-50/50 via-white to-blue-50 dark:bg-none dark:bg-cyber-black"
+          : "aur-page"
+      } flex min-h-screen flex-col transition-colors duration-300`}
+    >
+      {/* ── Top Navigation Bar ── */}
       {view !== "login" && view !== "admin" && <Navbar />}
 
-      {/* Main Core Layout */}
+      {/* ── Main Layout ── */}
       <div className="flex-grow flex w-full">
-        
-        {/* Collapsible Left Sidebar — shown on non-home views */}
         {showSidebar && <Sidebar />}
 
-        {/* Main Content Area — Full Width */}
         <main
           className={`flex-1 flex flex-col min-w-0 pb-20 md:pb-0 ${
-            view === "home" || view === "login" || view === "admin" ? "p-0" : "px-4 pt-4 lg:px-8 lg:pt-8"
+            view === "home" || view === "login" || view === "admin"
+              ? "p-0"
+              : "px-4 pt-4 lg:px-8 lg:pt-8"
           }`}
           style={{ isolation: "isolate" }}
         >
-          <>
-            <div
-              key={viewKey}
-              
-              
-              
-              
-              className="flex flex-col flex-grow"
-            >
-          {view === "home" && (
-            <Homepage
-              onSearchSubmit={(q) => setSearchQuery(q)}
-              onUniversitySelect={handleUniversitySelect}
-              onArticleSelect={handleArticleSelect}
-              onViewChange={handleViewChange}
-            />
-          )}
+          <div key={viewKey} className="flex flex-col flex-grow">
 
-          {view === "universities" && (
-            <UniversitiesList
-              onUniversitySelect={handleUniversitySelect}
-              onViewChange={handleViewChange}
-              savedUniIds={savedUniIds}
-              onToggleSave={handleToggleSave}
-            />
-          )}
+            {view === "home" && (
+              <Homepage
+                onSearchSubmit={(q) => setSearchQuery(q)}
+                onUniversitySelect={handleUniversitySelect}
+                onArticleSelect={handleArticleSelect}
+                onViewChange={handleViewChange}
+              />
+            )}
 
-          {(view === "rankings" || view === "countries") && (
-            <RankingsEngine
-              searchQuery={searchQuery}
-              onSearchQueryChange={setSearchQuery}
-              selectedUniIds={selectedUniIds}
-              onToggleCompare={handleToggleCompare}
-              onUniversitySelect={handleUniversitySelect}
-            />
-          )}
+            {view === "universities" && (
+              <UniversitiesList
+                onUniversitySelect={handleUniversitySelect}
+                onViewChange={handleViewChange}
+                savedUniIds={savedUniIds}
+                onToggleSave={handleToggleSave}
+              />
+            )}
 
-          {view === "universities" && (
-            <InstitutionDirectory
-              onUniversitySelect={handleUniversitySelect}
-            />
-          )}
+            {(view === "rankings" || view === "countries") && (
+              <RankingsEngine
+                searchQuery={searchQuery}
+                onSearchQueryChange={setSearchQuery}
+                selectedUniIds={selectedUniIds}
+                onToggleCompare={handleToggleCompare}
+                onUniversitySelect={handleUniversitySelect}
+              />
+            )}
 
-          {view === "profile" && id && (
-            <UniversityProfile
-              universityId={id}
-              onBack={handleBackToRankings}
-              onViewChange={handleViewChange}
-              savedUniIds={savedUniIds}
-              onToggleSave={handleToggleSave}
-            />
-          )}
+            {view === "universities" && (
+              <InstitutionDirectory onUniversitySelect={handleUniversitySelect} />
+            )}
 
-          {/* Analytics Dashboard */}
-          {view === "analytics" && <AnalyticsDashboard />}
+            {view === "profile" && id && (
+              <UniversityProfile
+                universityId={id}
+                onBack={handleBackToRankings}
+                onViewChange={handleViewChange}
+                savedUniIds={savedUniIds}
+                onToggleSave={handleToggleSave}
+              />
+            )}
 
-          {/* Methodology */}
-          {view === "methodology" && <Methodology />}
+            {view === "analytics"     && <AnalyticsDashboard />}
+            {view === "methodology"   && <Methodology />}
 
-          {/* Membership */}
-          {view === "membership" && <Membership />}
+            {/* Membership — only rendered when logged in (gate handled above) */}
+            {view === "membership" && isLoggedIn && <Membership />}
 
-          {/* Events & Awards */}
-          {view === "events" && <EventsAndAwards />}
+            {view === "events"        && <EventsAndAwards />}
+            {view === "faculty-awards" && <FacultyStudentAwards />}
+            {view === "admin"         && <AdminConsole />}
+            {view === "login"         && <Login />}
+            {view === "saved"         && <ComparisonMatrix />}
 
-          {/* Faculty & Student Awards */}
-          {view === "faculty-awards" && <FacultyStudentAwards />}
-
-          {/* Admin Console */}
-          {view === "admin" && <AdminConsole />}
-
-          {/* Login View */}
-          {view === "login" && <Login />}
-
-          {/* User Dashboard (Combines Saved & Settings) */}
-          {view === "settings" && (
-            <UserDashboard
-              savedUniversities={savedUniversities}
-              onUniversitySelect={handleUniversitySelect}
-              onNavigateToRankings={() => handleViewChange("rankings")}
-              settings={{
-                autoRecalc: settingsAutoRecalc,
-                realtimeSearch: settingsRealtimeSearch,
-                analyticsTelemetry: settingsAnalyticsTelemetry,
-              }}
-              onSettingsChange={(key, val) => {
-                if (key === "autoRecalc") setSettingsAutoRecalc(val);
-                if (key === "realtimeSearch") setSettingsRealtimeSearch(val);
-                if (key === "analyticsTelemetry") setSettingsAnalyticsTelemetry(val);
-              }}
-              onResetCache={() => {
-                if (confirm("Reset  configs and clear filters?")) {
-                  localStorage.clear();
-                  window.location.reload();
-                }
-              }}
-              onSignOut={() => handleViewChange("login")}
-            />
-          )}
-
-          {/* 2. Comparison Matrix */}
-          {view === "saved" && <ComparisonMatrix />}
-
-            </div>
-          </>
+            {view === "settings" && (
+              <UserDashboard
+                savedUniversities={savedUniversities}
+                onUniversitySelect={handleUniversitySelect}
+                onNavigateToRankings={() => handleViewChange("rankings")}
+                settings={{
+                  autoRecalc: settingsAutoRecalc,
+                  realtimeSearch: settingsRealtimeSearch,
+                  analyticsTelemetry: settingsAnalyticsTelemetry,
+                }}
+                onSettingsChange={(key, val) => {
+                  if (key === "autoRecalc") setSettingsAutoRecalc(val);
+                  if (key === "realtimeSearch") setSettingsRealtimeSearch(val);
+                  if (key === "analyticsTelemetry") setSettingsAnalyticsTelemetry(val);
+                }}
+                onResetCache={() => {
+                  if (confirm("Reset configs and clear filters?")) {
+                    localStorage.clear();
+                    window.location.reload();
+                  }
+                }}
+                onSignOut={() => handleViewChange("login")}
+              />
+            )}
+          </div>
         </main>
       </div>
 
-      {/* Mobile Responsive Navigation Drawer & Bottom Bar */}
+      {/* ── Mobile nav & comparison dock ── */}
       {view !== "login" && view !== "admin" && <MobileMenu />}
-
       {view !== "login" && view !== "admin" && (
         <ComparisonDock
           selectedIds={selectedUniIds}
@@ -226,10 +212,15 @@ export default function AppContent() {
           onUniversitySelect={handleUniversitySelect}
         />
       )}
-
       {view !== "login" && view !== "admin" && <FloatingChatAssistant />}
 
-
+      {/* ── Login / Signup Modal ── */}
+      {showLoginModal && (
+        <LoginModal
+          dismissible={modalReason === "nudge"}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }

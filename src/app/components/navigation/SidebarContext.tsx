@@ -43,6 +43,10 @@ interface SidebarContextType {
   handleClearCompare: () => void;
   isChatOpen: boolean;
   setIsChatOpen: (val: boolean) => void;
+  // ── Auth ──
+  isLoggedIn: boolean;
+  login: () => void;
+  logout: () => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -62,8 +66,9 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUniIds, setSelectedUniIds] = useState<string[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Read localStorage for isCollapsed and theme (safe for SSR)
+  // Read localStorage for isCollapsed, auth state (safe for SSR)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedCollapsed = localStorage.getItem("sidebar_collapsed");
@@ -78,6 +83,11 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } catch (error) {
           console.error(error);
         }
+      }
+
+      // Rehydrate auth state
+      if (localStorage.getItem("aur_logged_in") === "true") {
+        setIsLoggedIn(true);
       }
     }
   }, []);
@@ -120,6 +130,22 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const clearFilters = () => {
     setFilters(initialFilters);
+  };
+
+  // ── Auth helpers ──
+  const login = () => {
+    setIsLoggedIn(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("aur_logged_in", "true");
+    }
+  };
+
+  const logout = () => {
+    setIsLoggedIn(false);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("aur_logged_in");
+    }
+    handleViewChange("home");
   };
 
   // Write collapse state to localStorage
@@ -194,6 +220,9 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleClearCompare,
         isChatOpen,
         setIsChatOpen,
+        isLoggedIn,
+        login,
+        logout,
       }}
     >
       {children}

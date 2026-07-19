@@ -96,7 +96,7 @@ function GoogleIcon() {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Login() {
-  const { handleViewChange} = useSidebar();
+  const { handleViewChange, login } = useSidebar();
 
   const [isLogin, setIsLogin]             = useState(true);
   const [dir, setDir]                     = useState(1);
@@ -129,7 +129,7 @@ export default function Login() {
     
     if (isMockDemo) {
       // Simulate successful social login
-      localStorage.setItem("aur_logged_in", "true");
+      login();
       handleViewChange("home");
       return;
     }
@@ -191,22 +191,22 @@ export default function Login() {
 
         if (isLogin) {
           if (email === "admin" && password === "admin") {
-            localStorage.setItem("aur_logged_in", "true");
+            login();
             handleViewChange("admin");
             return;
           } else if (email === "user@aur.edu" && password === "user123") {
-            localStorage.setItem("aur_logged_in", "true");
+            login();
             handleViewChange("home");
             return;
           } else if (password.length >= 6 && email.includes("@")) {
-            localStorage.setItem("aur_logged_in", "true");
+            login();
             handleViewChange("home");
             return;
           } else {
             throw new Error("Invalid credentials. Use a valid account.");
           }
         } else {
-          localStorage.setItem("aur_logged_in", "true");
+          login();
           handleViewChange("home");
           return;
         }

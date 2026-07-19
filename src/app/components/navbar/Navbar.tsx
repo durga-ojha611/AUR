@@ -19,6 +19,8 @@ export default function Navbar() {
     setFilters,
     searchQuery,
     setSearchQuery,
+    isLoggedIn,
+    logout,
   } = useSidebar();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -95,8 +97,11 @@ export default function Navbar() {
 
           {/* ── Navigation Links - Desktop ── */}
           <nav className="hidden lg:flex space-x-1 items-center">
-            {TOP_NAV_LINKS.map((link) => {
+          {TOP_NAV_LINKS.map((link) => {
               const isActive = activeView === link.view;
+
+              // Hide Membership from top-nav for guests (they can access it after login via sidebar)
+              if (link.view === "membership" && !isLoggedIn) return null;
               
               if (link.view === "news") {
                 return (
@@ -191,49 +196,65 @@ export default function Navbar() {
             {/* Divider */}
             <div className="h-6 w-px bg-[var(--aur-border)] mx-1 hidden sm:block" />
 
-            {/* Profile avatar */}
+            {/* Profile area — auth-aware */}
             <div className="relative" ref={profileRef}>
-              <button
-                type="button"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                aria-label="Open profile menu"
-                className="flex items-center gap-1.5 focus:outline-none group"
-              >
-                <div className="h-8 w-8 rounded-none bg-[var(--aur-text)] flex items-center justify-center text-[var(--background)] text-[11px] font-bold tracking-wide transition-transform duration-200 group-hover:scale-105">
-                  US
-                </div>
-                <ChevronDown className="h-3 w-3 text-[var(--aur-text-muted)] group-hover:text-[var(--aur-text)] transition-colors hidden sm:block" />
-              </button>
-
-              {showProfileMenu && (
-                <div className="absolute right-0 top-full mt-2 w-52 rounded-none border border-[var(--aur-border)] bg-[var(--aur-surface)] shadow-xl py-1.5 z-50">
-                  <div className="px-4 py-3 border-b border-[var(--aur-border)]">
-                    <span className="block font-bold text-[var(--aur-text)] text-sm">Dr. John Doe</span>
-                    <span className="block text-[10px] text-[var(--aur-text-muted)] mt-0.5">j.doe@university.edu</span>
-                  </div>
-                  {[
-                    { label: "My Profile", icon: User, action: () => {} },
-                    { label: "Admin Console", icon: Shield, action: () => handleViewChange("admin") },
-                    { label: "Settings", icon: Shield, action: () => handleViewChange("settings") },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => { item.action(); setShowProfileMenu(false); }}
-                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--aur-text-secondary)] hover:bg-[var(--aur-hover)] hover:text-[var(--aur-text)] flex items-center gap-2.5 transition-colors"
-                    >
-                      <item.icon className="h-3.5 w-3.5 text-[var(--aur-text-muted)]" />
-                      <span>{item.label}</span>
-                    </button>
-                  ))}
-                  <div className="border-t border-[var(--aur-border)] my-1" />
+              {isLoggedIn ? (
+                /* ── Logged-in avatar ── */
+                <>
                   <button
-                    onClick={() => { handleViewChange("login"); setShowProfileMenu(false); }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-2.5 transition-colors"
+                    type="button"
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    aria-label="Open profile menu"
+                    className="flex items-center gap-1.5 focus:outline-none group"
                   >
-                    <LogOut className="h-3.5 w-3.5" />
-                    <span className="font-semibold">Sign Out</span>
+                    <div className="h-8 w-8 rounded-none bg-[var(--aur-text)] flex items-center justify-center text-[var(--background)] text-[11px] font-bold tracking-wide transition-transform duration-200 group-hover:scale-105">
+                      US
+                    </div>
+                    <ChevronDown className="h-3 w-3 text-[var(--aur-text-muted)] group-hover:text-[var(--aur-text)] transition-colors hidden sm:block" />
                   </button>
-                </div>
+
+                  {showProfileMenu && (
+                    <div className="absolute right-0 top-full mt-2 w-52 rounded-none border border-[var(--aur-border)] bg-[var(--aur-surface)] shadow-xl py-1.5 z-50">
+                      <div className="px-4 py-3 border-b border-[var(--aur-border)]">
+                        <span className="block font-bold text-[var(--aur-text)] text-sm">Dr. John Doe</span>
+                        <span className="block text-[10px] text-[var(--aur-text-muted)] mt-0.5">j.doe@university.edu</span>
+                      </div>
+                      {[
+                        { label: "My Profile",    icon: User,   action: () => {} },
+                        { label: "Admin Console", icon: Shield, action: () => handleViewChange("admin") },
+                        { label: "Settings",      icon: Shield, action: () => handleViewChange("settings") },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          onClick={() => { item.action(); setShowProfileMenu(false); }}
+                          className="w-full text-left px-4 py-2.5 text-xs text-[var(--aur-text-secondary)] hover:bg-[var(--aur-hover)] hover:text-[var(--aur-text)] flex items-center gap-2.5 transition-colors"
+                        >
+                          <item.icon className="h-3.5 w-3.5 text-[var(--aur-text-muted)]" />
+                          <span>{item.label}</span>
+                        </button>
+                      ))}
+                      <div className="border-t border-[var(--aur-border)] my-1" />
+                      <button
+                        onClick={() => { logout(); setShowProfileMenu(false); }}
+                        className="w-full text-left px-4 py-2.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-2.5 transition-colors"
+                      >
+                        <LogOut className="h-3.5 w-3.5" />
+                        <span className="font-semibold">Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* ── Guest: Sign In button ── */
+                <button
+                  id="navbar-signin-btn"
+                  type="button"
+                  onClick={() => handleViewChange("login")}
+                  className="flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider border border-[var(--aur-border-strong)] text-[var(--aur-text)] hover:bg-[var(--aur-text)] hover:text-[var(--background)] transition-all duration-200 rounded-none"
+                >
+                  <User className="h-3.5 w-3.5" />
+                  Sign In
+                </button>
               )}
             </div>
 
