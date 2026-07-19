@@ -27,7 +27,7 @@ function getUserRole(): string | null {
   }
 }
 
-export default function EventsAndAwards() {
+export default function EventsAndAwards({ onNavigateToLogin }: { onNavigateToLogin?: () => void }) {
   const [universities, setUniversities] = useState<DirectoryUniversity[]>([]);
 
   React.useEffect(() => {
@@ -41,6 +41,7 @@ export default function EventsAndAwards() {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [applicationError, setApplicationError] = useState<string | null>(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [selectedUniversityId, setSelectedUniversityId] = useState("");
   const [files, setFiles] = useState<FileList | null>(null);
 
@@ -90,6 +91,11 @@ export default function EventsAndAwards() {
   const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedEvent) return;
+    const existingToken = sessionStorage.getItem("aur_access_token");
+    if (!existingToken) {
+      setShowLoginPrompt(true);
+      return;
+    }
     setApplicationStatus("submitting");
     setApplicationError(null);
 
@@ -442,6 +448,19 @@ export default function EventsAndAwards() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLoginPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={() => setShowLoginPrompt(false)}>
+          <div className="bg-white rounded-2xl max-w-sm w-full p-8 text-center" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-serif font-bold text-[var(--aur-text)] mb-2">Please Login / Sign Up</h3>
+            <p className="text-sm text-[var(--aur-text-secondary)] mb-6">You need an account to apply. Please log in or sign up first.</p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => setShowLoginPrompt(false)} className="aur-btn-ghost px-6 py-2.5 text-xs font-bold uppercase tracking-wider">Close</button>
+              <button onClick={() => onNavigateToLogin && onNavigateToLogin()} className="aur-btn-primary px-6 py-2.5 text-xs font-bold uppercase tracking-wider">Login / Sign Up</button>
             </div>
           </div>
         </div>
