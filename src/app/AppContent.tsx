@@ -281,7 +281,7 @@ useEffect(() => {
           {view === "events" && <EventsAndAwards onNavigateToLogin={() => handleViewChange("login")} />}
 
           {/* Faculty & Student Awards */}
-          {view === "faculty-awards" && <FacultyStudentAwards />}
+          {view === "faculty-awards" && <FacultyStudentAwards onNavigateToLogin={() => handleViewChange("login")} />}
 
           {/* Admin Console */}
           {view === "admin" && <AdminConsole />}
