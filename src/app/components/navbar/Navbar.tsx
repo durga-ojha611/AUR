@@ -245,7 +245,6 @@ const res = await fetch(`${API_BASE_URL}/api/notifications`, {
                   </div>
                   {[
                     { label: "My Profile", icon: User, action: () => {} },
-                    { label: "Admin Console", icon: Shield, action: () => handleViewChange("admin") },
                     { label: "Settings", icon: Shield, action: () => handleViewChange("settings") },
                   ].map((item) => (
                     <button
