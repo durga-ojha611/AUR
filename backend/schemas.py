@@ -303,3 +303,50 @@ class NotificationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        
+from datetime import date, datetime
+from uuid import UUID
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
+
+
+class BlogBase(BaseModel):
+    title: str
+    category: str
+    status: str = "Draft"
+    description: str
+    content: str
+    cover_image: Optional[str] = None
+    author: Optional[str] = None
+    read_time: Optional[str] = None
+    tags: Optional[str] = None
+    featured: bool = False
+    publish_date: Optional[date] = None
+
+
+class BlogCreate(BlogBase):
+    pass
+
+
+class BlogUpdate(BaseModel):
+    title: Optional[str] = None
+    category: Optional[str] = None
+    status: Optional[str] = None
+    description: Optional[str] = None
+    content: Optional[str] = None
+    cover_image: Optional[str] = None
+    author: Optional[str] = None
+    read_time: Optional[str] = None
+    tags: Optional[str] = None
+    featured: Optional[bool] = None
+    publish_date: Optional[date] = None
+
+
+class BlogResponse(BlogBase):
+    id: UUID
+    slug: str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
