@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useMemo, useEffect, useDeferredValue } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -667,9 +667,9 @@ export default function RankingsEngine({
                     columnId === "tuition";
                   const widthClass =
                     columnId === "calculatedRank"
-                      ? "w-14 min-w-[56px] max-w-[56px]"
+                      ? "w-12 min-w-[48px] max-w-[48px]"
                       : columnId === "name"
-                        ? "w-[14rem] min-w-[14rem] sm:w-[18rem] sm:min-w-[18rem] lg:w-[22rem] lg:min-w-[22rem]"
+                        ? "w-[11rem] min-w-[11rem] sm:w-[18rem] sm:min-w-[18rem] lg:w-[22rem] lg:min-w-[22rem]"
                         : columnId === "compare"
                           ? "w-28 min-w-[112px]"
                           : "w-24 min-w-[96px]";
@@ -683,11 +683,11 @@ export default function RankingsEngine({
                   return (
                     <th
                       key={header.id}
-                      className={`px-3 sm:px-4 py-3 text-left font-bold select-none ${
+                      className={`px-2 sm:px-4 py-3 text-left font-bold select-none ${
                         isPinnedCol
                           ? idx === 0
                             ? `aur-rankings-th sticky left-0 z-20 border-r border-white/10 ${widthClass}`
-                            : `aur-rankings-th sticky left-[56px] z-20 border-r border-white/10 ${widthClass}`
+                            : `aur-rankings-th sticky left-[48px] z-20 border-r border-white/10 ${widthClass}`
                           : ""
                       } ${widthClass} ${alignClass} ${
                         isMobileHiddenCol ? "hidden sm:table-cell" : ""
@@ -727,9 +727,9 @@ export default function RankingsEngine({
                     columnId === "tuition";
                   const widthClass =
                     columnId === "calculatedRank"
-                      ? "w-14 min-w-[56px] max-w-[56px]"
+                      ? "w-12 min-w-[48px] max-w-[48px]"
                       : columnId === "name"
-                        ? "w-[14rem] min-w-[14rem] sm:w-[18rem] sm:min-w-[18rem] lg:w-[22rem] lg:min-w-[22rem]"
+                        ? "w-[11rem] min-w-[11rem] sm:w-[18rem] sm:min-w-[18rem] lg:w-[22rem] lg:min-w-[22rem]"
                         : columnId === "compare"
                           ? "w-28 min-w-[112px]"
                           : "w-24 min-w-[96px]";
@@ -743,11 +743,11 @@ export default function RankingsEngine({
                   return (
                     <td
                       key={cell.id}
-                      className={`px-3 sm:px-4 py-3 align-middle ${
+                      className={`px-2 sm:px-4 py-3 align-middle ${
                         isPinnedCol
                           ? idx === 0
                             ? `sticky-pin sticky left-0 z-10 border-r border-[var(--aur-border)] font-bold text-[var(--aur-text)] ${widthClass}`
-                            : `sticky-pin sticky left-[56px] z-10 border-r border-[var(--aur-border)] font-bold text-[var(--aur-text)] ${widthClass}`
+                            : `sticky-pin sticky left-[48px] z-10 border-r border-[var(--aur-border)] font-bold text-[var(--aur-text)] ${widthClass}`
                           : ""
                       } ${widthClass} ${alignClass} ${isMobileHiddenCol ? "hidden sm:table-cell" : ""}`}
                     >
@@ -836,8 +836,8 @@ export default function RankingsEngine({
       {isWeightsDrawerOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden font-sans">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity" onClick={() => setIsWeightsDrawerOpen(false)} />
-          <div className="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-            <div className="w-screen max-w-md bg-[var(--aur-surface)] border-l border-[var(--aur-border)] flex flex-col justify-between shadow-2xl">
+          <div className="fixed inset-y-0 right-0 p-0 sm:pl-10 max-w-full flex">
+            <div className="w-full max-w-md bg-[var(--aur-surface)] border-l border-[var(--aur-border)] flex flex-col justify-between shadow-2xl">
               
               {/* Drawer Header */}
               <div className="p-6 border-b border-[var(--aur-border)]">

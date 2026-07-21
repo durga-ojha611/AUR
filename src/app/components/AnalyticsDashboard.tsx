@@ -142,7 +142,7 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* ── KPI Cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[
           {
             title: "Institutions",
@@ -206,7 +206,7 @@ export default function AnalyticsDashboard() {
               </span>
             </div>
           </div>
-          <div className="h-[300px] w-full">
+          <div className="h-[300px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={a.countryData} margin={{ left: 0, right: 10, top: 5, bottom: 5 }} barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--aur-border-strong)" vertical={false} />
@@ -228,7 +228,7 @@ export default function AnalyticsDashboard() {
             Average Metric Profile
           </span>
           <span className="text-sm font-serif font-bold text-[var(--aur-text)] block mb-6">Five-axis institutional quality index</span>
-          <div className="h-[280px] w-full">
+          <div className="h-[280px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={a.radarData} cx="50%" cy="50%" outerRadius="65%">
                 <PolarGrid stroke="var(--aur-border-strong)" />
@@ -268,7 +268,7 @@ export default function AnalyticsDashboard() {
             </span>
           </div>
         </div>
-        <div className="h-[300px] w-full">
+        <div className="h-[300px] w-full min-w-0">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={a.trendData} margin={{ left: 0, right: 10, top: 10, bottom: 5 }}>
               <defs>
@@ -318,7 +318,7 @@ export default function AnalyticsDashboard() {
           </span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full min-w-[550px] text-xs">
             <thead>
               <tr className="bg-[var(--aur-surface-2)] border-b border-[var(--aur-border)]">
                 {["Country", "Universities", "Avg Score", "Avg Citations", "Avg Research"].map((h) => (

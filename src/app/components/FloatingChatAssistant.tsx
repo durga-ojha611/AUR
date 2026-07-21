@@ -136,8 +136,8 @@ export default function FloatingChatAssistant() {
           <div
             key="chat-panel"
             className={[
-              "fixed bottom-24 right-6 z-50",
-              "w-80 sm:w-[360px]",
+              "fixed bottom-20 md:bottom-24 right-3 sm:right-6 z-50",
+              "max-w-[calc(100vw-1.5rem)] w-80 sm:w-[360px]",
               "flex flex-col rounded-xl overflow-hidden",
               "border",
               border,
@@ -294,7 +294,7 @@ export default function FloatingChatAssistant() {
       <>
         {!isChatOpen && (
           <div
-            className="fixed bottom-6 right-6 z-50 flex items-end gap-4 pointer-events-none"
+            className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 flex items-end gap-4 pointer-events-none"
             style={{
               opacity: isIdle ? 1 : 0,
               transform: isIdle ? "translate3d(0, 0, 0)" : "translate3d(0, 8px, 0)",
