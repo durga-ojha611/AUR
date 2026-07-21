@@ -89,7 +89,7 @@ export const TOP_NAV_LINKS = [
   { label: "Discovery Hub", view: "home" },
   { label: "Institution Directory", view: "universities" },
   { label: "Rankings Engine", view: "rankings" },
-  { label: "Methodology", view: "methodology" },
+  // { label: "Methodology", view: "methodology" },
   { label: "Comparison Matrix", view: "saved" },
   { label: "Events & Awards", view: "events" },
   { label: "News", view: "news" },

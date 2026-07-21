@@ -16,6 +16,8 @@ import FloatingChatAssistant from "./components/FloatingChatAssistant";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import Login from "./components/Login";
 import UserDashboard from "./components/UserDashboard";
+import UniversitiesList from "./components/UniversitiesList";
+// import Methodology from "./components/Methodology";
 import Methodology from "./components/Methodology";
 import EventsAndAwards from "./components/EventsAndAwards";
 import FacultyStudentAwards from "./components/FacultyStudentAwards";
@@ -325,7 +327,7 @@ useEffect(() => {
           {view === "analytics" && <AnalyticsDashboard />}
 
           {/* Methodology */}
-          {view === "methodology" && <Methodology />}
+          {/* {view === "methodology" && <Methodology />} */}
 
           {/* Events & Awards */}
           {view === "events" && <EventsAndAwards />}
