@@ -1,4 +1,5 @@
 import os
+import re
 import httpx
 from typing import List
 from dotenv import load_dotenv
@@ -53,6 +54,7 @@ async def fetch_external_news(query: str = "higher education Asia", limit: int =
         "lang": "en",
         "max": min(limit * 2, 20),
         "apikey": GNEWS_API_KEY,
+        "in": "title,description",
     }
 
     try:
@@ -63,7 +65,9 @@ async def fetch_external_news(query: str = "higher education Asia", limit: int =
     except Exception:
         return []
 
-    articles = payload.get("articles", [])
+    raw_articles = payload.get("articles", [])
+    safe_relevant_articles = filter_articles(raw_articles)
+
     results = []
     for article in articles:
         title = article.get("title", "")
