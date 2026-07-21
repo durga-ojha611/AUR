@@ -11,9 +11,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "source.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "aur-38ce.onrender.com",
+      },
     ],
   },
-
 };
 
 export default nextConfig;
