@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 interface BrandLogoProps {
   className?: string;
-  theme?: "dark" | "light" | string;
+  theme?: "light" | "dark";
 }
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ className = "", theme = "dark" }) => {
