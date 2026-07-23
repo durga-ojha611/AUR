@@ -22,6 +22,9 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 80, damping: 15 } }
 };
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 function formatDate(dateStr?: string) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -30,7 +33,14 @@ function formatDate(dateStr?: string) {
 }
 
 export default function NewsPage() {
+  const router = useRouter();
   const { externalNews, loading, error } = useExternalNewsData();
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("aur_access_token")) {
+      router.replace("/?view=login&mode=login");
+    }
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--aur-text)] font-sans pb-24 relative overflow-hidden">
