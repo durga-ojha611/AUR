@@ -300,7 +300,7 @@ export default function FloatingChatAssistant() {
                   "bg-white border border-cyber-black/10 text-cyber-black shadow-cyber-black/10",
                 ].join(" ")}
               >
-                👋 Come talk to me!
+                Come talk to me!
                 <div
                   className={[
                     "absolute right-4 -bottom-1.5 w-3.5 h-3.5 rotate-45 border-r border-b",
