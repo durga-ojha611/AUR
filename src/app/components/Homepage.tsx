@@ -1103,28 +1103,6 @@ export default function Homepage({
               </div>
             </div>
 
-            {[
-              { title: "Platform", links: [["Rankings Engine", "rankings"], ["Discovery Hub", "home"], ["Analytics", "analytics"], ["Compare Institutions", "home"]] },
-              { title: "Resources", links: [["Reports", "home"], ["Insights", "home"], ["News & Updates", "home"]] },
-              { title: "Company", links: [["About Us", "home"], ["Careers", "home"], ["Contact", "settings"], ["Privacy Policy", "settings"]] },
-            ].map((col) => (
-              <div key={col.title}>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-6">{col.title}</h4>
-                <ul className="space-y-3">
-                  {col.links.map(([label, view]) => (
-                    <li key={label}>
-                      <button
-                        type="button"
-                        onClick={() => handleProtectedViewChange(view)}
-                        className="text-sm text-left justify-start text-blue-100/70 hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 w-full"
-                      >
-                        {label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
             <div className="md:col-span-2 md:col-start-5">
               <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#152a5e] mb-5">Platform</h4>
               <ul className="space-y-3">
