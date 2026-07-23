@@ -188,14 +188,26 @@ export default function Navbar({
 
           {/* ── Navigation Links - Desktop ── */}
           <nav className="hidden lg:flex space-x-1 items-center">
-            {TOP_NAV_LINKS.filter(link => isAuthenticated || link.view === "home").map((link) => {
+            {TOP_NAV_LINKS.map((link) => {
               const isActive = activeView === link.view;
+
+              const handleClick = (e: React.MouseEvent) => {
+                if (!isAuthenticated && link.view !== "home") {
+                  e.preventDefault();
+                  onLogIn?.();
+                  return;
+                }
+                if (link.view !== "news") {
+                  handleViewChange(link.view);
+                }
+              };
 
               if (link.view === "news") {
                 return (
                   <Link
                     key={link.label}
-                    href="/news"
+                    href={isAuthenticated ? "/news" : "#"}
+                    onClick={handleClick}
                     className="relative px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-300 rounded-none text-[#1A365D] hover:text-[#1A365D]/80 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1A365D] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left"
                   >
                     {link.label}
@@ -206,7 +218,8 @@ export default function Navbar({
               return (
                 <button
                   key={link.label}
-                  onClick={() => handleViewChange(link.view)}
+                  type="button"
+                  onClick={handleClick}
                   className={`relative px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-300 rounded-none after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1A365D] after:transition-transform after:duration-300 after:origin-left ${
                     isActive
                       ? "text-[#1A365D] after:scale-x-100"

@@ -30,8 +30,12 @@ export default function MobileMenu({
   const [activeTab, setActiveTab] = useState<"menu" | "filters">("menu");
 
   const handleLinkClick = (item: NavItem) => {
-    handleViewChange(item.view);
     setIsMobileOpen(false);
+    if (!isAuthenticated && item.view !== "home") {
+      onLogIn?.();
+      return;
+    }
+    handleViewChange(item.view);
   };
 
   return (
@@ -50,13 +54,13 @@ export default function MobileMenu({
               className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
             />
 
-            {/* Slide-in Drawer Content */}
+            {/* Slide-out Panel */}
             <div
               
               
               
               
-              className="relative w-80 max-w-[85vw] h-full flex flex-col shadow-2xl z-10 bg-[var(--aur-surface)] text-[var(--aur-text)] border-r border-[var(--aur-border)]"
+              className="relative w-4/5 max-w-xs bg-white dark:bg-cyber-black border-r border-slate-200 dark:border-cyber-border flex flex-col justify-between shadow-2xl z-50 overflow-hidden"
             >
               {/* Drawer Header */}
               <div className="p-4 border-b border-slate-200 dark:border-cyber-border/40 flex items-center justify-between">
@@ -108,7 +112,7 @@ export default function MobileMenu({
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {activeTab === "menu" ? (
                   <nav className="space-y-1">
-                    {SIDEBAR_ITEMS.filter((item) => isAuthenticated || item.view === "home").map((item) => {
+                    {SIDEBAR_ITEMS.map((item) => {
                       const Icon = item.icon;
                       const isActive = activeView === item.view;
                       return (
