@@ -125,7 +125,7 @@ function OAuthSuccessContent() {
             fontSize: "1.5rem",
           }}
         >
-          ✕
+          &times;
         </div>
         <h2 style={{ color: "#f9fafb", fontSize: "1.1rem", margin: "0 0 0.5rem" }}>
           Authentication Failed
