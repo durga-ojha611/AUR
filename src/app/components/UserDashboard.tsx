@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+import { API_BASE_URL } from "../lib/universities";
 
 import {
   Bookmark,
@@ -52,6 +54,23 @@ export default function UserDashboard({
   onSignOut,
 }: UserDashboardProps) {
   const [activeTab, setActiveTab] = useState<TabType>("portfolio");
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("aur_access_token");
+    if (!token) return;
+    const controller = new AbortController();
+    fetch(`${API_BASE_URL}/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.email) setEmail(data.email);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
 
   const tabs: { id: TabType; label: string; icon: React.ElementType<{ className?: string }> }[] = [
     { id: "portfolio", label: "Saved Portfolio", icon: Bookmark },
@@ -267,13 +286,13 @@ export default function UserDashboard({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 border border-[var(--aur-border)] bg-[var(--aur-surface-2)] rounded-xl">
                       <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--aur-text-muted)] mb-2">Registered Email</div>
-                      <div className="text-sm font-medium text-[var(--aur-text)]">scholar@institution.edu</div>
-                      <button className="mt-4 text-[10px] font-bold uppercase tracking-widest text-[var(--aur-text)] underline underline-offset-4">Change Email</button>
+                      <div className="text-sm font-medium text-[var(--aur-text)]">{email ?? "—"}</div>
+                      <p className="mt-4 text-[10px] text-[var(--aur-text-muted)]">Email cannot be changed.</p>
                     </div>
                     <div className="p-4 border border-[var(--aur-border)] bg-[var(--aur-surface-2)] rounded-xl">
                       <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--aur-text-muted)] mb-2">Authentication</div>
-                      <div className="text-sm font-medium text-[var(--aur-text)]">Password & 2FA Disabled</div>
-                      <button className="mt-4 text-[10px] font-bold uppercase tracking-widest text-[var(--aur-text)] underline underline-offset-4">Update Security</button>
+                      <div className="text-sm font-medium text-[var(--aur-text)]">Password protected</div>
+                      <p className="mt-4 text-[10px] text-[var(--aur-text-muted)]">Contact support to update credentials.</p>
                     </div>
                   </div>
                 </div>
@@ -297,9 +316,12 @@ export default function UserDashboard({
                     <h3 className="text-2xl font-bold text-[var(--aur-text)] font-serif mb-1">Institutional Access</h3>
                     <p className="text-sm text-[var(--aur-text-muted)] mb-6">Provides unlimited queries to the rankings engine and real-time analytics.</p>
                     
-                    <button className="bg-[var(--aur-text)] text-[var(--background)] px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-lg">
-                      Manage Subscription
-                    </button>
+                    <a
+                      href="mailto:sales@asiauniversityrankings.com?subject=Institutional%20subscription%20enquiry"
+                      className="inline-block bg-[var(--aur-text)] text-[var(--background)] px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-lg"
+                    >
+                      Contact Sales
+                    </a>
                   </div>
                 </div>
               )}

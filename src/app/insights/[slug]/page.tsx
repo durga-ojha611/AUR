@@ -16,15 +16,15 @@ export default async function InsightDetailsPage({ params }: { params: Promise<{
 
   return (
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-xs font-bold uppercase tracking-widest text-slate-400">Loading insight…</div>}>
-      <SidebarProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <SidebarProvider>
           <UniversityDataProvider>
             <AppLayout>
               <InsightDetails slug={slug} initialInsight={insight} />
             </AppLayout>
           </UniversityDataProvider>
-        </ToastProvider>
-      </SidebarProvider>
+        </SidebarProvider>
+      </ToastProvider>
     </Suspense>
   );
 }

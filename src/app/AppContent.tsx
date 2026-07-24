@@ -21,6 +21,8 @@ import UniversitiesList from "./components/UniversitiesList";
 import Methodology from "./components/Methodology";
 import EventsAndAwards from "./components/EventsAndAwards";
 import FacultyStudentAwards from "./components/FacultyStudentAwards";
+import NewsFeed from "./components/NewsFeed";
+import InsightsFeed from "./components/InsightsFeed";
 import BlogForm from "./components/blog/BlogForm";
 import { useSidebar } from "./components/navigation/SidebarContext";
 import { useUniversityData } from "./components/data/UniversityDataProvider";
@@ -29,11 +31,14 @@ import { Bookmark, ShieldAlert } from "lucide-react";
 import { API_BASE_URL } from "./lib/universities";
 import DiscoveryJoinModal from "./components/DiscoveryJoinModal";
 import ProfileSection from "./components/ProfileSection";
+import { isProtectedView } from "./components/navigation/config";
+import { useAuthGate } from "./components/auth/AuthGate";
 
 export default function AppContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { universities } = useUniversityData();
+  const { requireAuth } = useAuthGate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
@@ -134,7 +139,7 @@ useEffect(() => {
     .catch((err) => console.error("Failed to load bookmarks", err));
 }, [uniDirectory, universities]);
   // Derived state from URL (synced with context)
-  const view = !isAuthenticated && activeView !== "home" && activeView !== "login"
+  const view = !isAuthenticated && isProtectedView(activeView)
     ? "login"
     : activeView;
   const id = selectedUniId;
@@ -145,7 +150,7 @@ useEffect(() => {
   const handleToggleSave = async (uniId: string) => {
   const token = sessionStorage.getItem("aur_access_token");
   if (!token) {
-    handleViewChange("login");
+    requireAuth(undefined, "Sign in to save universities to your shortlist.");
     return;
   }
 
@@ -184,8 +189,16 @@ useEffect(() => {
 };
 
   const handleUniversitySelect = (uniId: string) => {
-    setSelectedUniId(uniId);
-    handleViewChange("university-profile");
+    requireAuth(() => {
+      setSelectedUniId(uniId);
+    }, "Sign in to view full university profiles, metrics, and admissions details.");
+  };
+
+  const handleGatedToggleCompare = (uniId: string) => {
+    requireAuth(
+      () => handleToggleCompare(uniId),
+      "Sign in to compare universities side by side."
+    );
   };
 
   const handleBackToRankings = () => {
@@ -211,7 +224,7 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-    if (authReady && !isAuthenticated && activeView !== "home" && activeView !== "login") {
+    if (authReady && !isAuthenticated && isProtectedView(activeView)) {
       router.replace("?view=login&mode=login");
     }
   }, [activeView, authReady, isAuthenticated, router]);
@@ -288,7 +301,7 @@ useEffect(() => {
               searchQuery={searchQuery}
               onSearchQueryChange={setSearchQuery}
               selectedUniIds={selectedUniIds}
-              onToggleCompare={handleToggleCompare}
+              onToggleCompare={handleGatedToggleCompare}
               onUniversitySelect={handleUniversitySelect}
             />
           )}
@@ -312,6 +325,12 @@ useEffect(() => {
 
           {/* Analytics Dashboard */}
           {view === "analytics" && <AnalyticsDashboard />}
+
+          {/* News (in-app feed) */}
+          {view === "news" && <NewsFeed />}
+
+          {/* Insights (in-app feed) */}
+          {view === "insights" && <InsightsFeed />}
 
           {/* Methodology */}
           {/* {view === "methodology" && <Methodology />} */}
@@ -364,7 +383,6 @@ useEffect(() => {
       </div>
 
       {/* Mobile Responsive Navigation Drawer & Bottom Bar */}
-      {view !== "login" && <MobileMenu />}
       {view !== "login" && view !== "admin" && (
         <MobileMenu
           isAuthenticated={isAuthenticated}

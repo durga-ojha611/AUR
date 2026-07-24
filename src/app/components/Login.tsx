@@ -416,7 +416,12 @@ export default function Login({ initialMode = "login" }: { initialMode?: "login"
                       <input type="checkbox" checked={keepIn} onChange={e => setKeepIn(e.target.checked)} className="lp-checkbox"/>
                       Keep me signed in
                     </label>
-                    <button type="button" className="lp-forgot">Forgot password?</button>
+                    <a
+                      href="mailto:support@asiauniversityrankings.com?subject=Password%20reset%20request"
+                      className="lp-forgot"
+                    >
+                      Forgot password?
+                    </a>
                   </div>
                 )}
 

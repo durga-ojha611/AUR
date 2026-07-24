@@ -10,8 +10,8 @@ import { UniversityDataProvider } from "../components/data/UniversityDataProvide
 export default function InsightsPage() {
   return (
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-xs font-bold uppercase tracking-widest text-slate-400">Loading insights…</div>}>
-      <SidebarProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <SidebarProvider>
           <UniversityDataProvider>
             <AppLayout>
             <section className="mx-auto w-full max-w-6xl py-4 sm:py-8">
@@ -28,8 +28,8 @@ export default function InsightsPage() {
             </section>
             </AppLayout>
           </UniversityDataProvider>
-        </ToastProvider>
-      </SidebarProvider>
+        </SidebarProvider>
+      </ToastProvider>
     </Suspense>
   );
 }

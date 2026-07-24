@@ -9,7 +9,43 @@ import { SidebarProvider } from "../../components/navigation/SidebarContext";
 import { ToastProvider } from "../../components/feedback/ToastContext";
 import { UniversityDataProvider } from "../../components/data/UniversityDataProvider";
 import { Article } from "../../data";
-import { getStoredBlog, storedBlogToArticle } from "../../lib/blog-storage";
+import { API_BASE_URL } from "../../lib/universities";
+
+function formatBlogDate(value: string | null): string {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+
+/** Map the backend blog (snake_case) to the Article shape this page renders. */
+function backendBlogToArticle(b: {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  content: string;
+  cover_image: string | null;
+  author: string | null;
+  read_time: string | null;
+  tags: string | null;
+  publish_date: string | null;
+  created_at: string;
+}): Article {
+  return {
+    id: b.id,
+    title: b.title,
+    subtitle: b.description ?? "",
+    source: b.author || "AUR Editorial",
+    date: formatBlogDate(b.publish_date) || formatBlogDate(b.created_at),
+    contentSummary: b.description ?? "",
+    image: b.cover_image ?? "",
+    content: b.content,
+    category: b.category,
+    readTime: b.read_time ?? undefined,
+    tags: b.tags ? b.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+  };
+}
 
 function BlogDetailsContent() {
   const params = useParams();
@@ -23,23 +59,13 @@ function BlogDetailsContent() {
     if (!id) return;
     async function fetchBlog() {
       try {
-        const storedBlog = getStoredBlog(id);
-        if (storedBlog) {
-          setBlog(storedBlogToArticle(storedBlog));
-          return;
-        }
-
-        const res = await fetch(`/api/blogs/${id}`);
+        const res = await fetch(`${API_BASE_URL}/blogs/${id}`);
         if (!res.ok) {
-          if (res.status === 404) {
-            setError("Blog not found");
-          } else {
-            setError("Failed to load blog");
-          }
+          setError(res.status === 404 ? "Blog not found" : "Failed to load blog");
           return;
         }
         const data = await res.json();
-        setBlog(data);
+        setBlog(backendBlogToArticle(data));
       } catch (err) {
         console.error(err);
         setError("Network error occurred");
@@ -201,13 +227,13 @@ export default function BlogDetailsPage() {
         Initializing Engine...
       </div>
     }>
-      <SidebarProvider>
-        <ToastProvider>
+      <ToastProvider>
+        <SidebarProvider>
           <UniversityDataProvider>
             <BlogDetailsContent />
           </UniversityDataProvider>
-        </ToastProvider>
-      </SidebarProvider>
+        </SidebarProvider>
+      </ToastProvider>
     </React.Suspense>
   );
 }

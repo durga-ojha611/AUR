@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, ArrowRight, BarChart3, Shuffle, Trash } from "lucide-react";
 import { useUniversityData } from "./data/UniversityDataProvider";
+import { MAX_COMPARE } from "./navigation/SidebarContext";
 
 interface ComparisonDockProps {
   selectedIds: string[];
@@ -71,7 +72,7 @@ export default function ComparisonDock({
                 Comparison Suite
               </span>
               <div className="text-[10px] sm:text-xs font-bold text-slate-900 dark:text-slate-100 mt-0.5 truncate">
-                Comparing {selectedUnis.length} of 4 Universities
+                Comparing {selectedUnis.length} of {MAX_COMPARE} Universities
               </div>
             </div>
 

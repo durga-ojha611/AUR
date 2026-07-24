@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { motion } from "framer-motion";
 import NewsFlashWidget from "./NewsFlashWidget";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Search,
   BookOpen,
@@ -28,6 +29,7 @@ import { FEATURED_ARTICLES, University, Article } from "../data";
 import { getPublishedStoredBlogs, storedBlogToArticle } from "../lib/blog-storage";
 import { useUniversityData } from "./data/UniversityDataProvider";
 import { useSidebar } from "./navigation/SidebarContext";
+import { isProtectedView } from "./navigation/config";
 import "./home/ref-home.css";
 import { API_BASE_URL } from "../lib/universities";
 
@@ -445,6 +447,38 @@ function scoreHistory(uni: University, metric: "research" | "employability" | "o
   return uni.history.map((rank, i) => Math.min(100, base - i * 0.8 + (5 - rank) * 0.5));
 }
 
+type FooterLinkItem = {
+  label: string;
+  kind: "view" | "route";
+  target: string;
+};
+
+/** Footer navigation link: SPA views navigate in-app (ungated), route links use Next.js routing. */
+function FooterLink({
+  item,
+  onViewChange,
+}: {
+  item: FooterLinkItem;
+  onViewChange: (view: string) => void;
+}) {
+  const className =
+    "text-sm text-left justify-start text-[#1A365D]/70 hover:text-[#1A365D] hover:translate-x-1 transition-all flex items-center gap-2 w-full";
+
+  if (item.kind === "route") {
+    return (
+      <Link href={item.target} className={className}>
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={() => onViewChange(item.target)} className={className}>
+      {item.label}
+    </button>
+  );
+}
+
 interface HomepageProps {
   onSearchSubmit: (query: string) => void;
   onUniversitySelect: (id: string) => void;
@@ -462,7 +496,7 @@ export default function Homepage({
 }: HomepageProps) {
   const handleProtectedViewChange = useCallback(
     (targetView: string) => {
-      if (!isAuthenticated && targetView !== "home" && targetView !== "login") {
+      if (!isAuthenticated && isProtectedView(targetView)) {
         onViewChange("login");
       } else {
         onViewChange(targetView);
@@ -1022,9 +1056,9 @@ export default function Homepage({
               <button type="button" className="bg-white hover:bg-slate-100 text-[#1A365D] font-bold rounded-lg px-8 py-3.5 text-sm transition-colors" onClick={() => handleProtectedViewChange("rankings")}>
                 Explore Rankings
               </button>
-              <button type="button" className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-bold rounded-lg px-8 py-3.5 text-sm transition-colors" onClick={() => handleProtectedViewChange("settings")}>
+              <a href="mailto:sales@asiauniversityrankings.com?subject=Institutional%20access%20request" className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-bold rounded-lg px-8 py-3.5 text-sm transition-colors inline-block">
                 Request Institutional Access
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -1074,45 +1108,17 @@ export default function Homepage({
               </div>
             </div>
 
-            {[
-              { title: "Platform", links: [["Rankings Engine", "rankings"], ["Discovery Hub", "home"], ["Analytics", "analytics"], ["Compare Institutions", "home"]] },
-              { title: "Resources", links: [["Reports", "home"], ["Insights", "home"], ["News & Updates", "home"]] },
-              { title: "Company", links: [["About Us", "home"], ["Careers", "home"], ["Contact", "settings"], ["Privacy Policy", "settings"]] },
-            ].map((col) => (
-              <div key={col.title}>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-6">{col.title}</h4>
-                <ul className="space-y-3">
-                  {col.links.map(([label, view]) => (
-                    <li key={label}>
-                      <button
-                        type="button"
-                        onClick={() => handleProtectedViewChange(view)}
-                        className="text-sm text-left justify-start text-blue-100/70 hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 w-full"
-                      >
-                        {label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
             <div className="md:col-span-2 md:col-start-5">
               <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#152a5e] mb-5">Platform</h4>
               <ul className="space-y-3">
-                {[
-                  ["Rankings Engine", "rankings"],
-                  ["Discovery Hub", "home"],
-                  ["Analytics", "analytics"],
-                  ["Compare Institutions", "home"],
-                ].map(([label, view]) => (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      onClick={() => handleProtectedViewChange(view)}
-                      className="text-sm text-left justify-start text-[#1A365D]/70 hover:text-[#1A365D] hover:translate-x-1 transition-all flex items-center gap-2 w-full"
-                    >
-                      {label}
-                    </button>
+                {([
+                  { label: "Rankings Engine", kind: "view", target: "rankings" },
+                  { label: "Discovery Hub", kind: "view", target: "home" },
+                  { label: "Analytics", kind: "view", target: "analytics" },
+                  { label: "Compare Institutions", kind: "view", target: "saved" },
+                ] as const).map((item) => (
+                  <li key={item.label}>
+                    <FooterLink item={item} onViewChange={onViewChange} />
                   </li>
                 ))}
               </ul>
@@ -1121,38 +1127,12 @@ export default function Homepage({
             <div className="md:col-span-2">
               <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#152a5e] mb-5">Resources</h4>
               <ul className="space-y-3">
-                {[
-                  ["Insights", "home"],
-                  ["News & Updates", "home"],
-                ].map(([label, view]) => (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      onClick={() => handleProtectedViewChange(view)}
-                      className="text-sm text-left justify-start text-[#1A365D]/70 hover:text-[#1A365D] hover:translate-x-1 transition-all flex items-center gap-2 w-full"
-                    >
-                      {label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="md:col-span-2">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#152a5e] mb-5">Company</h4>
-              <ul className="space-y-3">
-                {[
-                  ["Contact", "settings"],
-                  ["Privacy Policy", "settings"],
-                ].map(([label, view]) => (
-                  <li key={label}>
-                    <button
-                      type="button"
-                      onClick={() => handleProtectedViewChange(view)}
-                      className="text-sm text-left justify-start text-[#1A365D]/70 hover:text-[#1A365D] hover:translate-x-1 transition-all flex items-center gap-2 w-full"
-                    >
-                      {label}
-                    </button>
+                {([
+                  { label: "Insights", kind: "view", target: "insights" },
+                  { label: "News & Updates", kind: "view", target: "news" },
+                ] as const).map((item) => (
+                  <li key={item.label}>
+                    <FooterLink item={item} onViewChange={onViewChange} />
                   </li>
                 ))}
               </ul>

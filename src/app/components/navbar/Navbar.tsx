@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Search, Bell, Menu, X, ChevronDown, User, Shield, LogOut } from "lucide-react";
 import { BrandLogo } from "../BrandLogo";
 import { useSidebar } from "../navigation/SidebarContext";
@@ -77,11 +76,26 @@ export default function Navbar({
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         });
+
+        // An expired/invalid token means the session is stale — clear it and
+        // let the app fall back to its logged-out state instead of pretending
+        // we're still signed in with no user data.
+        if (response.status === 401) {
+          sessionStorage.removeItem("aur_access_token");
+          sessionStorage.removeItem("aur_refresh_token");
+          localStorage.removeItem("aur_logged_in");
+          setCurrentUser(null);
+          window.dispatchEvent(new Event("aur-auth-change"));
+          return;
+        }
+
         if (!response.ok) throw new Error("Failed to fetch signed-in user");
         setCurrentUser(await response.json());
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
-        console.error("Unable to load signed-in user:", error);
+        // Recoverable: the navbar just renders without user details. Warn
+        // rather than error so it doesn't trip the dev error overlay.
+        console.warn("Unable to load signed-in user:", error);
         setCurrentUser(null);
       }
     }
@@ -188,20 +202,8 @@ export default function Navbar({
 
           {/* ── Navigation Links - Desktop ── */}
           <nav className="hidden lg:flex space-x-1 items-center">
-            {TOP_NAV_LINKS.filter(link => isAuthenticated || link.view === "home").map((link) => {
+            {TOP_NAV_LINKS.map((link) => {
               const isActive = activeView === link.view;
-
-              if (link.view === "news") {
-                return (
-                  <Link
-                    key={link.label}
-                    href="/news"
-                    className="relative px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-300 rounded-none text-[#1A365D] hover:text-[#1A365D]/80 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#1A365D] after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left"
-                  >
-                    {link.label}
-                  </Link>
-                );
-              }
 
               return (
                 <button

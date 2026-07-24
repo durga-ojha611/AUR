@@ -3,6 +3,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
+import { useToast } from "../feedback/ToastContext";
+
+/** Maximum number of universities that can be compared at once (shared across the compare flow). */
+export const MAX_COMPARE = 4;
+
 export interface FilterState {
   searchQuery: string;
   country: string;
@@ -50,6 +55,7 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
 
   // Active view sync from URL
   const activeView = searchParams.get("view") || "home";
@@ -88,8 +94,8 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ? prev.filter((id) => id !== uniId)
         : [...prev, uniId];
 
-      if (next.length > 4) {
-        alert("You can compare a maximum of 4 universities at a time.");
+      if (next.length > MAX_COMPARE) {
+        showToast(`You can compare up to ${MAX_COMPARE} universities at a time.`, "warning");
         return prev;
       }
 
@@ -147,7 +153,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const handleViewChange = (view: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.set("view", view);
-    if (view !== "profile") {
+    if (view !== "university-profile") {
       current.delete("id");
     }
     
@@ -163,7 +169,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const setSelectedUniId = (id: string | null) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     if (id) {
-      current.set("view", "profile");
+      current.set("view", "university-profile");
       current.set("id", id);
     } else {
       current.set("view", "rankings");

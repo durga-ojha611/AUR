@@ -32,10 +32,6 @@ interface UniversityProfileProps {
 export default function UniversityProfile({ universityId, onBack, onViewChange, savedUniIds, onToggleSave }: UniversityProfileProps) {
   const { universities } = useUniversityData();
   const [activeTab, setActiveTab] = useState<"overview" | "metrics" | "admissions">("overview");
-  
-  // Eligibility State
-  const [showEligibility, setShowEligibility] = useState(false);
-  const [eligibilityResult, setEligibilityResult] = useState<null | { chance: number, message: string }>(null);
 
   const uni = universities.find((u) => u.id === universityId);
   const isShortlisted = savedUniIds?.includes(universityId) || false;
@@ -49,115 +45,200 @@ export default function UniversityProfile({ universityId, onBack, onViewChange, 
     );
   }
 
+  // Current AUR rank = the most recent entry in the 5-year history series.
+  const currentRank = uni.history?.[0];
+  // Typographic monogram fallback — never show a stretched campus photo as a "logo".
+  const monogram = uni.name
+    .split(/\s+/)
+    .filter((w) => /^[A-Za-z]/.test(w))
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+  const classification = `${typeof uni.isPublic === "boolean" ? (uni.isPublic ? "Public" : "Private") : "Research"} University`;
+
+  // Vitals strip — only cells with real data are rendered, so we never show a
+  // hollow "0" or "—" masquerading as a fact.
+  const vitals: { label: string; value: string }[] = [
+    uni.founded !== undefined && { label: "Founded", value: String(uni.founded) },
+    uni.studentCount !== undefined && { label: "Students", value: uni.studentCount.toLocaleString() },
+    uni.acceptanceRate !== undefined && { label: "Acceptance", value: `${uni.acceptanceRate}%` },
+    { label: uni.subjects.length === 1 ? "Subject area" : "Subject areas", value: String(uni.subjects.length) },
+    uni.tuition && { label: "Tuition / yr", value: uni.tuition.replace(/\/\s*year/i, "").trim() },
+  ].filter(Boolean) as { label: string; value: string }[];
+
   return (
     <div className="mx-auto w-full pb-16 font-sans flex-grow animate-fadeIn bg-[var(--background)]">
-      
-      {/* Top Navigation */}
-      <div className="px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between border-b border-[var(--aur-border)] bg-[var(--aur-surface)]/80 backdrop-blur-md sticky top-0 z-40">
+
+      {/* Record bar — reads like the header of a catalogued entry */}
+      <div className="px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between border-b border-[var(--aur-border)] bg-[var(--aur-surface)]/85 backdrop-blur-md sticky top-0 z-40">
         <button
           onClick={onBack}
-          className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider text-[var(--aur-text-secondary)] hover:text-[var(--aur-text)] transition-colors bg-[var(--aur-surface-hover)] border border-[var(--aur-border)] px-4 py-2 rounded-lg"
+          className="group inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--aur-text-secondary)] hover:text-[var(--aur-text)] transition-colors"
         >
-          <ArrowLeft className="h-4 w-4 mr-1.5" />
-          Back to Directory
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Directory
         </button>
-        
-        <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--aur-text-muted)]">
-          Institutional Profile
+        <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[var(--aur-text-muted)]">
+          Institutional Record
         </span>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative mb-8 md:mb-24 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6">
-        <div className="relative min-h-[360px] md:h-[420px] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-[var(--aur-surface-2)] shadow-[var(--aur-shadow)] flex flex-col justify-end p-6 sm:p-8 md:p-12">
-          <Image
-            src={uni.campusPhoto}
-            alt={`${uni.name} Campus`}
-            fill
-            className="object-cover opacity-90"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/90 via-[#000000]/50 to-transparent pointer-events-none" />
-          
-          {/* Content inside banner */}
-          <div className="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6 md:gap-8 text-white w-full">
-            <div className="h-20 w-20 sm:h-28 sm:w-28 md:h-32 md:w-32 bg-[var(--aur-surface)] rounded-2xl shadow-2xl border-2 sm:border-4 border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
-               <Image
-                 src={uni.logo || uni.campusPhoto}
-                 alt={`${uni.name} Logo`}
-                 width={128}
-                 height={128}
-                 className="object-cover w-full h-full opacity-80 mix-blend-luminosity"
-               />
-            </div>
-            <div className="flex-grow flex flex-col md:flex-row justify-between items-center md:items-end w-full pb-1 sm:pb-2">
-              <div className="text-center md:text-left min-w-0 max-w-full">
-                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif tracking-tight mb-2 sm:mb-3 text-white drop-shadow-md break-words">
-                  {uni.name}
-                </h1>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-white/80 justify-center md:justify-start font-medium">
-                  <MapPin className="h-4 w-4 opacity-80 shrink-0" />
-                  <span>{uni.location}</span>
+      {/* ── Masthead ── full-bleed campus band with a contained identity plate ── */}
+      <div className="relative w-full min-h-[340px] md:min-h-[400px] flex items-center overflow-hidden bg-[var(--aur-text)]">
+        <Image
+          src={uni.campusPhoto}
+          alt={`${uni.name} campus`}
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Directional scrim: dark at the left where the plate sits, clearing to the right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1628]/95 via-[#0a1628]/70 to-[#0a1628]/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/80 via-transparent to-transparent" />
+
+        <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 md:py-20">
+          <div className="flex items-start gap-5 sm:gap-8">
+
+            {/* Rank — the signature: an oversized editorial numeral with a crimson rule */}
+            {currentRank !== undefined && (
+              <div className="hidden sm:flex shrink-0 items-stretch gap-5">
+                <div className="flex flex-col justify-center text-right">
+                  <span className="aur-serif text-5xl md:text-7xl font-bold leading-none text-white tabular-nums">
+                    {currentRank}
+                  </span>
+                  <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/60">
+                    AUR Rank
+                  </span>
                 </div>
+                <div className="w-px self-stretch bg-[var(--aur-accent)]" />
               </div>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 md:mt-0 shrink-0">
-                <button 
-                  onClick={() => onToggleSave(universityId)}
-                  className={`${isShortlisted ? "bg-red-500 text-white" : "bg-cyber-black/50 hover:bg-cyber-black/70 text-white border border-white/20"} font-bold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg backdrop-blur-sm`}>
-                  <Bookmark className={`h-4 w-4 ${isShortlisted ? "fill-current" : ""}`} /> {isShortlisted ? "Saved" : "Save"}
-                </button>
-                <button 
-                  onClick={() => onViewChange("rankings")}
-                  className="bg-cyber-black/50 hover:bg-cyber-black/70 text-white border border-white/20 font-bold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg backdrop-blur-sm">
-                  <Square className="h-4 w-4" /> Compare
-                </button>
+            )}
+
+            {/* Identity */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start gap-4 sm:gap-5">
+                {/* Logo or typographic monogram — never a stretched photo */}
+                <div className="shrink-0 h-16 w-16 sm:h-20 sm:w-20 rounded-xl bg-white/95 border border-white/40 shadow-lg overflow-hidden flex items-center justify-center">
+                  {uni.logo ? (
+                    <Image
+                      src={uni.logo}
+                      alt={`${uni.name} logo`}
+                      width={80}
+                      height={80}
+                      className="object-contain w-full h-full p-2"
+                    />
+                  ) : (
+                    <span className="aur-serif text-xl sm:text-2xl font-bold text-[var(--aur-text)]">
+                      {monogram}
+                    </span>
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <h1 className="aur-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.05] break-words">
+                    {uni.name}
+                  </h1>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-white/75">
+                    {/* Rank inline on mobile, where the large numeral is hidden */}
+                    {currentRank !== undefined && (
+                      <>
+                        <span className="sm:hidden inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
+                          <span className="text-[var(--aur-accent-muted)]">AUR</span> No. {currentRank}
+                        </span>
+                        <span className="sm:hidden h-1 w-1 rounded-full bg-white/40" />
+                      </>
+                    )}
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium">
+                      <MapPin className="h-4 w-4 shrink-0" />
+                      {uni.location}
+                    </span>
+                    <span className="h-1 w-1 rounded-full bg-white/40" />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/60">
+                      {classification}
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="mt-6 flex flex-wrap gap-2.5">
+                    <button
+                      onClick={() => onToggleSave(universityId)}
+                      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                        isShortlisted
+                          ? "bg-[var(--aur-accent)] text-white shadow-lg"
+                          : "bg-white/10 text-white border border-white/25 hover:bg-white/20 backdrop-blur-sm"
+                      }`}
+                    >
+                      <Bookmark className={`h-4 w-4 ${isShortlisted ? "fill-current" : ""}`} />
+                      {isShortlisted ? "Saved" : "Save"}
+                    </button>
+                    <button
+                      onClick={() => onViewChange("saved")}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-[0.12em] bg-white/10 text-white border border-white/25 hover:bg-white/20 backdrop-blur-sm transition-all"
+                    >
+                      <Square className="h-4 w-4" /> Compare
+                    </button>
+                    {uni.website && (
+                      <a
+                        href={uni.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-[0.12em] bg-white text-[var(--aur-text)] hover:bg-white/90 transition-all"
+                      >
+                        Visit site <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* 3 Stat Cards — In-flow on mobile, absolute overlap on desktop */}
-        <div className="mt-4 sm:mt-6 md:mt-0 md:absolute md:-bottom-12 md:left-0 md:right-0 px-0 sm:px-4 md:px-10 lg:px-16 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 z-20">
-           <div className="bg-[var(--aur-surface)] border border-[var(--aur-border)] rounded-2xl p-4 sm:p-6 shadow-[var(--aur-shadow-sm)] md:shadow-[var(--aur-shadow)] flex flex-col items-center justify-center text-center transform transition-transform hover:-translate-y-1">
-             <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[var(--aur-text)] mb-1 sm:mb-2">
-                #{uni.history[0] || uni.qsSubjectRankings?.[0]?.worldRank || 587}
-             </span>
-             <span className="text-[10px] uppercase tracking-widest text-[var(--aur-text-muted)] font-bold">QS World Rank</span>
-           </div>
-           <div className="bg-[var(--aur-surface)] border border-[var(--aur-border)] rounded-2xl p-4 sm:p-6 shadow-[var(--aur-shadow-sm)] md:shadow-[var(--aur-shadow)] flex flex-col items-center justify-center text-center transform transition-transform hover:-translate-y-1">
-             <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[var(--aur-text)] mb-1 sm:mb-2">
-                {uni.subjects.length * 15}
-             </span>
-             <span className="text-[10px] uppercase tracking-widest text-[var(--aur-text-muted)] font-bold">Total Programmes</span>
-           </div>
-           <div className="bg-[var(--aur-surface)] border border-[var(--aur-border)] rounded-2xl p-4 sm:p-6 shadow-[var(--aur-shadow-sm)] md:shadow-[var(--aur-shadow)] flex flex-col items-center justify-center text-center transform transition-transform hover:-translate-y-1">
-             <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[var(--aur-text)] mb-1 sm:mb-2">
-                {uni.intlStudents || 12}%
-             </span>
-             <span className="text-[10px] uppercase tracking-widest text-[var(--aur-text-muted)] font-bold">Intl Students</span>
-           </div>
+      {/* ── Vitals strip ── hairline-divided data cells, only where data exists ── */}
+      <div className="border-b border-[var(--aur-border)] bg-[var(--aur-surface)]">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-x divide-y sm:divide-y-0 divide-[var(--aur-border)]">
+            {vitals.map((v) => (
+              <div key={v.label} className="px-5 py-5 sm:py-6">
+                <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--aur-text-muted)]">
+                  {v.label}
+                </dt>
+                <dd className="mt-1.5 aur-serif text-2xl sm:text-3xl font-bold text-[var(--aur-text)] tabular-nums">
+                  {v.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        {/* Accessible Tab Navigation */}
-        <div className="border-b border-[var(--aur-border)] mb-12 flex overflow-x-auto hide-scrollbar gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+        {/* Section Navigation */}
+        <div
+          className="border-b border-[var(--aur-border)] mb-12 flex overflow-x-auto gap-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
           {[
-            { id: "overview", label: "Overview & Context", icon: Building2 },
-            { id: "metrics", label: "Academic Metrics", icon: LineChart },
+            { id: "overview", label: "Overview", icon: Building2 },
+            { id: "metrics", label: "Metrics", icon: LineChart },
             { id: "admissions", label: "Admissions", icon: GraduationCap },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`inline-flex items-center whitespace-nowrap border-b-2 pb-4 text-xs font-bold uppercase tracking-widest transition-all -mb-[1px] ${
+              className={`group relative inline-flex items-center gap-2.5 whitespace-nowrap px-4 pb-4 pt-1 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors -mb-px ${
                 activeTab === tab.id
-                  ? "border-[var(--aur-text)] text-[var(--aur-text)]"
-                  : "border-transparent text-[var(--aur-text-muted)] hover:text-[var(--aur-text-secondary)] hover:border-[var(--aur-border-strong)]"
+                  ? "text-[var(--aur-text)]"
+                  : "text-[var(--aur-text-muted)] hover:text-[var(--aur-text-secondary)]"
               }`}
             >
-              <tab.icon className={`h-4 w-4 mr-2.5 ${activeTab === tab.id ? "text-[var(--aur-text)]" : "text-[var(--aur-text-muted)]"}`} />
+              <tab.icon className="h-4 w-4" />
               {tab.label}
+              <span
+                className={`absolute inset-x-0 -bottom-px h-0.5 transition-colors ${
+                  activeTab === tab.id ? "bg-[var(--aur-accent)]" : "bg-transparent group-hover:bg-[var(--aur-border-strong)]"
+                }`}
+              />
             </button>
           ))}
         </div>
@@ -260,10 +341,8 @@ export default function UniversityProfile({ universityId, onBack, onViewChange, 
                           </div>
                           <div className="w-full h-2.5 bg-[var(--aur-surface-hover)] rounded-full overflow-hidden border border-[var(--aur-border)]">
                             <div
-                              
-                              
-                              
-                              className="h-full bg-[var(--aur-text)] rounded-full"
+                              style={{ width: `${Math.max(0, Math.min(100, metric.value))}%` }}
+                              className="h-full bg-[var(--aur-text)] rounded-full transition-[width] duration-700 ease-out"
                             />
                           </div>
                         </div>
@@ -431,99 +510,34 @@ export default function UniversityProfile({ universityId, onBack, onViewChange, 
                 </div>
               </div>
 
-              {/* ── Eligibility Check Feature ── */}
+              {/* ── Official Admissions ── */}
               <div className="bg-[var(--aur-surface)] border border-[var(--aur-border)] rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-[var(--aur-shadow-sm)]">
-                
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10 mb-6">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
                   <div className="flex items-center gap-4">
                     <div className="bg-[var(--aur-surface-2)] border border-[var(--aur-border)] p-3 rounded-xl text-[var(--aur-text)]">
                       <GraduationCap className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold font-serif text-[var(--aur-text)] leading-tight">Eligibility Predictor</h3>
-                      <p className="text-xs text-[var(--aur-text-muted)] mt-1 font-medium tracking-wide">Enter your marks and exam scores to check your chances at {uni.name}.</p>
+                      <h3 className="text-xl font-bold font-serif text-[var(--aur-text)] leading-tight">Admissions &amp; Requirements</h3>
+                      <p className="text-xs text-[var(--aur-text-muted)] mt-1 font-medium tracking-wide">Entry requirements, deadlines, and how to apply are published by {uni.name}.</p>
                     </div>
                   </div>
-                  
-                  {!showEligibility && !eligibilityResult && (
-                    <button 
-                      onClick={() => setShowEligibility(true)}
-                      className="bg-[var(--aur-text)] text-[var(--background)] hover:opacity-80 font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all shadow-md shrink-0 w-full md:w-auto text-center"
+
+                  {uni.website ? (
+                    <a
+                      href={uni.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[var(--aur-text)] text-[var(--background)] hover:opacity-80 font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all shadow-md shrink-0 w-full md:w-auto text-center inline-flex items-center justify-center gap-2"
                     >
-                      Calculate Chances
-                    </button>
+                      Visit Admissions Site <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  ) : (
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--aur-text-muted)] bg-[var(--aur-surface-2)] border border-[var(--aur-border)] py-3 px-6 rounded-xl shrink-0 w-full md:w-auto text-center">
+                      Website unavailable
+                    </span>
                   )}
                 </div>
-
-                {showEligibility && !eligibilityResult && (
-                  <div className="animate-fadeIn mt-8 pt-6 border-t border-[var(--aur-border)] relative z-10">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                      <div>
-                        <label className="block text-[10px] uppercase font-bold tracking-wider text-[var(--aur-text-muted)] mb-2 ml-1">Current Academic Marks</label>
-                        <input type="text" placeholder="e.g. 92% or 3.8 GPA" className="w-full bg-[var(--aur-surface-2)] border border-[var(--aur-border)] rounded-xl px-4 py-3 text-sm font-bold text-[var(--aur-text)] placeholder-[var(--aur-text-muted)] focus:outline-none focus:border-[var(--aur-text)] transition-colors" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] uppercase font-bold tracking-wider text-[var(--aur-text-muted)] mb-2 ml-1">Standardized Exam (Optional)</label>
-                        <input type="text" placeholder="e.g. SAT 1450" className="w-full bg-[var(--aur-surface-2)] border border-[var(--aur-border)] rounded-xl px-4 py-3 text-sm font-bold text-[var(--aur-text)] placeholder-[var(--aur-text-muted)] focus:outline-none focus:border-[var(--aur-text)] transition-colors" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] uppercase font-bold tracking-wider text-[var(--aur-text-muted)] mb-2 ml-1">English Proficiency</label>
-                        <select className="w-full bg-[var(--aur-surface-2)] border border-[var(--aur-border)] rounded-xl px-4 py-3 text-sm font-bold text-[var(--aur-text)] focus:outline-none focus:border-[var(--aur-text)] transition-colors cursor-pointer appearance-none">
-                          <option>IELTS (7.0+)</option>
-                          <option>TOEFL (100+)</option>
-                          <option>None / Pending</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="flex gap-3 justify-end">
-                      <button 
-                        onClick={() => setShowEligibility(false)}
-                        className="font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl border border-[var(--aur-border)] text-[var(--aur-text-secondary)] hover:text-[var(--aur-text)] hover:bg-[var(--aur-surface-hover)] transition-all"
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        onClick={() => {
-                          setShowEligibility(false);
-                          setEligibilityResult({
-                            chance: Math.floor(Math.random() * 40) + 50, // Mock percentage between 50-90%
-                            message: "Your academic profile is competitive. To maximize your chances, focus on highlighting your extracurricular achievements and securing strong letters of recommendation."
-                          });
-                        }}
-                        className="bg-[var(--aur-text)] text-[var(--background)] hover:opacity-80 font-bold text-xs uppercase tracking-wider py-3 px-8 rounded-xl transition-all shadow-md"
-                      >
-                        Analyze Profile
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {eligibilityResult && (
-                  <div className="animate-fadeIn mt-6 pt-6 border-t border-[var(--aur-border)] relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                    <div className="relative w-32 h-32 shrink-0 flex items-center justify-center">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8" className="text-[var(--aur-surface-2)]" />
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray={`${eligibilityResult.chance * 2.83} 283`} className="text-[#10b981]" strokeLinecap="round" />
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-3xl font-black text-[var(--aur-text)]">{eligibilityResult.chance}%</span>
-                      </div>
-                    </div>
-                    <div className="flex-1 text-center md:text-left">
-                      <h4 className="font-bold text-lg text-[var(--aur-text)] mb-2">Estimated Admission Chance</h4>
-                      <p className="text-[var(--aur-text-secondary)] text-sm leading-relaxed mb-4">{eligibilityResult.message}</p>
-                      <button 
-                        onClick={() => {
-                          setEligibilityResult(null);
-                          setShowEligibility(true);
-                        }}
-                        className="text-[11px] font-bold uppercase tracking-wider text-[#10b981] hover:text-white bg-[#10b981]/10 hover:bg-[#10b981] px-5 py-2.5 rounded-lg transition-all border border-[#10b981]/20 inline-flex items-center gap-2"
-                      >
-                        Recalculate <ArrowLeft className="w-3 h-3 rotate-180" />
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* ── Languages of Instruction ── */}

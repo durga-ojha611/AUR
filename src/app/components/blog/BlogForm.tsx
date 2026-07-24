@@ -104,7 +104,7 @@ export default function BlogForm() {
       }
 
       if (status === "Published") {
-        router.push("/");
+        router.push("/?view=insights");
         return;
       }
 

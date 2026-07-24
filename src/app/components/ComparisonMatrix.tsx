@@ -4,6 +4,9 @@ import React, { useState, useMemo } from "react";
 import { X, LayoutGrid, Search } from "lucide-react";
 import { University } from "../data";
 import { useUniversityData } from "./data/UniversityDataProvider";
+import { MAX_COMPARE } from "./navigation/SidebarContext";
+import { useToast } from "./feedback/ToastContext";
+import { useAuthGate } from "./auth/AuthGate";
 
 const ProfessionalInput = ({
   label, value, onChange, placeholder, prefix, suffix
@@ -30,6 +33,8 @@ const ProfessionalInput = ({
 
 export default function ComparisonMatrix() {
   const { universities } = useUniversityData();
+  const { showToast } = useToast();
+  const { requireAuth } = useAuthGate();
 
   const [selectedUnis, setSelectedUnis] = useState<University[]>([]);
   const [maxTuition, setMaxTuition] = useState("");
@@ -56,15 +61,19 @@ export default function ComparisonMatrix() {
   const applyFilters = () => setHasSearched(true);
 
   const toggleSelect = (uni: University) => {
-    if (selectedUnis.some(u => u.id === uni.id)) {
+    const alreadySelected = selectedUnis.some(u => u.id === uni.id);
+    if (alreadySelected) {
       setSelectedUnis(prev => prev.filter(u => u.id !== uni.id));
-    } else {
-      if (selectedUnis.length >= 5) {
-        alert("You can only compare up to 5 universities at once.");
-        return;
-      }
-      setSelectedUnis(prev => [...prev, uni]);
+      return;
     }
+    if (!requireAuth(undefined, "Sign in to compare universities side by side.")) {
+      return;
+    }
+    if (selectedUnis.length >= MAX_COMPARE) {
+      showToast(`You can only compare up to ${MAX_COMPARE} universities at once.`, "warning");
+      return;
+    }
+    setSelectedUnis(prev => [...prev, uni]);
   };
 
   const clearParameters = () => {
@@ -84,7 +93,7 @@ export default function ComparisonMatrix() {
             Comparison Matrix
           </h1>
           <p className="mt-3 max-w-2xl mx-auto text-sm sm:text-base text-slate-500">
-            Select up to 5 institutions to evaluate side-by-side against real ranking metrics, tuition, and admission data.
+            Select up to {MAX_COMPARE} institutions to evaluate side-by-side against real ranking metrics, tuition, and admission data.
           </p>
         </header>
 
@@ -200,7 +209,7 @@ export default function ComparisonMatrix() {
             <LayoutGrid className="w-12 h-12 text-slate-300 mx-auto mb-4" />
             <h3 className="text-base font-semibold text-slate-900">No institutions selected</h3>
             <p className="mt-2 text-sm text-slate-500">
-              Search and add institutions from the panel above to begin your comparison. You can compare up to 5 at once.
+              Search and add institutions from the panel above to begin your comparison. You can compare up to {MAX_COMPARE} at once.
             </p>
           </div>
         ) : (

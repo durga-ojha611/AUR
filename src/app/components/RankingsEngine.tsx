@@ -29,9 +29,12 @@ import {
   Award,
   X,
   FilterX,
+  Lock,
 } from "lucide-react";
 import { University } from "../data";
 import { useUniversityData } from "./data/UniversityDataProvider";
+import { useAuthGate } from "./auth/AuthGate";
+import { PREVIEW_LIMIT } from "./navigation/config";
 import { useSidebar } from "./navigation/SidebarContext";
 import MultiSelectDropdown from "./ui/MultiSelectDropdown";
 
@@ -59,7 +62,8 @@ export default function RankingsEngine({
   onToggleCompare,
   onUniversitySelect,
 }: RankingsEngineProps) {
-  const { universities } = useUniversityData();
+  const { universities, error: dataError } = useUniversityData();
+  const { isAuthenticated, promptSignIn } = useAuthGate();
   const focusRing =
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--aur-text)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]";
   const router = useRouter();
@@ -281,6 +285,14 @@ export default function RankingsEngine({
     });
   }, [processedData, deferredSearchQuery, locations, selectedSubjects, selectedLanguages, filters]);
 
+  // Preview gating: logged-out visitors see at most PREVIEW_LIMIT institutions.
+  const totalMatches = filteredData.length;
+  const isPreviewCapped = !isAuthenticated && totalMatches > PREVIEW_LIMIT;
+  const previewData = useMemo(
+    () => (isPreviewCapped ? filteredData.slice(0, PREVIEW_LIMIT) : filteredData),
+    [filteredData, isPreviewCapped]
+  );
+
   // 6. Extract unique values for filter dropdown options
   const uniqueLocations = useMemo(() => Array.from(new Set(universities.map((u) => u.location))).sort(), [universities]);
   const uniqueSubjects = useMemo(() => Array.from(new Set(universities.flatMap((u) => u.subjects))).sort(), [universities]);
@@ -447,7 +459,7 @@ export default function RankingsEngine({
 
   // 8. TanStack Table Instance
   const table = useReactTable({
-    data: filteredData,
+    data: previewData,
     columns,
     state: {
       sorting,
@@ -641,6 +653,12 @@ export default function RankingsEngine({
         </div>
       </div>
 
+      {dataError && (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Live rankings couldn&apos;t be loaded right now — showing a bundled sample instead. Please try again later.
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
         <span className="text-[10px] text-[var(--aur-text-muted)] font-bold uppercase tracking-wider">
           Total: <span className="text-[var(--aur-text)] font-mono">{filteredData.length}</span> matching institutions
@@ -744,8 +762,38 @@ export default function RankingsEngine({
         </div>
       </div>
 
+      {/* Locked preview CTA — logged-out visitors capped at PREVIEW_LIMIT */}
+      {isPreviewCapped && (
+        <div className="relative mt-2 overflow-hidden rounded-2xl border border-[#1A365D]/15 bg-gradient-to-b from-white/60 to-[#1A365D]/[0.06] px-6 py-10 text-center">
+          {/* Faded teaser rows behind the CTA */}
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-6 flex flex-col gap-2 px-6 opacity-40 blur-[2px]">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-10 rounded-lg bg-white/70 border border-white/80" style={{ opacity: 1 - i * 0.3 }} />
+            ))}
+          </div>
+          <div className="relative">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1A365D]/10 text-[#1A365D]">
+              <Lock className="h-6 w-6" />
+            </div>
+            <h3 className="font-serif text-xl font-bold text-[#1A365D]">
+              {totalMatches - PREVIEW_LIMIT} more institutions
+            </h3>
+            <p className="mx-auto mt-2 mb-6 max-w-sm text-sm leading-relaxed text-slate-500">
+              You&apos;re viewing the top {PREVIEW_LIMIT} of {totalMatches}. Create a free account to unlock the full ranking, compare institutions, and save your shortlist.
+            </p>
+            <button
+              type="button"
+              onClick={() => promptSignIn(`Sign in to see all ${totalMatches} ranked institutions.`)}
+              className="rounded-lg bg-[#1A365D] px-6 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-blue-900"
+            >
+              Unlock all {totalMatches} universities
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Pagination Controls */}
-      <div className="aur-panel aur-rankings-pagination flex items-center justify-between px-3 sm:px-4 py-3 mt-4 rounded-sm">
+      <div className={`aur-panel aur-rankings-pagination flex items-center justify-between px-3 sm:px-4 py-3 mt-4 rounded-sm ${isPreviewCapped ? "hidden" : ""}`}>
         <div className="flex flex-1 justify-between sm:hidden">
           <button
             onClick={() => table.previousPage()}

@@ -5,7 +5,7 @@ import { useSidebar } from "../navigation/SidebarContext";
 import { SIDEBAR_ITEMS, NavItem } from "../navigation/config";
 import FilterPanel from "../filters/FilterPanel";
 
-import { X, SlidersHorizontal, Home, Trophy, Settings, LogIn, UserPlus } from "lucide-react";
+import { X, SlidersHorizontal, Home, Trophy, Settings, LogIn } from "lucide-react";
 
 interface MobileMenuProps {
   isAuthenticated?: boolean;
@@ -108,7 +108,7 @@ export default function MobileMenu({
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {activeTab === "menu" ? (
                   <nav className="space-y-1">
-                    {SIDEBAR_ITEMS.filter((item) => isAuthenticated || item.view === "home").map((item) => {
+                    {SIDEBAR_ITEMS.map((item) => {
                       const Icon = item.icon;
                       const isActive = activeView === item.view;
                       return (
@@ -153,7 +153,7 @@ export default function MobileMenu({
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t z-40 transition-colors duration-200 bg-[var(--aur-surface)]/95 border-[var(--aur-border)] text-[var(--aur-text-muted)] pb-safe-bottom backdrop-blur-md"
       >
-        <div className={`h-full grid ${isAuthenticated ? "grid-cols-4" : "grid-cols-3"} items-center max-w-lg mx-auto`}>
+        <div className="h-full grid grid-cols-4 items-center max-w-lg mx-auto">
           {/* Item 1: Home */}
           <button
             type="button"
@@ -168,8 +168,7 @@ export default function MobileMenu({
             <span className="text-[8px] font-bold uppercase tracking-wider">Home</span>
           </button>
 
-          {isAuthenticated ? <>
-          {/* Item 2: Prestige Rankings */}
+          {/* Item 2: Prestige Rankings (available to everyone) */}
           <button
             type="button"
             onClick={() => handleViewChange("rankings")}
@@ -196,30 +195,26 @@ export default function MobileMenu({
             <span className="text-[8px] font-bold uppercase tracking-wider">Filters</span>
           </button>
 
-          {/* Item 4: Settings */}
-          <button
-            type="button"
-            onClick={() => handleViewChange("settings")}
-            className={`flex flex-col items-center justify-center h-full transition-colors ${
-              activeView === "settings"
-                ? "text-amber-700 dark:text-cyber-yellow"
-                : "hover:text-slate-800 dark:hover:text-white"
-            } ${focusRing}`}
-          >
-            <Settings className="h-4.5 w-4.5 mb-1" />
-            <span className="text-[8px] font-bold uppercase tracking-wider">Settings</span>
-          </button>
-
-          </> : <>
-            <button type="button" onClick={onLogIn} className={`flex h-full flex-col items-center justify-center ${focusRing}`}>
+          {/* Item 4: Settings (authed) or Sign In (guest) */}
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => handleViewChange("settings")}
+              className={`flex flex-col items-center justify-center h-full transition-colors ${
+                activeView === "settings"
+                  ? "text-amber-700 dark:text-cyber-yellow"
+                  : "hover:text-slate-800 dark:hover:text-white"
+              } ${focusRing}`}
+            >
+              <Settings className="h-4.5 w-4.5 mb-1" />
+              <span className="text-[8px] font-bold uppercase tracking-wider">Settings</span>
+            </button>
+          ) : (
+            <button type="button" onClick={onLogIn} className={`flex h-full flex-col items-center justify-center transition-colors hover:text-slate-800 dark:hover:text-white ${focusRing}`}>
               <LogIn className="mb-1 h-4.5 w-4.5" />
-              <span className="text-[8px] font-bold uppercase tracking-wider">Log In</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider">Sign In</span>
             </button>
-            <button type="button" onClick={onSignUp} className={`flex h-full flex-col items-center justify-center ${focusRing}`}>
-              <UserPlus className="mb-1 h-4.5 w-4.5" />
-              <span className="text-[8px] font-bold uppercase tracking-wider">Sign Up</span>
-            </button>
-          </>}
+          )}
 
         </div>
       </nav>

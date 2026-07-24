@@ -705,8 +705,17 @@ img {
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    /* Don't retain keyframe endpoints — with `both`, entrance animations
+       (fadeInUp starts at opacity:0) would otherwise stay stuck invisible. */
+    animation-fill-mode: none !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Entrance animations resolve instantly to their visible resting state. */
+  .animate-fadeIn {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
