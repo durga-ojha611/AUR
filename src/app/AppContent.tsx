@@ -184,6 +184,10 @@ useEffect(() => {
 };
 
   const handleUniversitySelect = (uniId: string) => {
+    if (!isAuthenticated) {
+      openAuth("login");
+      return;
+    }
     setSelectedUniId(uniId);
     handleViewChange("university-profile");
   };
@@ -193,6 +197,10 @@ useEffect(() => {
   };
 
   const handleArticleSelect = (article: Article) => {
+    if (!isAuthenticated) {
+      openAuth("login");
+      return;
+    }
     router.push(`/blogs/${article.id}`);
   };
 
@@ -364,7 +372,6 @@ useEffect(() => {
       </div>
 
       {/* Mobile Responsive Navigation Drawer & Bottom Bar */}
-      {view !== "login" && <MobileMenu />}
       {view !== "login" && view !== "admin" && (
         <MobileMenu
           isAuthenticated={isAuthenticated}
