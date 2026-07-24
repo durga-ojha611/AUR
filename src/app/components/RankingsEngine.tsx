@@ -14,7 +14,6 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import {
-  SlidersHorizontal,
   ChevronDown,
   ChevronUp,
   RotateCcw,
@@ -488,16 +487,6 @@ export default function RankingsEngine({
             Index refreshed Â· Jun 2026 Â· {filteredData.length} institutions indexed
           </p>
         </div>
-        
-        {/* Recalculator Drawer Trigger button */}
-        <button
-          type="button"
-          onClick={() => setIsWeightsDrawerOpen(true)}
-          className={`aur-rankings-action mt-2 md:mt-0 inline-flex w-full sm:w-auto items-center justify-center px-5 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-all aur-focus-ring ${focusRing}`}
-        >
-          <SlidersHorizontal className="h-4 w-4 mr-2" />
-          Weights Recalculator
-        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8 relative z-10">
